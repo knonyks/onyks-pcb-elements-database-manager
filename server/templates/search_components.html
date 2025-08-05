@@ -1,3 +1,5 @@
+{% extends "base.html" %}
+{% block content %}
 <div class="search-container">
     <!-- Przyciski kategorii -->
     <div class="category-buttons">
@@ -20,7 +22,7 @@
         <button class="import-btn">
             <span class="btn-icon">+</span>
             <span class="btn-label">Importuj nowe</span>
-        </button>   
+        </button>
     </div>
 
     <!-- Tabela wyników -->
@@ -42,3 +44,4 @@
         </table>
     </div>
 </div>
+{% endblock %}

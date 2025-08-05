@@ -66,6 +66,8 @@ body {
     background: none;
     border: none;
     color: var(--light-small);
+    text-decoration: none;
+    align-content: center;
     padding: 25px 8px;
     font-size: 1rem;
     font-weight: 500;
@@ -80,6 +82,8 @@ body {
     background: none;
     border: none;
     color: var(--light-small);
+    text-decoration: none;
+    align-content: center;
     padding: 8px 8px;
     font-size: 1.3rem;
     font-weight: 900;

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>ONYKS Altium DB Library</title>
+    <link rel="icon" href="static/images/ico.ico">
+    <link rel="stylesheet" href="static/style2.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">
+            <img src="static/images/logo.png" alt="ONYKS Logo">
+        </div>
+        <div class="Nav_Btn">
+            <button class="Btn">Strona Główna</button>
+            <button class="Search">Wyszukiwarka</button>
+            <button class="Btn">Symbole</button>
+            <button class="Btn">Footprinty</button>
+            <button class="Btn">Ustawienia</button>
+        </div>
+        <div class="Github">
+            <a href="https://github.com/jimmyswimmy/AltiumDesignerLibrary">Repozytorium DB</a>
+        </div>
+    </div>
+
+    <main class="main-container">
+        <!-- Tutaj wstawiamy treści do strony np dashboard, tabelki itp. -->
+         <div class="search-container">
+    <h1 style="color: var(--primary); margin-bottom: 30px;">Dodaj nowy komponent</h1>
+    
+    <form id="component-form" enctype="multipart/form-data">
+        <div class="form-grid">
+            <!-- Sekcja podstawowych informacji -->
+            <div>
+                <h2 style="color: var(--secondary); margin-bottom: 20px; font-size: 1.2rem;">Podstawowe informacje</h2>
+                
+                <div class="form-group">
+                    <label for="name">Nazwa elementu*</label>
+                    <input type="text" id="name" name="name" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="value">Wartość elementu*</label>
+                    <input type="text" id="value" name="value" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="availability">Dostępność*</label>
+                    <select id="availability" name="availability" class="form-control" required>
+                        <option value="">Wybierz...</option>
+                        <option value="in_stock">W magazynie dużo (>=25 sztuk)</option>
+                        <option value="in_stock">W magazynie mało</option>
+                        <option value="out_of_stock">Brak na stanie</option>
+                        <option value="discontinued">Wycofany</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Sekcja plików -->
+            <div>
+                <h2 style="color: var(--secondary); margin-bottom: 20px; font-size: 1.2rem;">Pliki i referencje</h2>
+                
+                <div class="form-group">
+                    <label>Symbol (.schlib)</label>
+                    <div class="file-upload" onclick="document.getElementById('symbol-file').click()">
+                        <div class="file-upload-icon">+</div>
+                        <div>Kliknij aby dodać plik</div>
+                        <input type="file" id="symbol-file" name="symbol" accept=".schlib">
+                    </div>
+                    <div class="preview-container" id="symbol-preview"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Footprint (.pcblib)</label>
+                    <div class="file-upload" onclick="document.getElementById('footprint-file').click()">
+                        <div class="file-upload-icon">+</div>
+                        <div>Kliknij aby dodać plik</div>
+                        <input type="file" id="footprint-file" name="footprint" accept=".pcblib">
+                    </div>
+                    <div class="preview-container" id="footprint-preview"></div>
+                </div>
+            </div>
+            
+            <!-- Sekcja dodatkowych informacji -->
+            <div>
+                <h2 style="color: var(--secondary); margin-bottom: 20px; font-size: 1.2rem;">Dodatkowe informacje</h2>
+                
+                <div class="form-group">
+                    <label for="distributor_link">Link do dystrybutora</label>
+                    <input type="url" id="distributor_link" name="distributor_link" class="form-control">
+                </div>
+                
+                <div class="form-group">
+                    <label>Zdjęcie referencyjne</label>
+                    <div class="file-upload" onclick="document.getElementById('image-file').click()">
+                        <div class="file-upload-icon">+</div>
+                        <div>Kliknij aby dodać zdjęcie</div>
+                        <input type="file" id="image-file" name="image" accept="image/*">
+                    </div>
+                    <div class="preview-container" id="image-preview"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label>PDF Datasheet</label>
+                    <div class="file-upload" onclick="document.getElementById('pdf-file').click()">
+                        <div class="file-upload-icon">+</div>
+                        <div>Kliknij aby dodać PDF</div>
+                        <input type="file" id="pdf-file" name="datasheet" accept=".pdf">
+                    </div>
+                    <div class="preview-container" id="pdf-preview"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="submit-section">
+            <button type="submit" class="add-btn">Zapisz komponent</button>
+        </div>
+    </form>
+</div>
+    </main>
+</body>
+</html>

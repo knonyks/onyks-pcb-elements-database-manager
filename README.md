@@ -102,3 +102,7 @@ Install
 select .DbLib file
 ok -->
 
+
+#TODO
+ - add requirements.txt
+ - add instruction how to run this (simple for development)

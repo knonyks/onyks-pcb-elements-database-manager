@@ -1,3 +1,51 @@
+# Onyks PCB Elements Database Manager
+
+A web app designed for managing PCB components (mainly for Altium Designer) with database and SVN repository.
+
+### Requirements
+- Python 3.11
+- installed postgreSQL: psqlodbc_x64.msi
+
+### How to install and run
+
+#### Example for Windows 11
+```
+cd server
+python3.11 -m venv .venv
+.\.venv\Scripts\activate
+pip install -r requirements.txt
+python run.py
+```
+
+Before running we need to set up a config file - config.json. It have to be filled by our input data for database and also for a SVN repository.
+
+### Config file
+
+Soon.
+
+### Database
+
+### PostgreSQL query for components data
+```
+CREATE TABLE Components (
+    uuid TEXT PRIMARY KEY,
+    part_name TEXT,
+	created_at TIMESTAMPTZ DEFAULT NOW(),
+    edited_at TIMESTAMPTZ DEFAULT NOW(),
+);
+```
+
+### What do they all mean?
+```
+uuid - universally unique identifier for every compontent,
+part_name - a manufacturer name of the compontent,
+created_at - a date when the component was created,
+edited_at - a date when the last time the component was edited
+```
+
+
+<!-- 
+
 # Altium Designer Library ONYKS
 
 A simple web-frontend for managing components in Altium Designer.  This is for you if you use database libraries, or SVNDBlib files, which use an external database to manage library components.
@@ -24,7 +72,7 @@ The database can contain anything you want. The original author uses reflection 
     - footprint_ref # wiadomo
     - availability  #  duzo,malo brak
     - distributor_link   # link do lcsc,tme, mouser, cokolwiek
-    - datasheet_ref # sciezka do pdfa na serwerze
+    - datasheet_ref # sciezka do pdfa na serwerze -->
 
 
 
@@ -101,8 +149,3 @@ Open library preferences
 Install
 select .DbLib file
 ok -->
-
-
-#TODO
- - add requirements.txt
- - add instruction how to run this (simple for development)

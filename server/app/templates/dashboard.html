@@ -4,23 +4,23 @@
     <!-- Duża karta -->
     <div class="card large-card">
         <h2>Zgromadzone Elementy</h2>
-        <div class="stat-number">543</div>
+        <div class="stat-number">{{componentsDatabaseCount}}</div>
         <p class="stat-label">Łączna liczba elementów</p>
-        <p><strong>Nowe dzisiaj:</strong> 3</p>
-        <p><strong>Ostatnio dodany:</strong> LM317</p>
+        <p><strong>Nowe dzisiaj: </strong>{{componentsDatabaseTodaysCount}}</p>
+        <p><strong>Ostatnio dodany: </strong>{{componentsDatabaseLastAddedPartName}}</p>
     </div>
 
     <!-- Małe karty -->
     <div class="small-cards">
         <div class="card small-card">
             <h2>Footprinty</h2>
-            <div class="stat-number">1</div>
+            <div class="stat-number">{{componentsFootprintsCount}}</div>
             <p class="stat-label">Dostępne footprinty</p>
         </div>
 
         <div class="card small-card">
             <h2>Symbole</h2>
-            <div class="stat-number">1</div>
+            <div class="stat-number">{{componentsSymbolsCount}}</div>
             <p class="stat-label">Dostępne symbole</p>
         </div>
     </div>

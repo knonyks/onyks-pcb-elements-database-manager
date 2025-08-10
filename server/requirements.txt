@@ -1,0 +1,10 @@
+tzdata; python_version >= "3.9" --only-binary=:all:
+backports.zoneinfo; python_version < "3.9" --only-binary=:all:
+flask>=2.0.0
+flask_sqlalchemy>=3.0.0
+sqlalchemy>=1.4.0
+tzdata --only-binary=:all:
+pytz; python_version < "3.9" or platform_system == "Windows"
+git+https://github.com/dsoprea/PySvn.git
+pyaltiumlib
+psycopg2

@@ -1,9 +1,17 @@
 {
     "server":
     {
-        "port": 3000
+        "port": 5000
     },
-    "database":
+    "compontentsDatabase":
+    {
+        "host": "localhost",
+        "port": 5432,
+        "username": "postgres",
+        "password": "1234",
+        "name": "zbyszek"
+    },
+    "usersDatabase":
     {
         "host": "localhost",
         "port": 5432,
@@ -13,8 +21,9 @@
     },
     "svn":
     {
-        "url": "https://svn.example.com/repo",
-        "username": "svn_user",
-        "password": "svn_password"
+        "url": "https://Aspire5/svn/altium_lib/",
+        "user": "zero-jedynkowy",
+        "password": "1234",
+        "path": "./svn_repo"
     }
 }

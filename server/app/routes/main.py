@@ -1,35 +1,9 @@
 from flask import Blueprint, render_template, redirect, url_for
 from app import models
-from app import db
 from app import repo
-from datetime import datetime, timedelta
-from datetime import datetime, timedelta
-from zoneinfo import ZoneInfo  # Wbudowane w Python 3.9+
-from sqlalchemy import func, and_
+from app.utils.database import countTodaysEntries
 
 main_bp = Blueprint('main', __name__)
-
-from datetime import datetime, timedelta
-from pytz import timezone
-
-def count_todays_entries(timezone_str: str = 'Europe/Warsaw') -> int:
-    user_tz = ZoneInfo(timezone_str)
-    now_local = datetime.now(user_tz)
-    
-    start_of_day = now_local.replace(hour=0, minute=0, second=0, microsecond=0)
-    end_of_day = start_of_day + timedelta(days=1)
-    
-    start_utc = start_of_day.astimezone(ZoneInfo('UTC'))
-    end_utc = end_of_day.astimezone(ZoneInfo('UTC'))
-    
-    return db.session.query(
-        func.count(models.Components.uuid)
-    ).filter(
-        and_(
-            models.Components.created_at >= start_utc,
-            models.Components.created_at < end_utc
-        )
-    ).scalar() or 0
 
 @main_bp.route('/')
 def index():
@@ -42,8 +16,7 @@ def dashboard():
     parameters = {}
     parameters['title'] = 'Dashboard'
     parameters['componentsDatabaseCount'] = models.Components.query.count()
-    x = count_todays_entries('Europe/Warsaw')
-    parameters['componentsDatabaseTodaysCount'] = x
+    parameters['componentsDatabaseTodaysCount'] = countTodaysEntries('Europe/Warsaw')
     parameters['componentsDatabaseLastAddedPartName'] = models.Components.query.order_by(models.Components.created_at.desc()).first().part_name
     parameters['componentsFootprintsCount'] = repo.footprints
     parameters['componentsSymbolsCount'] = repo.symbols

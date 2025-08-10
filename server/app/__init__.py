@@ -1,9 +1,6 @@
 from flask import Flask
-from app.utils import database
 from flask_sqlalchemy import SQLAlchemy
 from app.utils import svn
-import pprint
-import pyaltiumlib
 
 db = SQLAlchemy()
 repo = None
@@ -11,13 +8,17 @@ repo = None
 
 def createApp(config):
     global repo, db
+
+    from app.utils.database import createPostgresURI
+
     app = Flask(__name__)
 
     #CONFIG DATABASE
-    app.config['SQLALCHEMY_DATABASE_URI'] = database.createPostgresURI(**config['compontentsDatabase'])
+    app.config['SQLALCHEMY_DATABASE_URI'] = createPostgresURI(**config['compontentsDatabase'])
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.init_app(app)
 
+    #CONFIG SVN
     repo = svn.SVN(**config['svn'])
     repo.init()
     repo.pull()

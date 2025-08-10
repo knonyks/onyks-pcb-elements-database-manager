@@ -75,4 +75,5 @@ class SVN:
 
     def startLoop(self):
         self.thread = threading.Thread(target=self.updateLoop)
+        self.thread.daemon = True
         self.thread.start()

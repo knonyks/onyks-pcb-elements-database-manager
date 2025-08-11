@@ -26,22 +26,60 @@
     </div>
 
     <!-- Tabela wyników -->
-    <div class="card results-table">
+    <div class="search-controls">
+        <div class="search-bar">
+            <input type="text" placeholder="Wyszukaj komponent..." class="search-input">
+            <button class="search-btn">
+                <span class="btn-icon">🔍</span>
+            </button>
+        </div>
+        <div class="table-filters">
+            <select class="filter-select">
+                <option>Wszystkie kategorie</option>
+                <option>Kondensatory</option>
+                <option>Rezystory</option>
+                <option>Cewki</option>
+                <option>Układy Scalone</option>
+            </select>
+            <select class="filter-select">
+                <option>Wszystkie stany</option>
+                <option>Dostępny</option>
+                <option>Na zamówienie</option>
+                <option>Brak</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Tabela wyników -->
+    <div class="table-container">
         <table>
             <thead>
                 <tr>
                     <th>Part Name</th>
                     <th>Kategoria</th>
                     <th>Value</th>
-                    <th>Opis</th>
+                    <th class="description-col">Opis</th>
                     <th>Dostępność</th>
-                    <th>Cechy (Screen)</th>
+                    <th>Cechy</th>
                 </tr>
             </thead>
-            <tbody>
-                <!-- Tutaj będą wyniki wyszukiwania -->
-            </tbody>
         </table>
+        <div class="table-scroll">
+            <table>
+                <tbody>
+                    {% for i in range(25) %}
+                    <tr>
+                        <td>C0805C104K5RACTU</td>
+                        <td>Kondensatory</td>
+                        <td>100nF</td>
+                        <td>Kondensator ceramiczny 100nF 50V X7R 0805</td>
+                        <td><span class="status available">Dostępny</span></td>
+                        <td><img src="{{url_for('static', filename='images/preview.png')}}" class="symbol-preview"></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 {% endblock %}

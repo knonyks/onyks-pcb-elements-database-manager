@@ -51,34 +51,27 @@
     </div>
 
     <!-- Tabela wyników -->
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Part Name</th>
-                    <th>Kategoria</th>
-                    <th>Value</th>
-                    <th class="description-col">Opis</th>
-                    <th>Dostępność</th>
-                    <th>Cechy</th>
-                </tr>
-            </thead>
-        </table>
-        <div class="table-scroll">
-            <table>
-                <tbody>
-                    {% for i in range(25) %}
-                    <tr>
-                        <td>C0805C104K5RACTU</td>
-                        <td>Kondensatory</td>
-                        <td>100nF</td>
-                        <td>Kondensator ceramiczny 100nF 50V X7R 0805</td>
-                        <td><span class="status available">Dostępny</span></td>
-                        <td><img src="{{url_for('static', filename='images/preview.png')}}" class="symbol-preview"></td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    <div class="custom-table-container">
+        <div class="custom-table-header">
+            <div class="custom-header-cell">Part Name</div>
+            <div class="custom-header-cell">Kategoria</div>
+            <div class="custom-header-cell">Value</div>
+            <div class="custom-header-cell custom-wide-cell">Opis</div>
+            <div class="custom-header-cell">Dostępność</div>
+            <div class="custom-header-cell">Cechy</div>
+        </div>
+        
+        <div class="custom-table-body">
+            {% for i in range(25) %}
+            <div class="custom-table-row">
+            <div class="custom-body-cell">C0805C104K5RACTU</div>
+            <div class="custom-body-cell">Kondensatory</div>
+            <div class="custom-body-cell">100nF</div>
+            <div class="custom-body-cell custom-wide-cell">Kondensator ceramiczny 100nF 50V X7R 0805</div>
+            <div class="custom-body-cell"><span class="status available">Dostępny</span></div>
+            <div class="custom-body-cell"><img src="{{url_for('static', filename='images/preview.png')}}" class="symbol-preview"></div>
+            </div>
+            {% endfor %}
         </div>
     </div>
 </div>

@@ -443,79 +443,133 @@ body {
 }
 .filter-select:focus { outline: none; border-color: var(--primary); }
 
+/* ============================================= */
 /* TABELKA */
-.table-container {
-    display:flex;
-    flex-direction: column;
-    width: 100%;
-    max-width: 100%;
-    max-height: var(--table-max-height);
-    overflow-x: auto;
-    overflow-y: hidden;
+/* ============================================= */
+
+/* GŁÓWNE STYLE TABELI */
+.custom-table-container {
+  --table-max-height: 600px;
+  --scrollbar-width: 16px;
+  --header-height: 48px;
+  --primary-color: #cb2525;
+  --dark-light: #2c2c2c;
+  --gray: #1e1e1e;
+  --light: #f7fafc;
+
+  border-radius: 0.75rem;
+  background: var(--dark-light);
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.table-header-wrapper {
-    width: 100%;
-    overflow-x: hidden; 
+/* NAGŁÓWEK TABELI */
+.custom-table-header {
+  display: grid;
+  grid-template-columns: 
+    200px /* Part Name */
+    150px /* Kategoria */
+    100px /* Value */
+    minmax(300px, 1fr) /* Opis */
+    200px /* Dostępność */
+    200px; /* Cechy */
+  background: var(--primary-color);
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
-.table-body-wrapper {
-    overflow-y: auto;
-    overflow-x: auto;
-    max-height: var(--table-max-height);
-    flex-grow: 1;
-    border-bottom-left-radius: 0.75rem;
-    border-bottom-right-radius: 0.75rem;
+/* CIAŁO TABELI */
+.custom-table-body {
+  max-height: var(--table-max-height);
+  overflow-y: auto;
+  overflow-x: auto;
+  scrollbar-gutter: stable;
+  display: grid;
+  grid-template-columns: 
+    200px 
+    150px 
+    100px 
+    minmax(300px, 1fr) 
+    200px 
+    200px;
 }
 
-.table-container::-webkit-scrollbar-thumb {
-    background-color: var(--primary);
-    border: 4px solid transparent;
-    border-radius: 8px;
-    background-clip: padding-box;  
+/* WIERSZE TABELI */
+.custom-table-row {
+  display: contents;
 }
 
-.table-container::-webkit-scrollbar {
-    width: 16px;
-    height: 16px;
-    background-color: var(--dark-light);
-    border-bottom-right-radius: 0.75rem; 
+/* KOMÓRKI */
+.custom-header-cell,
+.custom-body-cell {
+  padding: 0.75rem 1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--gray);
 }
 
-table {
-    width: 100%;
-    border: hidden;
-    border-collapse: collapse;
-    table-layout: fixed;
+.custom-body-cell {
+  background: var(--dark-light);
+  color: var(--light);
 }
 
-th, td {
-    width: 200px;
-    padding: 0.75rem 1rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+/* SZEROKA KOLUMNA (OPIS) */
+.custom-wide-cell {
+  min-width: 300px;
 }
 
-th {
-    background-color: var(--primary);
-    text-align: left;
+/* SCROLLBARY */
+.custom-table-body::-webkit-scrollbar {
+  width: var(--scrollbar-width);
+  height: var(--scrollbar-width);
 }
 
-td {
-    background-color: var(--dark-light);
-    color: var(--light);
-    border-bottom: 1px solid var(--gray);
+.custom-table-body::-webkit-scrollbar-track {
+  background: var(--dark-light);
+  margin-top: var(--header-height);
+  border-bottom-right-radius: 0.75rem;
 }
 
-.table-scroll tbody {
-    overflow-y: auto;
+.custom-table-body::-webkit-scrollbar-thumb {
+  background-color: var(--primary-color);
+  border: 4px solid transparent;
+  border-radius: 8px;
+  background-clip: padding-box;
 }
 
-th:first-child {border-top-left-radius: 0.75rem;}
-th:last-child {border-top-right-radius: 0.75rem;}
-/* td:first-child {border-bottom-left-radius: 0.75rem;}
-td:last-child {border-bottom-right-radius: 0.75rem;}     */
+/* STATUSY */
+.status.available {
+  color: #48bb78;
+  font-weight: 500;
+}
+
+/* DLA FIREFOXA */
+@supports (scrollbar-width: thin) {
+  .custom-table-body {
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-color) var(--dark-light);
+  }
+}
+
+/* ZAOKRĄGLENIE ROGÓW */
+.custom-table-header .custom-header-cell:first-child {
+  border-top-left-radius: 0.75rem;
+}
+
+.custom-table-header .custom-header-cell:last-child {
+  border-top-right-radius: 0.75rem;
+}
+
+.custom-table-body .custom-body-cell:first-child:last-child {
+  border-bottom-left-radius: 0.75rem;
+}
+
+.custom-table-body .custom-body-cell:last-child:last-child {
+  border-bottom-right-radius: 0.75rem;
+}
 
 /* ============================================= */
 /* ZAKŁADKA IMPORT */

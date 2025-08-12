@@ -14,17 +14,17 @@
     <!-- BODY -->
     <body>
         <div class="navbar">
-            <div class="logo">
+            <div class="logo" id="menuToggle">
                 <img src="{{url_for('static', filename='images/logo.png')}}" alt="ONYKS Logo">
             </div>
-            <div class="Nav_Btn">
-                <a class="Btn" href="/dashboard">Strona Główna</a>
-                <a class="Search" href="/search_components">Wyszukiwarka</a>
-                <a class="Btn" href="/symbols">Symbole</a>
-                <a class="Btn" href="/footprints">Footprinty</a>
-                <a class="Btn" href="/settings">Ustawienia</a>
+            <div class="nav_btn" id="navLinks">
+                <a class="btn" href="/dashboard">Strona Główna</a>
+                <a class="search" href="/search_components">Wyszukiwarka</a>
+                <a class="btn" href="/symbols">Symbole</a>
+                <a class="btn" href="/footprints">Footprinty</a>
+                <a class="btn" href="/settings">Ustawienia</a>
             </div>
-            <div class="Github"><a href="https://github.com/knonyks"></a></div>
+            <div class="github"><a href="https://github.com/knonyks"></a></div>
         </div>
         <main class="main-container">
             {% block content %}
@@ -33,3 +33,9 @@
         </main>
     </body>
 </html>
+
+<!-- Skrypt do obsłygi przycisków, suwaka itp. -->
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='JS/sort.js') }}"></script>
+{% endblock %}

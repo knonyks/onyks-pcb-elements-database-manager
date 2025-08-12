@@ -65,12 +65,12 @@ body {
     transform: scale(1.05);
 }
 
-.Nav_Btn {
+.nav_btn {
     display: flex;
     gap: 24px;
 }
 
-.Btn {
+.btn {
     position: relative;
     background: none;
     border: none;
@@ -86,7 +86,7 @@ body {
     letter-spacing: 0.5px;
 }
 
-.Search {
+.search {
     position: relative;
     background: none;
     border: none;
@@ -102,7 +102,7 @@ body {
     letter-spacing: 0.5px;
 }
 
-.Search::after {
+.search::after {
     content: '';
     position: absolute;
     left: 0;
@@ -112,13 +112,13 @@ body {
     background-color: var(--primary);
 }
 
-.Search:hover {
+.search:hover {
     font-size: 1.4rem;
     color: var(--light);
     background-color: rgba(128, 9, 9, 0.49);
 }
 
-.Btn::after {
+.btn::after {
     content: '';
     position: absolute;
     left: 0;
@@ -129,21 +129,21 @@ body {
     transition: width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-.Btn:hover {
+.btn:hover {
     color: white;
     background-color: var(--gray);
 }
 
-.Btn:hover::after {
+.btn:hover::after {
     width: 100%;
 }
 
-.Github {
+.github {
     display:flex;
     padding:20px 5px;
 }
 
-.Github a {
+.github a {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -153,11 +153,11 @@ body {
     transition: all 0.3s ease;
 }
 
-.Github a:hover {
+.github a:hover {
     color: white;
 }
 
-.Github a::before {
+.github a::before {
     content: '';
     display: inline-block;
     width: 24px;
@@ -167,7 +167,7 @@ body {
     transition: opacity 0.3s ease;
 }
 
-.Github a:hover::before {
+.github a:hover::before {
     opacity: 1;
 }
 
@@ -177,35 +177,35 @@ body {
     padding: 40px 5%;
 }
 
-@media (max-width: 1024px) {
-    .navbar {
+@media (max-width: 1100px) {
+    .nav_btn {
+        display: none;
         flex-direction: column;
-        height: auto; /* Auto wysokość w trybie mobilnym */
-        padding: 16px 5%;
-    }
-    
-    .logo, .Github, .Nav_Btn {
-        height: auto;
-        width: 100%;
-        justify-content: center;
-    }
-    
-    .Nav_Btn {
-        flex-wrap: wrap;
         gap: 12px;
+        width: 100%;
+        background-color: var(--dark-light);
         padding: 12px 0;
     }
-    
-    .Btn, .Search {
-        height: auto;
-        padding: 8px 12px;
+
+    .nav_btn.show {
+        display: flex;
     }
-    
-    .Search::after {
-        left: 12px;
-        width: calc(100% - 24px);
+
+    .logo {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        cursor: pointer;
+    }
+
+    .github {
+        display: flex;
+        justify-content: center;
+        width: 100%;
     }
 }
+
 /* ============================================= */
 /* DASHBOARD (STRONA STARTOWA/CZOŁOWA)*/
 /* ============================================= */
@@ -542,7 +542,12 @@ body {
 
 /* STATUSY */
 .status.available {
-  color: #48bb78;
+  color: var(--success);
+  font-weight: 500;
+}
+
+.status.unavailable {
+  color: var(--error);
   font-weight: 500;
 }
 

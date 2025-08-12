@@ -3,27 +3,28 @@
 <div class="search-container">
     <!-- Przyciski kategorii -->
     <div class="category-buttons">
-        <button class="category-btn">
+        <button class="category-btn" onclick="filterByCategory('Kondensatory')">
             <span class="btn-icon">C</span>
             <span class="btn-label">Kondensatory</span>
         </button>
-        <button class="category-btn">
+        <button class="category-btn" onclick="filterByCategory('Rezystory')">
             <span class="btn-icon">R</span>
             <span class="btn-label">Rezystory</span>
         </button>
-        <button class="category-btn">
+        <button class="category-btn" onclick="filterByCategory('Cewki')">
             <span class="btn-icon">L</span>
             <span class="btn-label">Cewki</span>
         </button>
-        <button class="category-btn">
+        <button class="category-btn" onclick="filterByCategory('Układy Scalone')">
             <span class="btn-icon">IC</span>
             <span class="btn-label">Układy Scalone</span>
         </button>
-        <button class="import-btn">
+        <button class="import-btn" onclick="filterByCategory('all')">
             <span class="btn-icon">+</span>
-            <span class="btn-label">Importuj nowe</span>
+            <span class="btn-label">Wszystkie</span>
         </button>
     </div>
+
 
     <!-- Tabela wyników -->
     <div class="search-controls">
@@ -62,14 +63,24 @@
         </div>
         
         <div class="custom-table-body">
-            {% for i in range(25) %}
+            {% for i in range(15) %}
             <div class="custom-table-row">
-            <div class="custom-body-cell">C0805C104K5RACTU</div>
-            <div class="custom-body-cell">Kondensatory</div>
-            <div class="custom-body-cell">100nF</div>
-            <div class="custom-body-cell custom-wide-cell">Kondensator ceramiczny 100nF 50V X7R 0805</div>
-            <div class="custom-body-cell"><span class="status available">Dostępny</span></div>
-            <div class="custom-body-cell"><img src="{{url_for('static', filename='images/preview.png')}}" class="symbol-preview"></div>
+                <div class="custom-body-cell">C0805C104K5RACTU</div>
+                <div class="custom-body-cell">Kondensatory</div>
+                <div class="custom-body-cell">100nF</div>
+                <div class="custom-body-cell custom-wide-cell">Kondensator ceramiczny 100nF 50V X7R 0805</div>
+                <div class="custom-body-cell"><span class="status available">Dostępny</span></div>
+                <div class="custom-body-cell"><img src="{{url_for('static', filename='images/preview.png')}}" class="symbol-preview"></div>
+            </div>
+            {% endfor %}
+            {% for i in range(15) %}
+            <div class="custom-table-row">
+                <div class="custom-body-cell">C0805C104K5RACTU</div>
+                <div class="custom-body-cell">Rezystory</div>
+                <div class="custom-body-cell">100nF</div>
+                <div class="custom-body-cell">Kondensator ceramiczny 100nF 50V X7R 0805</div>
+                <div class="custom-body-cell"><span class="status available">Dostępny</span></div>
+                <div class="custom-body-cell"><img src="{{url_for('static', filename='images/preview.png')}}" class="symbol-preview"></div>
             </div>
             {% endfor %}
         </div>

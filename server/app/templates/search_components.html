@@ -52,35 +52,38 @@
     </div>
 
     <!-- Tabela wyników -->
-    <div class="custom-table-container">
-        <div class="custom-table-header">
-            <div class="custom-header-cell">Part Name</div>
-            <div class="custom-header-cell">Kategoria</div>
-            <div class="custom-header-cell">Value</div>
-            <div class="custom-header-cell custom-wide-cell">Opis</div>
-            <div class="custom-header-cell">Dostępność</div>
-            <div class="custom-header-cell">Cechy</div>
+    <div class="table-container">
+        <div class="table-header">
+            <div class="header-cell">Part Name</div>
+            <div class="header-cell">Kategoria</div>
+            <div class="header-cell">Value</div>
+            <div class="header-cell custom-wide-cell">Opis</div>
+            <div class="header-cell">Dostępność</div>
+            <div class="header-cell">Cechy</div>
         </div>
         
-        <div class="custom-table-body">
-            {% for i in range(15) %}
-            <div class="custom-table-row">
-                <div class="custom-body-cell">C0805C104K5RACTU</div>
-                <div class="custom-body-cell">Kondensatory</div>
-                <div class="custom-body-cell">100nF</div>
-                <div class="custom-body-cell custom-wide-cell">Kondensator ceramiczny 100nF 50V X7R 0805</div>
-                <div class="custom-body-cell"><span class="status available">Dostępny</span></div>
-                <div class="custom-body-cell"><img src="{{url_for('static', filename='images/preview.png')}}" class="symbol-preview"></div>
-            </div>
-            {% endfor %}
-            {% for i in range(15) %}
-            <div class="custom-table-row">
-                <div class="custom-body-cell">C0805C104K5RACTU</div>
-                <div class="custom-body-cell">Rezystory</div>
-                <div class="custom-body-cell">100nF</div>
-                <div class="custom-body-cell">Kondensator ceramiczny 100nF 50V X7R 0805</div>
-                <div class="custom-body-cell"><span class="status available">Dostępny</span></div>
-                <div class="custom-body-cell"><img src="{{url_for('static', filename='images/preview.png')}}" class="symbol-preview"></div>
+        <div class="table-body">
+            {% for part in components %}
+            <div class="table-row">
+                <div class="body-cell">{{ part.part_name }}</div>
+                <div class="body-cell">{{ part.category }}</div>
+                <div class="body-cell">{{ part.value }}</div>
+                <div class="body-cell">
+                    <div class="description">{{ part.description }}</div>
+                    <span class="description-tooltip" data-full-description="{{ part.description }}">
+                        <img src="{{url_for('static', filename='images/info.svg')}}" alt="info">
+                    </span>
+                </div>
+                <div class="body-cell">
+                    {% if part.available == "Dostępny" %}
+                        <span class="status available">{{ part.available }}</span>
+                    {% elif part.available == "Na zamówienie" %}
+                        <span class="status order">{{ part.available }}</span>
+                    {% else %}
+                        <span class="status unavailable">{{ part.available }}</span>
+                    {% endif %}
+                </div>
+                <div class="body-cell">{{ part.atributes or '' }}</div>
             </div>
             {% endfor %}
         </div>

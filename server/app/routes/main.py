@@ -26,6 +26,7 @@ def dashboard():
 def search_compontents():
     parameters = {}
     parameters['title'] = 'Search components'
+    parameters['components'] = models.Components.query.all()
     return render_template('search_components.html', **parameters)
 
 @main_bp.route('/symbols', methods=['GET', 'POST'])

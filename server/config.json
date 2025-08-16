@@ -9,9 +9,9 @@
         "port": 5432,
         "username": "postgres",
         "password": "1234",
-        "name": "altium_library"
+        "name": "zbyszek"
     },
-    "usersDatabase":    
+    "usersDatabase":
     {
         "host": "localhost",
         "port": 5432,
@@ -21,8 +21,8 @@
     },
     "svn":
     {
-        "url": "https://Xenon02/svn/database/",
-        "user": "Xenon02",
+        "url": "https://Aspire5/svn/altium_lib/",
+        "user": "zero-jedynkowy",
         "password": "1234",
         "path": "./svn_repo"
     }

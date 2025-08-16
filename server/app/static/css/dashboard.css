@@ -1,0 +1,121 @@
+.dashboard-grid 
+{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    grid-template-areas: "large small" "lastchange lastchange";
+    gap: 2rem;
+}
+
+.large-card, .small-card, .last-change-card 
+{
+    background-color: var(--dark-light);
+    border-radius: 16px;
+    padding: 32px;
+    /* box-shadow: 0 8px 24px #1e1e1e94; */
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    border: 1px solid var(--gray);
+}
+
+.large-card:hover, .small-card:hover, .last-change-card:hover 
+{
+    transform: translateY(-8px);
+    box-shadow: 0 12px 32px var(--dark-light);
+    border-color: var(--primary);
+}
+
+.large-card 
+{
+    grid-area: large;
+    min-height: 300px;
+}
+
+.small-cards 
+{
+    grid-area: small;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 32px;
+}
+
+.last-change-card 
+{
+    grid-area: lastchange;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+}
+
+.last-change-card .left, .last-change-card .right 
+{
+    flex: 1;
+    min-width: 300px;
+}
+
+.large-card h2, .small-card h2, .last-change-card h2 
+{
+    font-size: 1.5rem;
+    color: var(--primary);
+    margin-bottom: 24px;
+    font-weight: 600;
+    position: relative;
+    padding-bottom: 12px;
+}
+
+.large-card h2::after, .small-card h2::after, .last-change-card h2::after 
+{
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 48px;
+    height: 2px;
+    background-color: var(--primary);
+}
+
+.stat-number 
+{
+    font-size: 4rem;
+    font-weight: bold;
+    color: var(--light);
+    line-height: 1;
+    margin: 16px 0;
+}
+
+.stat-label 
+{
+    font-size: 1.2rem;
+    color: var(--light-small);
+    margin-bottom: 8px;
+}
+
+.small-card .stat-number 
+{
+    font-size: 2.5rem;
+}
+
+.large-card 
+{
+    animation-delay: 0.1s;
+}
+
+.small-card:nth-child(1) 
+{
+    animation-delay: 0.2s;
+}
+
+.small-card:nth-child(2) 
+{
+    animation-delay: 0.3s;
+}
+
+.last-change-card 
+{
+    animation-delay: 0.4s;
+}
+
+@media (max-width: 1024px) 
+{
+
+}

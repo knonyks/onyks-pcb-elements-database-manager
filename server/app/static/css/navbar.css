@@ -1,0 +1,170 @@
+.navbar 
+{
+  display: flex;
+  flex-direction: row;
+  background-color: var(--dark-light);
+  box-shadow: 0 2px 10px var(--dark-light);
+  position: fixed;
+  z-index: 999999;
+  width: 100vw;
+  top: 0;
+}
+
+.logo
+{
+  height: 3rem;
+  padding: 1rem;
+  box-sizing: content-box;
+  text-decoration: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.logo img
+{
+  height: 3rem;
+  transition: transform 0.3s ease;
+}
+
+.logo:hover img 
+{
+  transform: scale(1.05) rotate(5deg);
+}
+
+.nav-btns
+{
+  justify-content: center;
+  display: flex;
+  flex-direction: row;
+  justify-self: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.nav-btn
+{
+  font-size: 1.2rem;
+  display: block;
+  text-decoration: none;
+  color: white;
+  height: 1.2rem;
+  line-height: 1.2rem;
+  padding: calc(3.8rem / 2) 1rem;
+  box-sizing: content-box;
+  position: relative;
+  transition: font-size 0.2s ease-in-out;
+}
+
+
+
+#onyks-github-btn
+{
+  display: flex;
+  flex-direction: row;
+}
+
+#onyks-github-btn::before
+{
+  display: block;
+  font-family: 'bootstrap-icons';
+  content: '\F3ED';
+  margin-right: 1rem;
+}
+
+.nav-btn::after
+{
+  height: 2px;
+  width: 0%;
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: block;
+  background-color: red;
+  transition: width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.nav-btn:hover
+{
+  font-size: 1.5rem;
+}
+
+.nav-btn.open
+{
+  font-size: 1.5rem;
+}
+
+.nav-btn.open::after
+{
+  width: 100%;
+}
+
+.nav-btn:hover::after
+{
+  width: 100%;
+}
+
+.navbar-show-hide-btn
+{
+  display: none;
+}
+
+@media (max-width: 1100px)
+{
+  .navbar
+  {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .nav-btn
+  {
+    width: calc(100% - 2rem);
+  }
+
+  .logo
+  {
+    left: 0;
+  }
+
+  .nav-btns
+  {
+    flex-direction: column;
+    max-height: 0;
+    width: 100%;
+    overflow-y: hidden;
+    transition: max-height 0.5s ease-in-out;
+    margin-top: 5rem;
+  }
+
+  .navbar.open > .nav-btns
+  {
+    max-height: calc(6 * 5rem);
+  }
+
+  .navbar-show-hide-btn
+  {
+    position: absolute;
+    display: block;
+    inset-inline-end: 1rem;
+    top: 1rem;
+    height: 2rem;
+    width: 2rem;
+    line-height: 2rem;
+    padding: 0.5rem;
+    box-sizing: content-box;
+    color: white;
+    background-color: var(--primary-light);
+    text-align: center;
+    font-size: 2rem;
+    border-radius: 0.25rem;
+  }
+
+  .navbar-show-hide-btn::before
+  {
+    font-family: 'bootstrap-icons';
+    content: '\F479';
+    display: block;
+  }
+}

@@ -14,6 +14,7 @@ def index():
 @main_bp.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
     parameters = {}
+    parameters['active_page'] = 'dashboard'
     parameters['title'] = 'Dashboard'
     parameters['componentsDatabaseCount'] = models.Components.query.count()
     parameters['componentsDatabaseTodaysCount'] = countTodaysEntries('Europe/Warsaw')
@@ -25,6 +26,7 @@ def dashboard():
 @main_bp.route('/search_components', methods=['GET', 'POST'])
 def search_compontents():
     parameters = {}
+    parameters['active_page'] = 'search_components'
     parameters['title'] = 'Search components'
     parameters['components'] = models.Components.query.all()
     return render_template('search_components.html', **parameters)
@@ -32,17 +34,20 @@ def search_compontents():
 @main_bp.route('/symbols', methods=['GET', 'POST'])
 def symbols():
     parameters = {}
+    parameters['active_page'] = 'symbols'
     parameters['title'] = 'Symbols'
     return render_template('symbols.html', **parameters)
 
 @main_bp.route('/footprints', methods=['GET', 'POST'])
 def footprints():
     parameters = {}
+    parameters['active_page'] = 'footprints'
     parameters['title'] = 'Footprints'
     return render_template('footprints.html', **parameters)
 
 @main_bp.route('/settings', methods=['GET', 'POST'])
 def settings():
     parameters = {}
+    parameters['active_page'] = 'settings'
     parameters['title'] = 'Settings'
     return render_template('settings.html', **parameters)

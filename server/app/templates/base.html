@@ -5,26 +5,30 @@
     <head>
         <meta charset="utf-8" />
         <title>{{title}}</title>
-        <link rel="icon" href="{{url_for('static', filename='images/ico.ico')}}">
-        <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+        <link rel="icon" href="{{url_for('static', filename='img/ico.ico')}}">
+        <link rel="stylesheet" href="{{url_for('static', filename='css/general.css')}}">
+        <link rel="stylesheet" href="{{url_for('static', filename='css/navbar.css')}}">
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
-
+    {% block css %}
+    
+    {% endblock %}
     <!-- BODY -->
     <body>
         <div class="navbar">
-            <div class="logo" id="menuToggle">
-                <img src="{{url_for('static', filename='images/logo.png')}}" alt="ONYKS Logo">
+            <a class="logo" href="/dashboard">
+                <img src="{{url_for('static', filename='img/logo.png')}}" alt="ONYKS Logo">
+            </a>
+            <div class="nav-btns">
+                <a class="nav-btn {% if active_page == 'dashboard' %}open{% endif %}" href="/dashboard">Strona Główna</a>
+                <a class="nav-btn {% if active_page == 'search_components' %}open{% endif %}" href="/search_components">Wyszukiwarka</a>
+                <a class="nav-btn {% if active_page == 'symbols' %}open{% endif %}" href="/symbols">Symbole</a>
+                <a class="nav-btn {% if active_page == 'footprints' %}open{% endif %}" href="/footprints">Footprinty</a>
+                <a class="nav-btn {% if active_page == 'settings' %}open{% endif %}" href="/settings">Ustawienia</a>
+                <a class="nav-btn" href="https://github.com/knonyks" id="onyks-github-btn" target="_blank">ONYKS</a>
             </div>
-            <div class="nav-btn" id="navLinks">
-                <a class="btn" href="/dashboard">Strona Główna</a>
-                <a class="search" href="/search_components">Wyszukiwarka</a>
-                <a class="btn" href="/symbols">Symbole</a>
-                <a class="btn" href="/footprints">Footprinty</a>
-                <a class="btn" href="/settings">Ustawienia</a>
-            </div>
-            <div class="github"><a href="https://github.com/knonyks"></a></div>
+            <div class="navbar-show-hide-btn"></div>
         </div>
         <main class="main-container">
             {% block content %}
@@ -35,7 +39,8 @@
 </html>
 
 <!-- Skrypt do obsłygi przycisków, suwaka itp. -->
+<script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
+<script src="{{ url_for('static', filename='js/sort.js') }}"></script>
+{% block js %}
 
-{% block scripts %}
-<script src="{{ url_for('static', filename='JS/sort.js') }}"></script>
 {% endblock %}

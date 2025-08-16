@@ -22,8 +22,10 @@ class SVN:
         self.thread = None
 
     def init(self):
+        time.sleep(1)
         self.remote.checkout(self.path)
         self.local = LocalClient(self.path)
+        self.local.cleanup()
 
     def pull(self):
         self.local.update(self.path)
@@ -44,6 +46,7 @@ class SVN:
     def updateLoop(self):
         while True:
             self.pull()
+            time.sleep(2)
             if self.getLastCommitIndexAndDate()['rev'] > self.rev or self.rev == 0:
                 print('✅ THE SVN HAS BEEN UPDATED!')
                 self.rev = self.getLastCommitIndexAndDate()['rev']
@@ -74,6 +77,7 @@ class SVN:
         
 
     def startLoop(self):
+        pass
         self.thread = threading.Thread(target=self.updateLoop)
         self.thread.daemon = True
         self.thread.start()

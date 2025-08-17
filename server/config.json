@@ -9,22 +9,22 @@
         "port": 5432,
         "username": "postgres",
         "password": "1234",
-        "name": "altium_database"
+        "name": "altium_library"
     },
     "usersDatabase":
     {
         "host": "localhost",
         "port": 5432,
-        "username": "db_user",
-        "password": "db_password",
+        "username": "postgres",
+        "password": "1234",
         "name": "my_database"
     },
     "svn":
     {
         "config":
         {
-            "url": "https://svn/url",
-            "user": "user",
+            "url": "https://Xenon02/svn/database/",
+            "user": "Xenon02",
             "password": "1234",
             "path": "./svn_repo"
         },

@@ -1,4 +1,9 @@
 {% extends "base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{url_for('static', filename='css/search_components.css')}}">
+{% endblock %}
+
 {% block content %}
 <div class="search-container">
     <!-- Przyciski kategorii -->
@@ -20,7 +25,7 @@
             <span class="btn-label">Układy Scalone</span>
         </button>
         <button class="import-btn" onclick="filterByCategory('all')">
-            <span class="btn-icon">+</span>
+            <span class="btn-icon"></span>
             <span class="btn-label">Wszystkie</span>
         </button>
     </div>
@@ -30,8 +35,8 @@
     <div class="search-controls">
         <div class="search-bar">
             <input type="text" placeholder="Wyszukaj komponent..." class="search-input">
-            <button class="search-btn">
-                <span class="btn-icon">🔍</span>
+            <button class="search-btn" onclick="filterTable()">
+                <span class="btn-icon"></span>
             </button>
         </div>
         <div class="table-filters">
@@ -53,40 +58,54 @@
 
     <!-- Tabela wyników -->
     <div class="table-container">
-        <div class="table-header">
-            <div class="header-cell">Part Name</div>
-            <div class="header-cell">Kategoria</div>
-            <div class="header-cell">Value</div>
-            <div class="header-cell custom-wide-cell">Opis</div>
-            <div class="header-cell">Dostępność</div>
-            <div class="header-cell">Cechy</div>
-        </div>
-        
-        <div class="table-body">
-            {% for part in components %}
-            <div class="table-row">
-                <div class="body-cell">{{ part.part_name }}</div>
-                <div class="body-cell">{{ part.category }}</div>
-                <div class="body-cell">{{ part.value }}</div>
-                <div class="body-cell">
-                    <div class="description">{{ part.description }}</div>
-                    <span class="description-tooltip" data-full-description="{{ part.description }}">
-                        <img src="{{url_for('static', filename='images/info.svg')}}" alt="info">
-                    </span>
-                </div>
-                <div class="body-cell">
-                    {% if part.available == "Dostępny" %}
-                        <span class="status available">{{ part.available }}</span>
-                    {% elif part.available == "Na zamówienie" %}
-                        <span class="status order">{{ part.available }}</span>
-                    {% else %}
-                        <span class="status unavailable">{{ part.available }}</span>
-                    {% endif %}
-                </div>
-                <div class="body-cell">{{ part.atributes or '' }}</div>
-            </div>
-            {% endfor %}
-        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Part Name</th>
+                    <th>Kategoria</th>
+                    <th>Value</th>
+                    <th>Opis</th>
+                    <th>Dostępność</th>
+                    <th>Cechy</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for part in components %}
+                <tr>
+                    <td>{{ part.part_name }}</td>
+                    <td>{{ part.category }}</td>
+                    <td>{{ part.value }}</td>
+                    <td>
+                        <div class="description">{{ part.description }}</div>
+                        <span class="description-tooltip" data-full-description="{{ part.description }}">
+                            <img src="{{url_for('static', filename='img/info.svg')}}" alt="info">
+                        </span>
+                    </td>
+                    <td>
+                        {% if part.available == "Dostępny" %}
+                            <span class="status available">{{ part.available }}</span>
+                        {% elif part.available == "Na zamówienie" %}
+                            <span class="status order">{{ part.available }}</span>
+                        {% else %}
+                            <span class="status unavailable">{{ part.available }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ part.atributes or '' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 {% endblock %}
+
+
+Jak dostosować tabelkę do małych ekranów ? jak telefony ?
+
+
+
+
+
+
+
+

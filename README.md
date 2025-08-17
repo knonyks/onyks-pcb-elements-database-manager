@@ -17,7 +17,10 @@ cd server
 python3.11 -m venv .venv
 .\.venv\Scripts\activate
 pip install -r requirements.txt
+#with default config config.json
 python run.py
+#with a custom config, for example: my_config.json
+python run.py --config=my_config.json
 ```
 
 Before running we need to set up a config file - config.json. It have to be filled by our input data for database and also for a SVN repository.

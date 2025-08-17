@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for
 from app import models
-from app import repo
+import app
 from app.utils.database import countTodaysEntries
 
 main_bp = Blueprint('main', __name__)
@@ -19,8 +19,8 @@ def dashboard():
     parameters['componentsDatabaseCount'] = models.Components.query.count()
     parameters['componentsDatabaseTodaysCount'] = countTodaysEntries('Europe/Warsaw')
     parameters['componentsDatabaseLastAddedPartName'] = models.Components.query.order_by(models.Components.created_at.desc()).first().part_name
-    parameters['componentsFootprintsCount'] = repo.footprints
-    parameters['componentsSymbolsCount'] = repo.symbols
+    parameters['componentsFootprintsCount'] = app.footprintsAmount
+    parameters['componentsSymbolsCount'] = app.symbolsAmount
     return render_template('dashboard.html', **parameters)
 
 @main_bp.route('/search_components', methods=['GET', 'POST'])
@@ -51,3 +51,10 @@ def settings():
     parameters['active_page'] = 'settings'
     parameters['title'] = 'Settings'
     return render_template('settings.html', **parameters)
+
+@main_bp.route('/how_to_configure', methods=['GET', 'POST'])
+def how_to_configure():
+    parameters = {}
+    parameters['active_page'] = 'how_to_configure'
+    parameters['title'] = 'How to configure'
+    return render_template('how_to_configure.html', **parameters)

@@ -1,17 +1,28 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from app.utils import svn
+import threading
+from flask_socketio import SocketIO, emit
+import time
+from pathlib import Path
+from app.utils import images
 
 db = SQLAlchemy()
 repo = None
+socketio = None
 
+svnUpdaterThread = None
+footprintsAmount = 0
+symbolsAmount = 0
+revRepo = 0
 
 def createApp(config):
-    global repo, db
+    global repo, db, socketio
 
     from app.utils.database import createPostgresURI
 
     app = Flask(__name__)
+    socketio = SocketIO(app, cors_allowed_origins="*")
 
     #CONFIG DATABASE
     app.config['SQLALCHEMY_DATABASE_URI'] = createPostgresURI(**config['compontentsDatabase'])
@@ -19,13 +30,38 @@ def createApp(config):
     db.init_app(app)
 
     #CONFIG SVN
-    repo = svn.SVN(**config['svn'])
+    repo = svn.SVN(**config['svn']['config'])
     repo.init()
     repo.pull()
-    repo.startLoop()
+
+    def svnThread():
+        global symbolsAmount, footprintsAmount, revRepo
+        symbolsPath = Path(repo.path) / config['svn']['source_folders']['symbols']
+        footprintsPath = Path(repo.path) / config['svn']['source_folders']['footprints']
+        while True:
+            result = svn.svnUpdateDetect(repo, symbolsPath.as_posix(), footprintsPath.as_posix(), revRepo)
+            
+            if result != None:
+                print(result)
+                symbolsAmount = result[0]
+                footprintsAmount = result[1]
+                revRepo = result[2]
+                print(symbolsAmount, footprintsAmount, revRepo)
+                socketio.emit('update', {'source':'svn', 'content': [symbolsAmount, footprintsAmount, revRepo]})
+            else:
+                pass
+            time.sleep(config['svn']['update_frequency'])
+
+
+    #SVN UPDATER
+    svnUpdaterThread = threading.Thread(target = svnThread)
+    svnUpdaterThread.deamon = True
+    svnUpdaterThread.start()
 
     #SET SERVER BEHAVIOUR
     from app.routes.main import main_bp
     app.register_blueprint(main_bp)
 
-    return app
+    images.createDatabaseConfigImage(config['compontentsDatabase'], 'app/static/img/windows_odbc_form.png', 'app/static/.cache/windows_odbc_filled_form.png')
+
+    return app, socketio

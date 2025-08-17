@@ -8,3 +8,5 @@ pytz; python_version < "3.9" or platform_system == "Windows"
 git+https://github.com/dsoprea/PySvn.git
 pyaltiumlib
 psycopg2-binary
+flask_socketio
+Pillow

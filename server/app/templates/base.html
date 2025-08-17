@@ -8,8 +8,10 @@
         <link rel="icon" href="{{url_for('static', filename='img/ico.ico')}}">
         <link rel="stylesheet" href="{{url_for('static', filename='css/general.css')}}">
         <link rel="stylesheet" href="{{url_for('static', filename='css/navbar.css')}}">
+        <link rel="stylesheet" href="{{url_for('static', filename='css/toast.css')}}">
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     </head>
     {% block css %}
     
@@ -41,6 +43,8 @@
 <!-- Skrypt do obsłygi przycisków, suwaka itp. -->
 <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
 <script src="{{ url_for('static', filename='js/sort.js') }}"></script>
+<script src="{{ url_for('static', filename='js/toast.js') }}"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
 {% block js %}
 
 {% endblock %}

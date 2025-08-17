@@ -1,3 +1,6 @@
 .venv
 __pycache__
 svn_repo
+.cache
+*.json
+!config.json

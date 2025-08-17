@@ -9,7 +9,7 @@
         "port": 5432,
         "username": "postgres",
         "password": "1234",
-        "name": "zbyszek"
+        "name": "altium_database"
     },
     "usersDatabase":
     {
@@ -21,9 +21,18 @@
     },
     "svn":
     {
-        "url": "https://Aspire5/svn/altium_lib/",
-        "user": "zero-jedynkowy",
-        "password": "1234",
-        "path": "./svn_repo"
+        "config":
+        {
+            "url": "https://svn/url",
+            "user": "user",
+            "password": "1234",
+            "path": "./svn_repo"
+        },
+        "source_folders":
+        {
+            "symbols": "symbols",
+            "footprints": "footprints"
+        },
+        "update_frequency": 2
     }
 }

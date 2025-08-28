@@ -25,8 +25,7 @@
         {
             "url": "https://Xenon02/svn/database/",
             "user": "Xenon02",
-            "password": "1234",
-            "path": "./svn_repo"
+            "password": "1234"
         },
         "source_folders":
         {

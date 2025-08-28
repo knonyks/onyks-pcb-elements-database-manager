@@ -30,6 +30,7 @@ def createApp(config):
     db.init_app(app)
 
     #CONFIG SVN
+    config['svn']['config']['path'] = './.cache/svn'
     repo = svn.SVN(**config['svn']['config'])
     repo.init()
     repo.pull()

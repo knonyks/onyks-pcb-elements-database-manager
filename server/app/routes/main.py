@@ -52,6 +52,13 @@ def settings():
     parameters['title'] = 'Settings'
     return render_template('settings.html', **parameters)
 
+@main_bp.route('/explorer', methods=['GET', 'POST'])
+def explorer():
+    parameters = {}
+    parameters['active_page'] = 'explorer'
+    parameters['title'] = 'Explorer'
+    return render_template('explorer.html', **parameters)
+
 @main_bp.route('/how_to_configure', methods=['GET', 'POST'])
 def how_to_configure():
     parameters = {}

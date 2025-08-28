@@ -1,0 +1,244 @@
+.explorer
+{
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    width: 100%;
+}
+
+.explorer-navbar
+{
+    display: flex;
+    flex-direction: column;
+    background-color: var(--primary-light);
+    width: 40%;
+    border-radius: 1rem;
+    padding: 1rem;
+    gap: 1rem;
+}
+
+.explorer-browser
+{
+    display: flex;
+    flex-direction: column;
+    background-color: var(--gray);
+    width: 100%;
+    border-radius: 1rem;
+    padding: 1rem;
+    gap: 1rem;
+}
+
+.explorer-path
+{
+    display: flex;
+    flex-direction: row;
+    background-color: var(--primary);
+    width: 100%;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-y: hidden;
+    font-size: 1.2rem;
+}
+
+.explorer-path-obj
+{
+    display: flex;
+    background-color: var(--dark);
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    white-space: nowrap;
+    position: relative;
+    margin-right: 2.2rem;
+    height: 1.2rem;
+    line-height: 1.2rem;
+    box-sizing: content-box;
+}
+
+.explorer-path-obj::after
+{
+    font-family: 'bootstrap-icons';
+    content: '\F285';
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    line-height: 1.2rem;
+    height: 1.2rem;
+    width: 1.2rem;
+    position: absolute;
+    font-size: 1.2rem;
+    box-sizing: content-box;
+    top: 0;
+    right: -2.2rem;
+}
+
+.explorer-path-obj:last-child
+{
+    margin-right: 0;
+}
+
+.explorer-path-obj:last-child::after
+{
+    content: '';
+    display: none;
+}
+
+.explorer-content
+{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    overflow-y: auto;
+    max-height: 500px;
+    font-size: 2rem;
+}
+
+.explorer-content-obj
+{
+    background-color: #545454;
+    border-radius: 0.5rem;
+    display: flex;
+    flex-direction: row;
+    font-size: 1.2rem;
+    min-height: 1.2rem;
+    line-height: 1.2rem;
+    padding: 1rem;
+    box-sizing: content-box;
+    overflow-x: hidden;
+    white-space: nowrap;
+    width: calc(100% - 2rem);
+    position: relative;
+}
+
+.explorer-content-obj-name
+{
+    text-overflow: ellipsis;
+    width: calc(100% - 5rem);
+    overflow: hidden;
+}
+
+.explorer-content-obj::before
+{
+    display: block;
+    font-size: 1.2rem;
+    height: 1.2rem;
+    line-height: 1.2rem;
+    width: 1.2rem;
+    margin: 0;
+    box-sizing: content-box;
+    margin-right: 1rem;
+}
+
+.explorer-content-obj.schlib::before, 
+.explorer-content-obj.pcblib::before
+{
+    font-family: 'bootstrap-icons';
+    content: '\F6E7';
+}
+
+.explorer-content-obj.file::before
+{
+    font-family: 'bootstrap-icons';
+    content: '\F34C';
+}
+
+.explorer-content-obj.symbol::before
+{
+    font-family: 'bootstrap-icons';
+    content: '\F2D6';
+}
+
+.explorer-content-obj.footprint::before
+{
+    font-family: 'bootstrap-icons';
+    content: '\F2D6';
+}
+
+.explorer-content-obj.folder::before
+{
+    font-family: 'bootstrap-icons';
+    content: '\F10D';
+}
+
+.explorer-content-obj-info-btn
+{
+    right: 0;
+    top: 0;
+    position: absolute;
+}
+
+.explorer-content-obj-info-btn::after
+{
+    font-family: 'bootstrap-icons';
+    content: '\F431';
+    line-height: 1.2rem;
+    height: 1.2rem;
+    width: 1.2rem;
+    text-align: center;
+    position: absolute;
+    right: 0;
+    top: 0;
+    background-color: #0400ff;
+    padding: 1rem;
+    /* background-color: red;
+    border-radius: 0.5rem;
+    padding: 1rem; */
+}
+
+
+
+
+/* .explorer-content-obj-info-btn
+{
+    right: 0;
+    top: 1rem;
+    position: absolute;
+}
+
+.explorer-content-obj-info-btn::after
+{
+    font-family: 'bootstrap-icons';
+    content: '\F431';
+    line-height: 1.2rem;
+    height: 1.2rem;
+    width: 1.2rem;
+    background-color: red;
+    border-radius: 0.5rem;
+    padding: 1rem;
+} */
+
+@media (max-width: 900px) 
+{
+    .explorer
+    {
+        flex-direction: column;
+    }
+
+    .explorer-navbar
+    {
+        width: 100%;
+    }
+
+    .explorer-browser
+    {
+        width: 100%;
+    }
+}
+
+
+
+
+*::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: var(--primary);
+  border: 4px solid transparent;
+  border-radius: 8px;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-track {
+  background: var(--dark-light);
+}
+*::-webkit-scrollbar-corner {
+  background: var(--dark-light);
+}

@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{url_for('static', filename='css/explorer.css')}}">
+{% endblock %}
+
+{% block content %}
+<div class="explorer">
+    <div class="explorer-navbar">
+        <input type="search" id="site-search" name="q" />
+        <div class="switch-ver">
+            <div class="switch"></div>
+            <div class="switch-option">All</div>
+            <div class="switch-option">Footprints</div>
+            <div class="switch-option">Symbols</div>
+        </div>
+        <div class="">
+            <div class=""><<</div>
+            <div class="">>></div>
+        </div>
+        <div class="">Upload</div>
+    </div>
+    <div class="explorer-browser">
+        <div class="explorer-path">
+            <div class="explorer-path-obj">a</div>
+            <div class="explorer-path-obj">b</div>
+            <div class="explorer-path-obj">c</div>
+            <div class="explorer-path-obj">zbyszek zamachowski</div>
+            <div class="explorer-path-obj">folder</div>
+        </div>
+        <div class="explorer-content">
+            <div class="explorer-content-obj schlib">
+                <div class="explorer-content-obj-name">Symbols.SchLib</div>
+                <div class="explorer-content-obj-info-btn"></div>
+            </div>
+
+            <div class="explorer-content-obj pcblib">
+                <div class="explorer-content-obj-name">Footprints.PcbLib</div>
+                <div class="explorer-content-obj-info-btn"></div>
+            </div>
+
+            <div class="explorer-content-obj file">
+                <div class="explorer-content-obj-name">Photo.png</div>
+                <div class="explorer-content-obj-info-btn"></div>
+            </div>
+
+            <div class="explorer-content-obj symbol">
+                <div class="explorer-content-obj-name">LEDSDADAS</div>
+                <div class="explorer-content-obj-info-btn"></div>
+            </div>
+
+            <div class="explorer-content-obj footprint">
+                <div class="explorer-content-obj-name">LEDSDADAS</div>
+                <div class="explorer-content-obj-info-btn"></div>
+            </div>
+
+            <div class="explorer-content-obj folder">
+                <div class="explorer-content-obj-name">Folder</div>
+                <div class="explorer-content-obj-info-btn"></div>
+            </div>
+
+            <div class="explorer-content-obj folder">
+                <div class="explorer-content-obj-name">Folder</div>
+                <div class="explorer-content-obj-info-btn"></div>
+            </div>
+
+            <div class="explorer-content-obj folder">
+                <div class="explorer-content-obj-name">Folder</div>
+                <div class="explorer-content-obj-info-btn"></div>
+            </div>
+
+            <div class="explorer-content-obj folder">
+                <div class="explorer-content-obj-name">Folder</div>
+                <div class="explorer-content-obj-info-btn"></div>
+            </div>
+
+            <div class="explorer-content-obj folder">
+                <div class="explorer-content-obj-name">Folder</div>
+                <div class="explorer-content-obj-info-btn"></div>
+            </div>
+
+            <div class="explorer-content-obj symbol">
+                <div class="explorer-content-obj-name">LEDSDADAS</div>
+                <div class="explorer-content-obj-info-btn"></div>
+            </div>
+
+            <div class="explorer-content-obj footprint">
+                <div class="explorer-content-obj-name">LEDSDADAS</div>
+                <div class="explorer-content-obj-info-btn"></div>
+            </div>
+
+            <div class="explorer-content-obj symbol">
+                <div class="explorer-content-obj-name">LEDSDADAS</div>
+                <div class="explorer-content-obj-info-btn"></div>
+            </div>
+
+            <div class="explorer-content-obj footprint">
+                <div class="explorer-content-obj-name">LEDSDADAS</div>
+                <div class="explorer-content-obj-info-btn"></div>
+            </div>
+
+            <div class="explorer-content-obj symbol">
+                <div class="explorer-content-obj-name">LEDSDADAS</div>
+                <div class="explorer-content-obj-info-btn"></div>
+            </div>
+
+            <div class="explorer-content-obj footprint">
+                <div class="explorer-content-obj-name">LEDSDADAS</div>
+                <div class="explorer-content-obj-info-btn"></div>
+            </div>
+
+            <div class="explorer-content-obj symbol">
+                <div class="explorer-content-obj-name">LEDSDADAS</div>
+                <div class="explorer-content-obj-info-btn"></div>
+            </div>
+
+            <div class="explorer-content-obj footprint">
+                <div class="explorer-content-obj-name">dasdasdasdasdasdasdasdasdasdasdasdasdasdasdas</div>
+                <div class="explorer-content-obj-info-btn"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

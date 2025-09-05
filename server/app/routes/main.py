@@ -12,7 +12,7 @@ def index():
     parameters['title'] = 'Dashboard'
     return redirect(url_for('main.dashboard', **parameters))
 
-@main_bp.route('/dashboard', methods=['GET', 'POST'])
+@main_bp.route('/dashboard')
 def dashboard():
     parameters = {}
     parameters['active_page'] = 'dashboard'
@@ -24,7 +24,7 @@ def dashboard():
     parameters['componentsSymbolsCount'] = app.symbolsAmount
     return render_template('dashboard.html', **parameters)
 
-@main_bp.route('/search_components', methods=['GET', 'POST'])
+@main_bp.route('/search_components')
 def search_compontents():
     parameters = {}
     parameters['active_page'] = 'search_components'
@@ -32,42 +32,42 @@ def search_compontents():
     parameters['components'] = models.Components.query.all()
     return render_template('search_components.html', **parameters)
 
-@main_bp.route('/symbols', methods=['GET', 'POST'])
+@main_bp.route('/symbols')
 def symbols():
     parameters = {}
     parameters['active_page'] = 'symbols'
     parameters['title'] = 'Symbols'
     return render_template('symbols.html', **parameters)
 
-@main_bp.route('/footprints', methods=['GET', 'POST'])
+@main_bp.route('/footprints')
 def footprints():
     parameters = {}
     parameters['active_page'] = 'footprints'
     parameters['title'] = 'Footprints'
     return render_template('footprints.html', **parameters)
 
-@main_bp.route('/settings', methods=['GET', 'POST'])
+@main_bp.route('/settings')
 def settings():
     parameters = {}
     parameters['active_page'] = 'settings'
     parameters['title'] = 'Settings'
     return render_template('settings.html', **parameters)
 
-@main_bp.route('/explorer', methods=['GET', 'POST'])
+@main_bp.route('/explorer')
 def explorer():
     parameters = {}
     parameters['active_page'] = 'explorer'
     parameters['title'] = 'Explorer'
     return render_template('explorer.html', **parameters)
 
-@main_bp.route('/how_to_configure', methods=['GET', 'POST'])
+@main_bp.route('/how_to_configure')
 def how_to_configure():
     parameters = {}
     parameters['active_page'] = 'how_to_configure'
     parameters['title'] = 'How to configure'
     return render_template('how_to_configure.html', **parameters)
 
-@main_bp.route('/element/create', methods=['GET', 'POST'])
+@main_bp.route('/element/create')
 def element_create():
     form = forms.ElementForm()
     if form.validate_on_submit():

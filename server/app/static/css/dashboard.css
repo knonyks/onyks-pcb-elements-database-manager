@@ -50,7 +50,7 @@
 .last-change-card .left, .last-change-card .right 
 {
     flex: 1;
-    min-width: 300px;
+    max-width: 300px;
 }
 
 .large-card h2, .small-card h2, .last-change-card h2 
@@ -115,7 +115,14 @@
     animation-delay: 0.4s;
 }
 
-@media (max-width: 1024px) 
+@media (max-width: 900px) 
 {
-
+    .dashboard-grid 
+    {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+        grid-template-areas: "large" "small" "lastchange";
+        gap: 2rem;
+    }
 }

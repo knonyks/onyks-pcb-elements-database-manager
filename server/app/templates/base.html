@@ -19,16 +19,14 @@
     <!-- BODY -->
     <body>
         <div class="navbar">
-            <a class="logo" href="/dashboard">
+            <a class="logo" href="{{url_for('main.dashboard')}}">
                 <img src="{{url_for('static', filename='img/logo.png')}}" alt="ONYKS Logo">
             </a>
             <div class="nav-btns">
-                <a class="nav-btn {% if active_page == 'dashboard' %}open{% endif %}" href="/dashboard">Strona Główna</a>
-                <a class="nav-btn {% if active_page == 'search_components' %}open{% endif %}" href="/search_components">Wyszukiwarka</a>
-                <!-- <a class="nav-btn {% if active_page == 'symbols' %}open{% endif %}" href="/symbols">Symbole</a> -->
-                <!-- <a class="nav-btn {% if active_page == 'footprints' %}open{% endif %}" href="/footprints">Footprinty</a> -->
-                <a class="nav-btn {% if active_page == 'explorer' %}open{% endif %}" href="/explorer">Eksplorator</a>
-                <a class="nav-btn {% if active_page == 'settings' %}open{% endif %}" href="/settings">Ustawienia</a>
+                <a class="nav-btn {% if active_page == 'dashboard' %}open{% endif %}" href="{{url_for('main.dashboard')}}">Strona Główna</a>
+                <a class="nav-btn {% if active_page == 'search_components' %}open{% endif %}" href="{{url_for('main.search_compontents')}}">Wyszukiwarka</a>
+                <a class="nav-btn {% if active_page == 'explorer' %}open{% endif %}" href="{{url_for('main.explorer')}}">Eksplorator</a>
+                <a class="nav-btn {% if active_page == 'settings' %}open{% endif %}" href="{{url_for('main.settings')}}">Ustawienia</a>
                 <a class="nav-btn" href="https://github.com/knonyks" id="onyks-github-btn" target="_blank">ONYKS</a>
             </div>
             <div class="navbar-show-hide-btn"></div>

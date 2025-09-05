@@ -36,4 +36,139 @@ body
   max-width: 1280px;
   padding: 2rem 1rem 1rem 1rem;
   margin: 5rem auto 0 auto;
+  min-height: 100vh;
+}
+
+.footer
+{
+  height: max-content;
+  background-color: var(--dark-light);
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-copyright
+{
+  font-size: 1rem;
+  text-align: center;
+  width: 100%;
+  padding: 1rem 1rem;
+}
+
+.footer-content
+{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  height: 100%;
+  max-width: 1024px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  justify-content: center;
+  align-items: center;
+}
+
+.footer-content-part 
+{
+  width: 100%;
+  padding: 1rem;
+  height: 100%;
+}
+
+.footer-additional
+{
+  display: flex;
+  flex-direction: column;
+  max-width: 15rem;
+  padding-bottom: 0;
+}
+
+.footer-link
+{
+  width: 100%;
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem;
+}
+
+.footer-socials
+{
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  max-width: max-content;
+    justify-content: center;
+  align-items: center;
+}
+
+.footer-social
+{
+  color: white;
+  text-decoration: none;
+  font-size: 2.5rem;
+  background-color: var(--error);
+  height: 2.5rem;
+  line-height: 2.5rem;
+  width: 2.5rem;
+  text-align: center;
+  padding: 1rem;
+  box-sizing: content-box;
+  border-radius: 0.5rem;
+}
+
+#instagram::before
+{
+    font-family: 'bootstrap-icons';
+    content: '\F437';
+    display: block;
+}
+
+#facebook::before
+{
+    font-family: 'bootstrap-icons';
+    content: '\F344';
+    display: block;
+}
+
+#www::before
+{
+    font-family: 'bootstrap-icons';
+    content: '\F3EF';
+    display: block;
+}
+
+#mail::before
+{
+    font-family: 'bootstrap-icons';
+    content: '\F84C';
+    display: block;
+}
+
+
+@media (max-width: 700px) 
+{
+  .footer-content
+  {
+    flex-direction: column;
+    height: max-content;
+  }
+
+  .footer
+  {
+    height: max-content;
+  }
+
+  .footer-additional
+  {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .footer-link
+  {
+    width: 100%;
+  }
 }

@@ -36,6 +36,24 @@
             
             {% endblock %}
         </main>
+        <div class="footer">
+            <div class="footer-content">
+                <div class="footer-content-part footer-additional">
+                    <a href="{{url_for('main.dashboard')}}" class="footer-link">Strona Główna</a>
+                    <a href="{{url_for('main.search_compontents')}}" class="footer-link">Wyszukiwarka</a>
+                    <a href="{{url_for('main.explorer')}}" class="footer-link">Eksplorator</a>
+                    <a href="{{url_for('main.settings')}}" class="footer-link">Ustawienia</a>
+                    <a href="{{url_for('main.how_to_configure')}}" class="footer-link">Konfiguracja</a>
+                </div>
+                <div class="footer-content-part footer-socials">
+                    <a class="footer-social" id="instagram" href="https://www.instagram.com/knonyks/"></a>
+                    <a class="footer-social" id="facebook" href="https://www.facebook.com/knonyks"></a>
+                    <a class="footer-social" id="www" href="https://www.onyks.elka.pw.edu.pl/"></a>
+                    <a class="footer-social" id="mail" href="mailto:kn.onyks@gmail.com"></a>
+                </div>
+            </div>
+            <div class="footer-copyright">Copyright ©2025 ONYKS Scientific Club of Microsystems Warsaw University of Technology</div>
+        </div>
     </body>
 </html>
 

@@ -61,6 +61,7 @@
     font-weight: 600;
     position: relative;
     padding-bottom: 12px;
+    width: 100%;
 }
 
 .large-card h2::after, .small-card h2::after, .last-change-card h2::after 

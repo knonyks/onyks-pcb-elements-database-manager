@@ -1,17 +1,29 @@
 from app import db
+import uuid
 
 class Components(db.Model):
     __tablename__ = 'Components'
-    uuid = db.Column(db.String, primary_key=True)
+    uuid = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     part_name = db.Column(db.String, index=True, unique=True, nullable=False)
+    manufacturer = db.Column(db.String, index=True, unique=True, nullable=False)
+    description = db.Column(db.String, nullable=True)
+    library_ref = db.Column(db.String, index=True, unique=True, nullable=False)
+    library_path = db.Column(db.String, index=True, unique=True, nullable=False)
+    footprint_ref_1 = db.Column(db.String, index=True, unique=True, nullable=False)
+    footprint_path_1 = db.Column(db.String, index=True, unique=True, nullable=False)
+    footprint_ref_2 = db.Column(db.String, index=True, unique=True, nullable=False)
+    footprint_path_2 = db.Column(db.String, index=True, unique=True, nullable=False)
+    footprint_ref_3 = db.Column(db.String, index=True, unique=True, nullable=False)
+    footprint_path_3 = db.Column(db.String, index=True, unique=True, nullable=False)
+
+    
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    last_edited_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
     # category = db.Column(db.String, index=True, nullable=False)
     # value = db.Column(db.String, nullable=False)
-    # description = db.Column(db.String, nullable=True)
+
     # available = db.Column(db.String, default=True)
     # atributes = db.Column(db.String, nullable=True)
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
-    edited_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
-
 
     def __repr__(self):
-        return f'<User {self.part_name}>'
+        return f'<{self.part_name}>'

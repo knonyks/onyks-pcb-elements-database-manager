@@ -32,22 +32,60 @@ Soon.
 ### Database
 
 ### PostgreSQL query for components data
+For the creation of the table we need type the below query:
 ```
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE "Components" (
-    uuid VARCHAR PRIMARY KEY,
+    uuid VARCHAR(36) PRIMARY KEY DEFAULT (uuid_generate_v4()),
     part_name VARCHAR NOT NULL UNIQUE,
-    category VARCHAR NOT NULL,
-    value VARCHAR NOT NULL,
+    manufacturer VARCHAR NOT NULL,
     description VARCHAR,
-    available VARCHAR DEFAULT 'true',
-    atributes VARCHAR,
+    library_ref VARCHAR NOT NULL UNIQUE,
+    library_path VARCHAR NOT NULL UNIQUE,
+    footprint_ref_1 VARCHAR NOT NULL UNIQUE,
+    footprint_path_1 VARCHAR NOT NULL UNIQUE,
+    footprint_ref_2 VARCHAR NOT NULL UNIQUE,
+    footprint_path_2 VARCHAR NOT NULL UNIQUE,
+    footprint_ref_3 VARCHAR NOT NULL UNIQUE,
+    footprint_path_3 VARCHAR NOT NULL UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    edited_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    last_edited_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
--- Indekses added in the model (index=True)
-CREATE INDEX ix_Components_part_name ON "Components" (part_name);
-CREATE INDEX ix_Components_category ON "Components" (category);
+```
+For the generate test data in the created table we need to type the below query
+```
+INSERT INTO "Components" (
+    uuid, part_name, manufacturer, description, 
+    library_ref, library_path, 
+    footprint_ref_1, footprint_path_1, 
+    footprint_ref_2, footprint_path_2, 
+    footprint_ref_3, footprint_path_3
+)
+SELECT 
+    gen_random_uuid(),
+    'Part_' || (seq + 1000),
+    CASE (seq % 5) 
+        WHEN 0 THEN 'Texas Instruments'
+        WHEN 1 THEN 'STMicroelectronics'
+        WHEN 2 THEN 'Infineon'
+        WHEN 3 THEN 'NXP Semiconductors'
+        WHEN 4 THEN 'Analog Devices'
+    END,
+    CASE (seq % 4)
+        WHEN 0 THEN 'High-performance microcontroller'
+        WHEN 1 THEN 'Power management IC'
+        WHEN 2 THEN 'Voltage regulator'
+        WHEN 3 THEN 'Digital signal processor'
+    END,
+    'LibRef_' || (seq + 2000),
+    '/libraries/components/lib_' || (seq + 2000) || '.lib',
+    'FootprintRef_' || (seq + 3000) || '_1',
+    '/footprints/smd/fp_' || (seq + 3000) || '_1.pretty',
+    'FootprintRef_' || (seq + 4000) || '_2', 
+    '/footprints/tht/fp_' || (seq + 4000) || '_2.pretty',
+    'FootprintRef_' || (seq + 5000) || '_3',
+    '/footprints/bga/fp_' || (seq + 5000) || '_3.pretty'
+FROM generate_series(0, 1000) AS seq;
 ```
 
 ### What do they all mean?

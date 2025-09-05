@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div>{{title}}</div>
+
+<style>
+    form
+    {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        width: 300px;
+    }
+    textarea
+    {
+        resize: none;
+        width: 200px;
+        height: 200px;
+    }
+    .aaa
+    {
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
+    }
+</style>
+
+<form method="POST">
+    {{ form.hidden_tag() }}
+    {{ form.part_name.label}}
+    {{ form.part_name(size=32, placeholder="Part name")}}
+
+    {% for error in form.part_name.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+    {% endfor %}
+
+    {{ form.manufacturer.label}}
+    {{ form.manufacturer(size=32, placeholder="manufacturer")}}
+
+    {{ form.description.label }}
+    {{ form.description(rows=5, cols=32, placeholder="Description (max 256 characters)")}}
+    {% for error in form.description.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+    {% endfor %}
+
+    {{form.library_ref.label }}
+    {{form.library_ref(placeholder="library_ref")}}
+
+    {{form.library_path.label }}
+    {{form.library_path(placeholder="library_path")}}
+
+    {{form.footprint_ref_1.label }}
+    {{form.footprint_ref_1(placeholder="footprint_ref_1")}}
+
+    {{form.footprint_path_1.label }}
+    {{form.footprint_path_1(placeholder="footprint_path_1")}}
+
+    {{form.footprint_ref_2.label }}
+    {{form.footprint_ref_2(placeholder="footprint_ref_2")}}
+
+        {{form.footprint_path_2.label }}
+    {{form.footprint_path_2(placeholder="footprint_path_2")}}
+
+    {{form.footprint_ref_3.label }}
+    {{form.footprint_ref_3(placeholder="footprint_ref_3")}}
+
+        {{form.footprint_path_3.label }}
+    {{form.footprint_path_3(placeholder="footprint_path_3")}}
+
+    {{ form.submit(class="btn btn-primary") }}
+</form>
+
+{% endblock %}

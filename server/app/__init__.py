@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from app.utils import svn
 import threading
@@ -6,6 +6,11 @@ from flask_socketio import SocketIO, emit
 import time
 from pathlib import Path
 from app.utils import images
+from flask_wtf import FlaskForm
+from wtforms import StringField, TextAreaField, SubmitField
+from wtforms.validators import DataRequired, Length
+import os
+import secrets
 
 db = SQLAlchemy()
 repo = None
@@ -25,6 +30,7 @@ def createApp(config):
     socketio = SocketIO(app, cors_allowed_origins="*")
 
     #CONFIG DATABASE
+    app.config['SECRET_KEY'] = secrets.token_hex(24)
     app.config['SQLALCHEMY_DATABASE_URI'] = createPostgresURI(**config['compontentsDatabase'])
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.init_app(app)

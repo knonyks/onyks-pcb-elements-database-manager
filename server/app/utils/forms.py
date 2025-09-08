@@ -19,5 +19,4 @@ class ElementForm(FlaskForm):
     footprint_path_3 = StringField('Footprint Path 3', validators=[Length(max=256)])
 
 
-
-    submit = SubmitField('Submit')
+    accept = SubmitField('Accept')

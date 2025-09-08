@@ -67,7 +67,7 @@ def how_to_configure():
     parameters['title'] = 'How to configure'
     return render_template('how_to_configure.html', **parameters)
 
-@main_bp.route('/element/create')
+@main_bp.route('/element/create', methods=['GET', 'POST'])
 def element_create():
     form = forms.ElementForm()
     if form.validate_on_submit():

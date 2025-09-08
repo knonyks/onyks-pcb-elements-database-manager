@@ -1,6 +1,20 @@
 {% extends "base.html" %}
 {% block content %}
 
+<div class="dialog" id="confirmationDialog">
+    <div>
+        <div class="dialog-top-bar-title">Komunikat</div>
+        <div class="dialog-top-bar-close"></div>
+        <div class="dialog-content">
+            Czy jesteś pewien, że chcesz kontynuować?
+        </div>
+        <div class="dialog-bottom-btns">
+            <div class="dialog-bottom-btn yes">Yes</div>
+            <div class="dialog-bottom-btn no">No</div>
+        </div>
+    </div>
+</div>
+
 <div>{{title}}</div>
 
 <style>
@@ -25,7 +39,9 @@
     }
 </style>
 
-<form method="POST">
+
+
+<form method="POST" id="myForm">
     {{ form.hidden_tag() }}
     {{ form.part_name.label}}
     {{ form.part_name(size=32, placeholder="Part name")}}
@@ -67,7 +83,10 @@
         {{form.footprint_path_3.label }}
     {{form.footprint_path_3(placeholder="footprint_path_3")}}
 
-    {{ form.submit(class="btn btn-primary") }}
+    {{ form.accept(class="btn btn-primary", id='aaa') }}
 </form>
+{% endblock %}
 
+{% block js %}
+<script src="{{ url_for('static', filename='js/element_form.js') }}"></script>
 {% endblock %}

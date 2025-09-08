@@ -1,0 +1,130 @@
+@keyframes dialog-fadeIn-animation
+{
+    from 
+    {
+        opacity: 0;
+        display: flex;
+    }
+    to 
+    {
+        opacity: 1;
+    }    
+}
+
+@keyframes dialog-fadeOut-animation 
+{
+    from 
+    {
+        opacity: 1;
+    }
+    to 
+    {
+        opacity: 0;
+        display: none;
+    }        
+}
+
+.dialog.fadeIn
+{
+    animation: dialog-fadeIn-animation 0.5s forwards ease-in-out;
+}
+
+.dialog.fadeOut
+{
+    animation: dialog-fadeOut-animation 0.5s forwards ease-in-out;
+}
+
+.dialog
+{
+    position: fixed;
+    background-color: #00000091;
+    backdrop-filter: blur(10px);
+    width: 100%;
+    height: 100%;
+    z-index: 200;
+    top: 0;
+    left: 0;
+    display: flex;          
+    justify-content: center;
+    opacity: 0;
+    display: none;
+}
+
+.dialog > div
+{
+    max-width: 1024px;
+    width: fit-content;
+    min-width: 300px;
+    background-color: #252525;
+    margin: 1rem;
+    border-radius: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
+    max-height: 100vh;
+    position: relative;
+}
+
+.dialog-top-bar-title
+{
+    width: calc(100% - 2rem);
+    text-align: center;
+    padding: 0.75rem;
+    font-size: 1rem;
+    line-height: 1rem;
+    box-sizing: content-box;
+    position: relative;
+    border-radius: 0.5rem;
+    /* background-color: blue; */
+}
+
+.dialog-top-bar-close
+{
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 1.5rem;
+    height: 1.5rem;
+    width: 1.5rem;
+    line-height: 1.5rem;
+    padding: 0.5rem;
+    background-color: red;
+    box-sizing: content-box;
+    border-radius: 0.5rem;
+}
+
+.dialog-top-bar-close::before
+{
+    font-family: 'bootstrap-icons';
+    content: '\F623';    
+}
+
+.dialog-content
+{
+    max-height: 100%;
+    height: 100%;
+    margin: 1rem;
+    overflow-y: auto;
+    width: calc(100% - 2rem);
+    /* background-color: blue; */
+    box-sizing: content-box;
+    line-break: auto;
+}
+
+.dialog-bottom-btns
+{
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    justify-content: end;
+    padding: 1rem;
+}
+
+.dialog-bottom-btn
+{
+    background-color: red;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    min-width: 75px;
+    text-align: center;
+}

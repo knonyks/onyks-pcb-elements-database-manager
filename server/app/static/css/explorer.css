@@ -40,6 +40,14 @@
     font-size: 1.2rem;
 }
 
+.explorer-path::before
+{
+    display: block;
+    height: 2.2rem;
+    width: 0;
+    content: '';
+}
+
 .explorer-path-obj
 {
     display: flex;
@@ -89,7 +97,21 @@
     overflow-y: auto;
     max-height: 500px;
     font-size: 2rem;
+    min-height: 500px;
+    position: relative;
 }
+
+.explorer-content::after
+{
+    content: "Brak plików";
+    text-align: center;
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
 
 .explorer-content-obj
 {

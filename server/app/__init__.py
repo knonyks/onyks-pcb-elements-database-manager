@@ -68,6 +68,7 @@ def createApp(config):
     #SET SERVER BEHAVIOUR
     from app.routes.main import main_bp
     app.register_blueprint(main_bp)
+    import app.routes.explorer as explorer
 
     images.createDatabaseConfigImage(config['compontentsDatabase'], 'app/static/img/windows_odbc_form.png', 'app/static/.cache/windows_odbc_filled_form.png')
 

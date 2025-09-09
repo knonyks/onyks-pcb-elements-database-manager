@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="explorer">
+<div class="explorer" id="explorer">
     <div class="explorer-navbar">
         <input type="search" id="site-search" name="q" />
         <div class="switch-ver">
@@ -15,21 +15,21 @@
             <div class="switch-option">Symbols</div>
         </div>
         <div class="">
-            <div class=""><<</div>
-            <div class="">>></div>
+            <div class="">LEFT</div>
+            <div class="">RIFGHT</div>
         </div>
         <div class="">Upload</div>
     </div>
     <div class="explorer-browser">
         <div class="explorer-path">
-            <div class="explorer-path-obj">a</div>
-            <div class="explorer-path-obj">b</div>
-            <div class="explorer-path-obj">c</div>
-            <div class="explorer-path-obj">zbyszek zamachowski</div>
-            <div class="explorer-path-obj">folder</div>
+            <!-- <div class="explorer-path-obj" data-set-id="0">a</div>
+            <div class="explorer-path-obj" data-set-id="1">b</div>
+            <div class="explorer-path-obj" data-set-id="2">c</div>
+            <div class="explorer-path-obj" data-set-id="3">zbyszek zamachowski</div>
+            <div class="explorer-path-obj" data-set-id="4">folder</div> -->
         </div>
         <div class="explorer-content">
-            <div class="explorer-content-obj schlib">
+            <!-- <div class="explorer-content-obj schlib">
                 <div class="explorer-content-obj-name">Symbols.SchLib</div>
                 <div class="explorer-content-obj-info-btn"></div>
             </div>
@@ -118,8 +118,13 @@
                 <div class="explorer-content-obj-name">dasdasdasdasdasdasdasdasdasdasdasdasdasdasdas</div>
                 <div class="explorer-content-obj-info-btn"></div>
             </div>
-        </div>
+        </div> -->
     </div>
 </div>
 
+{% endblock %}
+
+{% block js %}
+<script src="{{url_for('static', filename='js/utils/explorer.js')}}"></script>
+<script src="{{url_for('static', filename='js/explorer.js')}}"></script>
 {% endblock %}

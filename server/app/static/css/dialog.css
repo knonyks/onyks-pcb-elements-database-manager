@@ -55,13 +55,14 @@
     max-width: 1024px;
     width: fit-content;
     min-width: 300px;
+    width: 100%;
     background-color: #252525;
     margin: 1rem;
     border-radius: 0.5rem;
     display: flex;
     flex-direction: column;
     height: fit-content;
-    max-height: 100vh;
+    max-height: 90%;
     position: relative;
 }
 

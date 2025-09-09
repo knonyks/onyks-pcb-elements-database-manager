@@ -37,17 +37,17 @@ For the creation of the table we need type the below query:
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE "Components" (
     uuid VARCHAR(36) PRIMARY KEY DEFAULT (uuid_generate_v4()),
-    part_name VARCHAR NOT NULL UNIQUE,
+    part_name VARCHAR NOT NULL,
     manufacturer VARCHAR NOT NULL,
     description VARCHAR,
-    library_ref VARCHAR NOT NULL UNIQUE,
-    library_path VARCHAR NOT NULL UNIQUE,
-    footprint_ref_1 VARCHAR NOT NULL UNIQUE,
-    footprint_path_1 VARCHAR NOT NULL UNIQUE,
-    footprint_ref_2 VARCHAR NOT NULL UNIQUE,
-    footprint_path_2 VARCHAR NOT NULL UNIQUE,
-    footprint_ref_3 VARCHAR NOT NULL UNIQUE,
-    footprint_path_3 VARCHAR NOT NULL UNIQUE,
+    library_ref VARCHAR NOT NULL,
+    library_path VARCHAR NOT NULL,
+    footprint_ref_1 VARCHAR NOT NULL,
+    footprint_path_1 VARCHAR NOT NULL,
+    footprint_ref_2 VARCHAR NOT NULL,
+    footprint_path_2 VARCHAR NOT NULL,
+    footprint_ref_3 VARCHAR NOT NULL,
+    footprint_path_3 VARCHAR NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     last_edited_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

@@ -1,6 +1,6 @@
 class Explorer 
 {
-    constructor(id, path, filter) 
+    constructor(id, path, filter, pathStartIndex=0) 
     {
         this.ui =
         {
@@ -13,36 +13,109 @@ class Explorer
         this.filter = filter
         this.ui.main.addEventListener("click", this.explorerEvent)
         this.ui.main.addEventListener("dblclick", this.explorerEvent)
+        this.pathStartIndex = pathStartIndex
+        this.multifileMarking = false
     }
     init()
     {
         this.initSocket()
     }
+    getMarkedFiles()
+    {
+        let list = this.ui.container.querySelectorAll('.marked')
+        let result = []
+        for(let i of list)
+        {
+            result.push(i.querySelector('.explorer-content-obj-name').innerText)
+        }
+        return result
+    }
+    getCurrentPath()
+    {
+        return this.pathChain.slice(this.pathStartIndex, this.pathChain.length).join('/')
+    }
     initSocket()
     {
         this.socket = io()
         this.socket.on('explorer-files', (data) =>
-        {  
+        {   
             for(let file of data)
             {
-                explorer.appendFile(file[0], file[1])
+                this.appendFile(file[0], file[1])
             }
         })
+    }
+    __markObj(src)
+    {
+        if(src.classList.contains('symbol') || src.classList.contains('footprint'))
+        {
+            let marked = this.ui.container.querySelector('.marked')
+            if(marked == null)
+            {
+                src.classList.add('marked')
+            }
+            else
+            {
+                console.log(src, marked, src == marked)
+                if(src == marked)
+                {
+                    src.classList.remove('marked')
+                }
+                else
+                {
+                    marked.classList.remove('marked')
+                    src.classList.add('marked')
+                }
+                // marked.classList.remove('marked')
+                // src.classList.add('marked')
+            }
+
+
+
+        }
+        
+        // if(src.manager.ui.container.querySelector('marked') != null)
+        // {
+        //     src.manager.ui.container.querySelector('marked').classList.remove('marked')
+            
+        // }
+        // else
+        // {
+
+        // }
     }
     explorerEvent(e)
     {
         if(e.type === "click")
         {
+            //PATH
             if(e.target.classList.contains("explorer-path-obj"))
             {
                 let id = parseInt(e.target.dataset.setId)
                 this.manager.pathChain = this.manager.pathChain.slice(0, id + 1)
                 this.manager.updateExplorerUI()
             }
+            //MARK THE CHOOSEN SYMBOL
+            else if(e.target.classList.contains("explorer-content-obj"))
+            {  
+                this.manager.__markObj(e.target)
+                // if(this.manager.ui.container.querySelector('marked') != null)
+                // {
+                //     this.manager.ui.container.querySelector('marked').classList.remove('marked')
+                // }
+                // e.target.classList.add('marked')
+                // if(this.manager.querySelector('marked'))
+                // {
+
+                // }
+            }
+            else if(e.target.classList.contains("explorer-content-obj-name"))
+            {
+                this.manager.__markObj(e.target.parentElement)
+            }
         }
         else if(e.type === "dblclick")
         {
-            console.log(e.target)
             //GO INSIDE TO THE FOLDER OR PCBLIB/SCHLIB FILE
             if(e.target.classList.contains("explorer-content-obj"))
             {   
@@ -54,9 +127,15 @@ class Explorer
             }
             else if(e.target.classList.contains("explorer-content-obj-name"))
             {
-                console.log(e.target)
-                this.manager.pathChain.push(e.target.innerText)
-                this.manager.updateExplorerUI()
+                let parent = e.target.parentElement
+                let condition = parent.classList.contains("folder")
+                condition |= parent.classList.contains('pcblib')
+                condition |= parent.classList.contains('schlib')
+                if(condition)
+                {
+                    this.manager.pathChain.push(e.target.innerText)
+                    this.manager.updateExplorerUI()
+                }
             }
         }
     }
@@ -64,7 +143,7 @@ class Explorer
     {
         this.ui.paths.innerHTML = ''
         this.ui.container.innerHTML = ''
-        for(let i = 0; i < this.pathChain.length; i++)
+        for(let i = this.pathStartIndex; i < this.pathChain.length; i++)
         {
             let ui = document.createElement('div')
             ui.classList.add('explorer-path-obj')
@@ -74,60 +153,6 @@ class Explorer
         }
         this.socket.emit('explorer-get-files', {'path': this.pathChain.join('/')})
     }
-
-
-
-
-    // explorerEvent(e)
-    // {
-    //     if(e.type === "click")
-    //     {
-    //         if(e.target.classList.contains("explorer-path-obj"))
-    //         {
-    //             let id = parseInt(e.target.dataset.setId)
-    //             this.manager.pathChain = this.manager.pathChain.slice(0, id + 1)
-    //             this.manager.socket.emit('explorer-get-files', {'path': this.manager.pathChain.join('/')})
-    //         }
-    //     }
-
-
-
-
-
-
-
-    //     // else if(e.type === "dblclick")
-    //     // {
-    //     //     if(e.target.classList.contains("explorer-content-obj"))
-    //     //     {
-    //     //         console.log(2)
-    //     //         if(e.target.classList.contains("folder"))
-    //     //         {
-    //     //             console.log(this.manager.appendPath(e.target.querySelector('.explorer-content-obj-name').innerText))
-    //     //             // this.appendPath(e.target.querySelector('.explorer-content-obj-name').innerText)
-    //     //             console.log(this.manager.pathChain.join('/'))
-    //     //             this.manager.removeAllFiles()
-    //     //             this.manager.socket.emit('explorer-get-files', {'path': this.manager.pathChain.join('/')})
-
-    //     //         }
-    //     //     }
-    //     // }
-    // }
-
-
-
-
-
-
-
-
-
-
-
-    // removeAllFiles()
-    // {
-    //     this.ui.container.innerHTML = ''
-    // }
     appendFile(name, type)
     {
         let ui = {main: document.createElement('div'), name: document.createElement('div'), infoBtn: document.createElement('div')}
@@ -141,35 +166,4 @@ class Explorer
         ui.main.appendChild(ui.infoBtn)
         this.ui.container.appendChild(ui.main)
     }
-    // appendPath(path)
-    // {
-    //     this.pathChain.push(path)
-    //     let ui = document.createElement('div')
-    //     ui.classList.add('explorer-path-obj')
-    //     ui.dataset.setId = this.pathChain.length - 1
-    //     ui.innerText = path
-    //     this.ui.paths.appendChild(ui)
-    // }
-    // removeLastPath()
-    // {
-    //     if(this.pathChain.length > 1)
-    //         this.pathChain.pop()
-    //     this.ui.paths.removeChild(this.ui.paths.lastChild)
-    // }
-
-
-
-    // updateUI()
-    // {
-    //     this.ui.paths.innerHTML = ''
-    //     for(let i = 0; i < this.pathChain.length; i++)
-    //     {
-    //         let ui = document.createElement('div')
-    //         ui.classList.add('explorer-path-obj')
-    //         ui.dataset.setId = i
-    //         ui.innerText = this.pathChain[i]
-    //         this.ui.paths.appendChild(ui)
-    //     }
-
-    // }
 }

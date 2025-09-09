@@ -1,12 +1,15 @@
 {% extends "base.html" %}
 
 {% block css %}
-<link rel="stylesheet" href="{{url_for('static', filename='css/explorer.css')}}">
+<link rel="stylesheet" href="{{url_for('static', filename='css/utils/explorer.css')}}">
+<link rel="stylesheet" href="{{url_for('static', filename='css/element_form.css')}}">
 {% endblock %}
 
 {% block content %}
 
-<div class="dialog" id="confirmationDialog">
+
+
+<div class="dialog" id="confirmation-dialog">
     <div>
         <div class="dialog-top-bar-title">Komunikat</div>
         <div class="dialog-top-bar-close"></div>
@@ -20,33 +23,18 @@
     </div>
 </div>
 
-<div class="dialog" id="explorerDialog">
+<div class="dialog" id="symbol-dialog">
     <div>
         <div class="dialog-top-bar-title">Wybierz symbol</div>
         <div class="dialog-top-bar-close"></div>
         <div class="dialog-content">
-            <div class="explorer" id="explorer">
+            <div class="explorer" id="symbol-explorer">
                 <div class="explorer-navbar">
-                    <input type="search" id="site-search" name="q" />
-                    <div class="switch-ver">
-                        <div class="switch"></div>
-                        <div class="switch-option">All</div>
-                        <div class="switch-option">Footprints</div>
-                        <div class="switch-option">Symbols</div>
-                    </div>
-                    <div class="">
-                        <div class="">LEFT</div>
-                        <div class="">RIFGHT</div>
-                    </div>
-                    <div class="">Upload</div>
+                    <input type="search" class="explorer-navbar-search"/>
                 </div>
                 <div class="explorer-browser">
-                    <div class="explorer-path">
-
-                    </div>
-                    <div class="explorer-content">
-                       
-                    </div>
+                    <div class="explorer-path"></div>
+                    <div class="explorer-content"></div>
                 </div>
             </div>
         </div>
@@ -56,34 +44,40 @@
     </div>
 </div>
 
-<div>{{title}}</div>
+<div class="dialog" id="footprint-dialog">
+    <div>
+        <div class="dialog-top-bar-title">Wybierz symbol</div>
+        <div class="dialog-top-bar-close"></div>
+        <div class="dialog-content">
+            <div class="explorer" id="footprint-explorer">
+                <div class="explorer-navbar">
+                    <input type="search" class="explorer-navbar-search"/>
+                </div>
+                <div class="explorer-browser">
+                    <div class="explorer-path"></div>
+                    <div class="explorer-content"></div>
+                </div>
+            </div>
+        </div>
+        <div class="dialog-bottom-btns">
+            <div class="dialog-bottom-btn ok">OK</div>
+        </div>
+    </div>
+</div>
 
-<style>
-    form
-    {
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-        width: 300px;
-    }
-    textarea
-    {
-        resize: none;
-        width: 200px;
-        height: 200px;
-    }
-    .aaa
-    {
-        display: flex;
-        flex-direction: row;
-        gap: 20px;
-    }
-</style>
+<div class="dialog" id="error-dialog">
+    <div>
+        <div class="dialog-top-bar-title">Komunikat</div>
+        <div class="dialog-top-bar-close"></div>
+        <div class="dialog-content">Nie wybrano elementu!</div>
+        <div class="dialog-bottom-btns">
+            <div class="dialog-bottom-btn ok">OK</div>
+        </div>
+    </div>
+</div>
 
-
-
-<form method="POST" id="myForm">
-    {{ form.hidden_tag() }}
+<form method="POST" id="element-form">
+    {{ form.hidden_tag()}}
     {{ form.part_name.label}}
     {{ form.part_name(size=32, placeholder="Part name")}}
 
@@ -101,30 +95,36 @@
     {% endfor %}
 
     {{form.library_ref.label }}
-    {{form.library_ref(placeholder="library_ref")}}
+    {{form.library_ref(placeholder="library_ref", id="library-ref")}}
 
     {{form.library_path.label }}
-    {{form.library_path(placeholder="library_path")}}
+    {{form.library_path(placeholder="library_path", id="library-path")}}
 
-    <button onclick="explorerDialog.show()">Pick</button>
+    <button id="symbol-picker-btn" type="button">Pick symbol</button>
 
     {{form.footprint_ref_1.label }}
-    {{form.footprint_ref_1(placeholder="footprint_ref_1")}}
+    {{form.footprint_ref_1(placeholder="footprint_ref_1", id="footprint-ref-1")}}
 
     {{form.footprint_path_1.label }}
-    {{form.footprint_path_1(placeholder="footprint_path_1")}}
+    {{form.footprint_path_1(placeholder="footprint_path_1", id="footprint-path-1")}}
+
+    <button id="footprint-picker-1-btn" type="button">Pick footprint no. 1</button>
 
     {{form.footprint_ref_2.label }}
-    {{form.footprint_ref_2(placeholder="footprint_ref_2")}}
+    {{form.footprint_ref_2(placeholder="footprint_ref_2", id="footprint-ref-2")}}
 
-        {{form.footprint_path_2.label }}
-    {{form.footprint_path_2(placeholder="footprint_path_2")}}
+    {{form.footprint_path_2.label }}
+    {{form.footprint_path_2(placeholder="footprint_path_2", id="footprint-path-2")}}
+
+    <button id="footprint-picker-2-btn" type="button">Pick footprint no. 2</button>
 
     {{form.footprint_ref_3.label }}
-    {{form.footprint_ref_3(placeholder="footprint_ref_3")}}
+    {{form.footprint_ref_3(placeholder="footprint_ref_3", id="footprint-ref-3")}}
 
-        {{form.footprint_path_3.label }}
-    {{form.footprint_path_3(placeholder="footprint_path_3")}}
+    {{form.footprint_path_3.label }}
+    {{form.footprint_path_3(placeholder="footprint_path_3", id="footprint-path-3")}}
+
+    <button id="footprint-picker-3-btn" type="button">Pick footprint no. 3</button>
 
     {{ form.accept(class="btn btn-primary", id='aaa') }}
 </form>

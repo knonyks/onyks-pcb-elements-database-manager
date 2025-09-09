@@ -10,7 +10,6 @@ class Dialog
         this.close = null
         this.ui.addEventListener("click", (e) => 
         {
-            console.log(e.target)
             if(e.target.classList.contains("yes"))
             {
                 this.yes(e)

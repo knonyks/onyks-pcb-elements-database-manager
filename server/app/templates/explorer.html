@@ -1,24 +1,15 @@
 {% extends "base.html" %}
 
 {% block css %}
-<link rel="stylesheet" href="{{url_for('static', filename='css/explorer.css')}}">
+<link rel="stylesheet" href="{{url_for('static', filename='css/utils/explorer.css')}}">
 {% endblock %}
 
 {% block content %}
 <div class="explorer" id="explorer">
     <div class="explorer-navbar">
-        <input type="search" id="site-search" name="q" />
-        <div class="switch-ver">
-            <div class="switch"></div>
-            <div class="switch-option">All</div>
-            <div class="switch-option">Footprints</div>
-            <div class="switch-option">Symbols</div>
-        </div>
-        <div class="">
-            <div class="">LEFT</div>
-            <div class="">RIFGHT</div>
-        </div>
-        <div class="">Upload</div>
+        <input type="search" class="explorer-navbar-search"/>
+        <div class="explorer-navbar-btn upload">Upload</div>
+        <div class="explorer-navbar-btn delete">Delete</div>
     </div>
     <div class="explorer-browser">
         <div class="explorer-path">

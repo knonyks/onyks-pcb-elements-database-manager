@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta charset="utf-8" />
+        <meta charset="utf-8"/>
         <title>{{title}}</title>
         <link rel="icon" href="{{url_for('static', filename='img/ico.ico')}}">
         <link rel="stylesheet" href="{{url_for('static', filename='css/general.css')}}">
         <link rel="stylesheet" href="{{url_for('static', filename='css/navbar.css')}}">
-        <link rel="stylesheet" href="{{url_for('static', filename='css/toast.css')}}">
-        <link rel="stylesheet" href="{{url_for('static', filename='css/dialog.css')}}">
+        <link rel="stylesheet" href="{{url_for('static', filename='css/utils/toast.css')}}">
+        <link rel="stylesheet" href="{{url_for('static', filename='css/utils/dialog.css')}}">
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
@@ -17,9 +17,7 @@
     {% endblock %}
     <body>
         <div class="navbar">
-            <a class="logo" href="{{url_for('main.dashboard')}}">
-                <img src="{{url_for('static', filename='img/logo.png')}}" alt="ONYKS Logo">
-            </a>
+            <a class="logo" href="{{url_for('main.dashboard')}}"><img src="{{url_for('static', filename='img/logo.png')}}" alt="ONYKS Logo"></a>
             <div class="nav-btns">
                 <a class="nav-btn {% if active_page == 'dashboard' %}open{% endif %}" href="{{url_for('main.dashboard')}}">Strona Główna</a>
                 <a class="nav-btn {% if active_page == 'search_components' %}open{% endif %}" href="{{url_for('main.search_compontents')}}">Wyszukiwarka</a>
@@ -53,8 +51,8 @@
             <div class="footer-copyright">©2025 ONYKS Scientific Club of Microsystems Warsaw University of Technology</div>
         </div>
         <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
-        <script src="{{ url_for('static', filename='js/toast.js') }}"></script>
-        <script src="{{url_for('static', filename='js/dialog.js')}}"></script>
+        <script src="{{ url_for('static', filename='js/utils/toast.js') }}"></script>
+        <script src="{{url_for('static', filename='js/utils/dialog.js')}}"></script>
         {% block js %}
 
         {% endblock %}

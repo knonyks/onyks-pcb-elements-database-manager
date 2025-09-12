@@ -17,8 +17,8 @@ def mainRoutes(server):
         parameters = {}
         parameters['active_page'] = 'dashboard'
         parameters['title'] = 'Dashboard'
-        parameters['componentsDatabaseCount'] = server.tables['Components'].query.count()
-        parameters['componentsDatabaseTodaysCount'] = countTodaysEntries(server.db, server.tables['Components'], 'Europe/Warsaw')
+        parameters['componentsDatabaseCount'] = sum([server.categories[i].query.count() for i in server.categories])
+        parameters['componentsDatabaseTodaysCount'] = sum([countTodaysEntries(server.db, server.categories[i], 'Europe/Warsaw') for i in server.categories])
         # parameters['componentsDatabaseLastAddedPartName'] = models.Components.query.order_by(models.Components.created_at.desc()).first().part_name
         parameters['componentsFootprintsCount'] = server.others['footprintsAmount']
         parameters['componentsSymbolsCount'] = server.others['symbolsAmount']
@@ -29,7 +29,7 @@ def mainRoutes(server):
         parameters = {}
         parameters['active_page'] = 'search_components'
         parameters['title'] = 'Search components'
-        parameters['components'] = server.tables['Components'].query.all()
+        parameters['components'] = server.categories['Resistors'].query.all()
         return render_template('search_components.html', **parameters)
 
     @main_bp.route('/symbols')
@@ -69,9 +69,11 @@ def mainRoutes(server):
 
     @main_bp.route('/element/create', methods=['GET', 'POST'])
     def element_create():
-        form = forms.ElementForm()
+        form = server.forms['element']()
         if form.validate_on_submit():
-            new_element = server.tables['Components'](
+            print(form.category.data)
+            print(server.config['database']['categories'][int(form.category.data) - 1])
+            new_element = server.categories[server.config['database']['categories'][int(form.category.data) - 1]](
                 part_name = form.part_name.data,
                 manufacturer = form.manufacturer.data,
                 description = form.description.data,

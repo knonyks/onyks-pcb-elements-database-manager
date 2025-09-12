@@ -85,6 +85,9 @@
         <span style="color: red;">[{{ error }}]</span>
     {% endfor %}
 
+    {{form.category.label}}
+    {{form.category()}}
+
     {{ form.manufacturer.label}}
     {{ form.manufacturer(size=32, placeholder="manufacturer")}}
 

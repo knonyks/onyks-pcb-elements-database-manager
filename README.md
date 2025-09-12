@@ -91,9 +91,13 @@ DECLARE
             'Diodes', 
             'Antennas', 
             'Modules'];
+    n_rows INT;
 BEGIN
     FOREACH tbl_name IN ARRAY names
     LOOP
+
+        n_rows := floor(random() * (1000 - 200 + 1) + 200)::INT;
+
         EXECUTE format($f$
             INSERT INTO %I (
                 uuid, part_name, manufacturer, description, 
@@ -126,8 +130,8 @@ BEGIN
                 '/footprints/tht/fp_' || (seq + 4000) || '_2.pretty',
                 'FootprintRef_' || (seq + 5000) || '_3',
                 '/footprints/bga/fp_' || (seq + 5000) || '_3.pretty'
-            FROM generate_series(0, 1000) AS seq;
-        $f$, tbl_name);
+            FROM generate_series(0, %s) AS seq;
+        $f$, tbl_name, n_rows);
     END LOOP;
 END $$;
 ```

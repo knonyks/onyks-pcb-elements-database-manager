@@ -13,6 +13,7 @@ import time
 import threading
 import logging
 from .routes import mainRoutes, socketioRoutes
+from .utils.forms import createElementForm
 
 class OnyksApp:
 
@@ -22,8 +23,9 @@ class OnyksApp:
         self.socketio = SocketIO(self.app, cors_allowed_origins="*")
         self.repository = None
         self.config = None
-        self.tables = {}
+        self.categories = {}
         self.others = {}
+        self.forms = {}
         self.repositoryUpdaterThread = None
 
     def __initDatabase(self):
@@ -47,7 +49,8 @@ class OnyksApp:
         self.repositoryUpdaterThread.start()
 
     def __createTables(self):
-        self.tables['Components'] = createElementsTable(self.db, 'Components')
+        for i in self.config['database']['categories']:
+            self.categories[i] = createElementsTable(self.db, i)
 
     def __initOthers(self):
         self.others["symbolsAmount"] = 0
@@ -105,6 +108,9 @@ class OnyksApp:
         else:
             print('❌ THE SVN HASN\'T HAD AN UPDATE!')
             return None
+        
+    def __initForms(self):
+        self.forms['element'] = createElementForm(self.config['database']['categories'])
 
     def __initRoutes(self):
         mainRoutes(self)
@@ -116,6 +122,7 @@ class OnyksApp:
         self.__initDatabase()
         self.__initRepository()
         self.__createTables()
+        self.__initForms()
         self.__initRoutes()
 
 

@@ -1,10 +1,9 @@
-from app import db
 from app import models
 from datetime import datetime, timedelta
 from sqlalchemy import func, and_
 from zoneinfo import ZoneInfo
 
-def createPostgresURI(username, password, host, name, port):
+def postgresURI(username, password, host, name, port):
     addr = 'postgresql://'
     addr += username
     addr += ':'
@@ -13,7 +12,7 @@ def createPostgresURI(username, password, host, name, port):
     addr += name
     return addr
 
-def countTodaysEntries(timezone_str = 'Europe/Warsaw'):
+def countTodaysEntries(db, model, timezone_str = 'Europe/Warsaw'):
     user_tz = ZoneInfo(timezone_str)
     now_local = datetime.now(user_tz)
     
@@ -23,11 +22,11 @@ def countTodaysEntries(timezone_str = 'Europe/Warsaw'):
     start_utc = start_of_day.astimezone(ZoneInfo('UTC'))
     end_utc = end_of_day.astimezone(ZoneInfo('UTC'))
     
-    return db.session.query(func.count(models.Components.uuid)).filter \
+    return db.session.query(func.count(model.uuid)).filter \
     (
         and_ \
         (
-            models.Components.created_at >= start_utc,
-            models.Components.created_at < end_utc
+            model.created_at >= start_utc,
+            model.created_at < end_utc
         )
     ).scalar() or 0

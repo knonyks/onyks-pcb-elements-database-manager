@@ -32,7 +32,7 @@ class OnyksApp:
 
         configCopy = copy.deepcopy(self.config['database'])
         configCopy.pop('usersTableEnabled')
-        self.app.config['SQLALCHEMY_DATABASE_URI'] = postgresURI(**configCopy)
+        self.app.config['SQLALCHEMY_DATABASE_URI'] = postgresURI(**configCopy['connection'])
 
         self.db.init_app(self.app)
 

@@ -1,37 +1,44 @@
 {
-    "server":
+    "server": 
     {
         "port": 5000
     },
-    "compontentsDatabase":
+    "database": 
     {
-        "host": "localhost",
-        "port": 5432,
-        "username": "postgres",
-        "password": "1234",
-        "name": "altium_library"
-    },
-    "usersDatabase":
-    {
-        "host": "localhost",
-        "port": 5432,
-        "username": "postgres",
-        "password": "1234",
-        "name": "my_database"
-    },
-    "svn":
-    {
-        "config":
+        "usersTableEnabled": false,
+        "usersTableName": "users",
+        "connection":
         {
-            "url": "https://Xenon02/svn/database/",
-            "user": "Xenon02",
+            "host": "localhost",
+            "port": 5432,
+            "username": "postgres",
+            "password": "1234",
+            "name": "database"
+        },
+        "categories":
+        [
+            "Resistors", 
+            "Capacitors", 
+            "Inductors", 
+            "ICs", 
+            "Connectors",
+            "Mechanical", 
+            "Batteries", 
+            "Diodes", 
+            "Antennas", 
+            "Modules"
+        ]
+    },
+    "svn": {
+        "config": {
+            "url": "https://svn",
+            "user": "user",
             "password": "1234"
         },
-        "source_folders":
-        {
+        "source_folders": {
             "symbols": "symbols",
             "footprints": "footprints"
         },
-        "update_frequency": 2
+        "update_frequency": 5
     }
 }

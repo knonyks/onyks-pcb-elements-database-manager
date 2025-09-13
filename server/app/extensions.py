@@ -5,38 +5,53 @@ import secrets
 from .utils.svn import SVN
 from .utils.database import postgresURI
 import copy
-from .models import createElementsTable
+from .models import getElementModel
 from .utils import files
 import pyaltiumlib
 from pathlib import Path
 import time
 import threading
 import logging
-from .routes import mainRoutes, socketioRoutes
-from .utils.forms import createElementForm
+from .routes import setRoutes, setSocketioRoutes
+from .utils.forms import getCreatingElementForm
 
 class OnyksApp:
 
     def __init__(self):
+        #flask
         self.app = Flask(__name__)
+
+        #database
         self.db = SQLAlchemy()
+
+        #socketio
         self.socketio = SocketIO(self.app, cors_allowed_origins="*")
+
+        #svn
         self.repository = None
-        self.config = None
-        self.categories = {}
-        self.others = {}
-        self.forms = {}
         self.repositoryUpdaterThread = None
 
+        #config's data
+        self.config = None
+        
+        #models
+        self.models = {}
+
+        #forms
+        self.forms = {}
+        self.siteDataFill = {}
+
     def __initDatabase(self):
-        self.app.config['SECRET_KEY'] = secrets.token_hex(24)
+        if self.config['server']['randomizeSecretKey']:
+            self.app.config['SECRET_KEY'] = secrets.token_hex(24)
+        else:
+            self.app.config['SECRET_KEY'] = self.config['server']['secretKey']
         self.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-        configCopy = copy.deepcopy(self.config['database'])
-        configCopy.pop('usersTableEnabled')
-        self.app.config['SQLALCHEMY_DATABASE_URI'] = postgresURI(**configCopy['connection'])
-
+        self.app.config['SQLALCHEMY_DATABASE_URI'] = postgresURI(**self.config['database']['elements'])
         self.db.init_app(self.app)
+
+        for i in self.config['database']['categories']:
+            self.models[i] = getElementModel(self.db, i)
 
     def __initRepository(self):
         configCopy = copy.deepcopy(self.config['svn']['config'])
@@ -48,13 +63,9 @@ class OnyksApp:
         self.repositoryUpdaterThread.deamon = True
         self.repositoryUpdaterThread.start()
 
-    def __createTables(self):
-        for i in self.config['database']['categories']:
-            self.categories[i] = createElementsTable(self.db, i)
-
-    def __initOthers(self):
-        self.others["symbolsAmount"] = 0
-        self.others["footprintsAmount"] = 0
+    def __initSiteDataFill(self):
+        self.siteDataFill["symbolsAmount"] = 0
+        self.siteDataFill["footprintsAmount"] = 0
 
     def __repositoryUpdater(self):
         symbolsPath = Path(self.repository.path) / self.config['svn']['source_folders']['symbols']
@@ -65,8 +76,8 @@ class OnyksApp:
             result = self.__detectRepositoryUpdate(symbolsPath.as_posix(), footprintsPath.as_posix(), rev)
             if result != None:
                 # print(result)
-                self.others["symbolsAmount"] = result[0]
-                self.others["footprintsAmount"] = result[1]
+                self.siteDataFill["symbolsAmount"] = result[0]
+                self.siteDataFill["footprintsAmount"] = result[1]
                 rev = result[2]
                 # print(symbolsAmount, footprintsAmount, rev)
                 # self.socketio.emit('update', {'source':'svn', 'content': [symbolsAmount, footprintsAmount, rev]})
@@ -110,24 +121,20 @@ class OnyksApp:
             return None
         
     def __initForms(self):
-        self.forms['element'] = createElementForm(self.config['database']['categories'])
+        self.forms['creatingElement'] = getCreatingElementForm(self.config['database']['categories'])
 
     def __initRoutes(self):
-        mainRoutes(self)
-        socketioRoutes(self)
+        setRoutes(self)
+        setSocketioRoutes(self)
 
     def init(self, config):
         self.config = config
-        self.__initOthers()
+
+        self.__initSiteDataFill()
         self.__initDatabase()
         self.__initRepository()
-        self.__createTables()
         self.__initForms()
         self.__initRoutes()
 
-
-
     def run(self):
-        self.socketio.run(server.app, debug=True, port=self.config['server']['port'], host='0.0.0.0')
-
-server = OnyksApp()
+        self.socketio.run(self.app, debug = True, port = self.config['server']['port'], host = '0.0.0.0')

@@ -1,79 +1,66 @@
 from flask import Blueprint, render_template, redirect, url_for
 import app.utils.forms as forms
 from app.utils.database import countTodaysEntries
+from pathlib import Path
+from app.utils import files
+from flask_socketio import emit
 
-def mainRoutes(server):
+def setRoutes(server):
 
-    main_bp = Blueprint('main', __name__)
-
-    @main_bp.route('/')
+    @server.app.route('/')
     def index():
         parameters = {}
         parameters['title'] = 'Dashboard'
-        return redirect(url_for('main.dashboard', **parameters))
+        return redirect(url_for('dashboard', **parameters))
 
-    @main_bp.route('/dashboard')
+    @server.app.route('/dashboard')
     def dashboard():
         parameters = {}
         parameters['active_page'] = 'dashboard'
         parameters['title'] = 'Dashboard'
-        parameters['componentsDatabaseCount'] = sum([server.categories[i].query.count() for i in server.categories])
-        parameters['componentsDatabaseTodaysCount'] = sum([countTodaysEntries(server.db, server.categories[i], 'Europe/Warsaw') for i in server.categories])
+        parameters['componentsDatabaseCount'] = sum([server.models[i].query.count() for i in server.models])
+        parameters['componentsDatabaseTodaysCount'] = sum([countTodaysEntries(server.db, server.models[i], 'Europe/Warsaw') for i in server.models])
         # parameters['componentsDatabaseLastAddedPartName'] = models.Components.query.order_by(models.Components.created_at.desc()).first().part_name
-        parameters['componentsFootprintsCount'] = server.others['footprintsAmount']
-        parameters['componentsSymbolsCount'] = server.others['symbolsAmount']
+        parameters['componentsFootprintsCount'] = server.siteDataFill['footprintsAmount']
+        parameters['componentsSymbolsCount'] = server.siteDataFill['symbolsAmount']
         return render_template('dashboard.html', **parameters)
 
-    @main_bp.route('/search_components')
+    @server.app.route('/search_components')
     def search_compontents():
         parameters = {}
         parameters['active_page'] = 'search_components'
         parameters['title'] = 'Search components'
-        parameters['components'] = server.categories['Resistors'].query.all()
+        parameters['components'] = server.models['Resistors'].query.all()
         return render_template('search_components.html', **parameters)
 
-    @main_bp.route('/symbols')
-    def symbols():
-        parameters = {}
-        parameters['active_page'] = 'symbols'
-        parameters['title'] = 'Symbols'
-        return render_template('symbols.html', **parameters)
-
-    @main_bp.route('/footprints')
-    def footprints():
-        parameters = {}
-        parameters['active_page'] = 'footprints'
-        parameters['title'] = 'Footprints'
-        return render_template('footprints.html', **parameters)
-
-    @main_bp.route('/settings')
+    @server.app.route('/settings')
     def settings():
         parameters = {}
         parameters['active_page'] = 'settings'
         parameters['title'] = 'Settings'
         return render_template('settings.html', **parameters)
 
-    @main_bp.route('/explorer')
+    @server.app.route('/explorer')
     def explorer():
         parameters = {}
         parameters['active_page'] = 'explorer'
         parameters['title'] = 'Explorer'
         return render_template('explorer.html', **parameters)
 
-    @main_bp.route('/how_to_configure')
+    @server.app.route('/how_to_configure')
     def how_to_configure():
         parameters = {}
         parameters['active_page'] = 'how_to_configure'
         parameters['title'] = 'How to configure'
         return render_template('how_to_configure.html', **parameters)
 
-    @main_bp.route('/element/create', methods=['GET', 'POST'])
+    @server.app.route('/element/create', methods=['GET', 'POST'])
     def element_create():
-        form = server.forms['element']()
+        form = server.forms['creatingElement']()
         if form.validate_on_submit():
             print(form.category.data)
             print(server.config['database']['categories'][int(form.category.data) - 1])
-            new_element = server.categories[server.config['database']['categories'][int(form.category.data) - 1]](
+            new_element = server.models[server.config['database']['categories'][int(form.category.data) - 1]](
                 part_name = form.part_name.data,
                 manufacturer = form.manufacturer.data,
                 description = form.description.data,
@@ -95,30 +82,10 @@ def mainRoutes(server):
         parameters['form'] = form
         return render_template('element_form.html', **parameters)
 
-    server.app.register_blueprint(main_bp)
+def setSocketioRoutes(server):
 
-# @main_bp.route('/element/copy', methods=['GET', 'POST'])
-# def element_copy():
-#     parameters = {}
-#     parameters['active_page'] = 'copy_element'
-#     parameters['title'] = 'Copy element'
-#     return render_template('element_form.html', **parameters)
-
-# @main_bp.route('/element/edit', methods=['GET', 'POST'])
-# def element_edit():
-#     parameters = {}
-#     parameters['active_page'] = 'edit_element'
-#     parameters['title'] = 'Edit element'
-#     return render_template('element_form.html', **parameters)
-
-
-from pathlib import Path
-from app.utils import files
-from flask_socketio import SocketIO, send, emit
-
-def socketioRoutes(server):
     @server.socketio.on('explorer-get-files')
-    def handle_message(msg):
+    def explorerGetFiles(msg):
         result = files.listFilesWithType(Path('.cache') / msg['path'])
         for i in result:
             if i[0].startswith('.'):

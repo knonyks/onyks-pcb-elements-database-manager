@@ -148,3 +148,22 @@ atributes - link to the manufacturer datasheet,
 created_at - a date when the component was created,
 edited_at - a date when the last time the component was edited
 ```
+
+
+```
+CREATE TABLE Users (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(80) NOT NULL,
+    family_name VARCHAR(80) NOT NULL,
+    username VARCHAR(80) UNIQUE NOT NULL,
+    email VARCHAR(120) UNIQUE NOT NULL,
+    password VARCHAR(200) NOT NULL,
+    expired_access_time TIMESTAMP NULL,
+    is_admin BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+INSERT INTO Users (name, family_name, username, email, password, is_admin)
+VALUES ('Jan', 'Kowalski', 'admin', 'jan@example.com',
+        '$2b$12$w6Qq.8zs9Go3LLtwwMgN6epxegZMnwtVC3/V/r59QyXh0wlU/j.0S',
+        FALSE);
+```

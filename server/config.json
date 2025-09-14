@@ -1,19 +1,21 @@
 {
     "server": 
     {
-        "port": 5000
+        "port": 5000,
+        "randomizeSecretKey": true,
+        "secretKey": "exapleSecretKeyBlaBlaBla"
     },
     "database": 
     {
-        "usersTableEnabled": false,
-        "usersTableName": "users",
-        "connection":
+        "usersEnabled": true,
+        "usersName": "users",
+        "elements":
         {
             "host": "localhost",
             "port": 5432,
             "username": "postgres",
             "password": "1234",
-            "name": "database"
+            "name": "postgres"
         },
         "categories":
         [
@@ -29,13 +31,16 @@
             "Modules"
         ]
     },
-    "svn": {
-        "config": {
-            "url": "https://svn",
+    "svn": 
+    {
+        "config": 
+        {
+            "url": "https://svn/svn",
             "user": "user",
             "password": "1234"
         },
-        "source_folders": {
+        "source_folders": 
+        {
             "symbols": "symbols",
             "footprints": "footprints"
         },

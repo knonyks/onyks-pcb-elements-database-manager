@@ -1,4 +1,5 @@
 import uuid
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 
 def getElementModel(db, tablename):
 
@@ -36,5 +37,21 @@ def getElementModel(db, tablename):
         
     return Element
 
-def getUserModel(db):
-    pass
+def getUserModel(db, tablename):
+   
+    class User(UserMixin, db.Model):
+        __tablename__ = tablename
+        id = db.Column(db.Integer, primary_key=True)
+        name = db.Column(db.String(80), nullable=True)
+        family_name = db.Column(db.String(80), nullable=True)
+        username = db.Column(db.String(80), unique=True, nullable=False)
+        email = db.Column(db.String(120), unique=True, nullable=False)
+        password = db.Column(db.String(200), nullable=False)
+        expired_access_time = db.Column(db.DateTime, nullable=True)
+        is_admin = db.Column(db.Boolean, default=False, nullable=False)
+
+        def full_name(self):
+            parts = [p for p in (self.first_name, self.last_name) if p]
+            return " ".join(parts) if parts else self.username
+        
+    return User

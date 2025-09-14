@@ -5,7 +5,7 @@ import secrets
 from .utils.svn import SVN
 from .utils.database import postgresURI
 import copy
-from .models import getElementModel
+from .models import getElementModel, getUserModel
 from .utils import files
 import pyaltiumlib
 from pathlib import Path
@@ -13,7 +13,9 @@ import time
 import threading
 import logging
 from .routes import setRoutes, setSocketioRoutes
-from .utils.forms import getCreatingElementForm
+from .utils.forms import getCreatingElementForm, getLoginForm, getChangeUserDataForm, getAddUserForm
+from flask_bcrypt import Bcrypt
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 
 class OnyksApp:
 
@@ -41,6 +43,19 @@ class OnyksApp:
         self.forms = {}
         self.siteDataFill = {}
 
+        #users
+        self.loginManager = None
+        self.bcrypt = None
+
+    def __initUsers(self):
+        if self.config['database']['usersEnabled']:
+            self.bcrypt = Bcrypt(self.app)
+            self.loginManager = LoginManager()
+            self.loginManager.init_app(self.app)
+            self.loginManager.login_view = "login"
+            self.loginManager.login_message_category = "info"
+            self.models['User'] = getUserModel(self.db, self.config['database']['usersName'])
+            
     def __initDatabase(self):
         if self.config['server']['randomizeSecretKey']:
             self.app.config['SECRET_KEY'] = secrets.token_hex(24)
@@ -122,6 +137,10 @@ class OnyksApp:
         
     def __initForms(self):
         self.forms['creatingElement'] = getCreatingElementForm(self.config['database']['categories'])
+        if self.config['database']['usersEnabled']:
+            self.forms['loginForm'] = getLoginForm()
+            self.forms['changeUserDataForm'] = getChangeUserDataForm()
+            self.forms['addUserForm'] = getAddUserForm()
 
     def __initRoutes(self):
         setRoutes(self)
@@ -132,6 +151,7 @@ class OnyksApp:
 
         self.__initSiteDataFill()
         self.__initDatabase()
+        self.__initUsers()
         self.__initRepository()
         self.__initForms()
         self.__initRoutes()

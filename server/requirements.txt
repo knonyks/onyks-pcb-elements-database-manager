@@ -12,3 +12,5 @@ flask_socketio
 flask-wtf 
 wtforms
 Pillow
+flask_bcrypt
+flask_login

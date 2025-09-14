@@ -5,6 +5,14 @@
 {% endblock %}
 
 {% block content %}
+{% if usersEnabled %}
+
+<div class="" style="display: flex; flex-direction: row;">
+    <div style="background-color: red; width: 100%;">Witaj {{current_user.name}} {{current_user.family_name}}!</div>
+    <a style="background-color: blue;" href="{{url_for('logout')}}">Wyloguj się</a>
+</div>
+
+{% endif %}
 <div class="dashboard dashboard-grid">
     <!-- Duża karta -->
     <div class="large-card">

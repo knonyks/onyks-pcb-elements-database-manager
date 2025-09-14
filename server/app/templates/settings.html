@@ -1,4 +1,68 @@
 {% extends "base.html" %}
 {% block content %}
+    <style>
+        form
+        {
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
     <h1>SETTINGS</h1>
+    {% if usersEnabled %}
+        {% if current_user.is_authenticated %}
+            <div class="" style="display: flex; flex-direction: row;">
+                <div style="background-color: red; width: 100%;">Zalogowany: {{current_user.name}} {{current_user.family_name}}!</div>
+                <a style="background-color: blue;" href="{{url_for('logout')}}">Wyloguj się</a>
+            </div>
+
+            <form method="POST">
+                {{ changeUserDataForm.hidden_tag()}}
+
+                {{ changeUserDataForm.old_username.label}}
+                {{ changeUserDataForm.old_username()}}
+
+                {{ changeUserDataForm.old_password.label}}
+                {{ changeUserDataForm.old_password()}}
+
+                {{ changeUserDataForm.new_password.label}}
+                {{ changeUserDataForm.new_password()}}
+
+                {{ changeUserDataForm.new_email.label}}
+                {{ changeUserDataForm.new_email()}}
+
+                {{ changeUserDataForm.new_username.label}}
+                {{ changeUserDataForm.new_username()}}
+
+                {{ changeUserDataForm.accept()}}
+            </form>
+
+
+
+            {% if current_user.is_admin %}
+                <form method="POST">
+                    {{ addUserForm.hidden_tag()}}
+
+                    {{ addUserForm.name.label}}
+                    {{ addUserForm.name()}}
+
+                    {{ addUserForm.family_name.label}}
+                    {{ addUserForm.family_name()}}
+
+                    {{ addUserForm.email.label}}
+                    {{ addUserForm.email()}}
+
+                    {{ addUserForm.expired_access_time.label}}
+                    {{ addUserForm.expired_access_time()}}
+
+                    {{ addUserForm.is_admin.label}}
+                    {{ addUserForm.is_admin()}}
+
+                    {{ addUserForm.accept()}}
+                </form>
+            {% endif %}
+
+        {% endif %}
+    {% else %}
+        Ustawienia są wyłączone.
+    {% endif %}
 {% endblock %}

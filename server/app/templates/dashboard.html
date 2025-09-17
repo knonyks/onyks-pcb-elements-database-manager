@@ -7,9 +7,9 @@
 {% block content %}
 {% if usersEnabled %}
 
-<div class="" style="display: flex; flex-direction: row;">
-    <div style="background-color: red; width: 100%;">Witaj {{current_user.name}} {{current_user.family_name}}!</div>
-    <a style="background-color: blue;" href="{{url_for('logout')}}">Wyloguj się</a>
+<div class="general-box">
+    <div class="label">Witaj {{current_user.name}} {{current_user.family_name}}!</div>
+    <a class="logout" href="{{url_for('logout')}}">Wyloguj się</a>
 </div>
 
 {% endif %}

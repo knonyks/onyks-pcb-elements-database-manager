@@ -5,6 +5,8 @@
     grid-template-rows: auto auto;
     grid-template-areas: "large small" "lastchange lastchange";
     gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .large-card, .small-card, .last-change-card 
@@ -12,7 +14,6 @@
     background-color: var(--dark-light);
     border-radius: 16px;
     padding: 32px;
-    /* box-shadow: 0 8px 24px #1e1e1e94; */
     transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
     border: 1px solid var(--gray);
 }

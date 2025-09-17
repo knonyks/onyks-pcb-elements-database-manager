@@ -36,92 +36,132 @@ body.modal
   overflow: hidden;
 }
 
+.general-box{
+  background-color: var(--dark-light);
+  border-radius: 16px;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  max-width: 1200px;
+  margin: 0 auto 1rem auto;
+  border: 1px solid var(--gray);
+}
+
+.label{
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.logout{
+  background-color: var(--primary);
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.logout:hover{
+  background-color: var(--primary-light);
+  transform: translateY(-2px);
+}
+
+.content-container{
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+}
+
 .main-container
 {
-  max-width: 1280px;
   padding: 2rem 1rem 1rem 1rem;
-  margin: 5rem auto 0 auto;
-  min-height: 100vh;
+  margin: 5rem 0 0 0;
 }
 
-.footer
-{
-  height: max-content;
-  background-color: var(--dark-light);
-  margin-top: 2rem;
-  display: flex;
-  flex-direction: column;
+.footer {
+    height: auto;
+    background-color: var(--dark-light);
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 1rem;
 }
 
-.footer-copyright
-{
-  font-size: 1rem;
-  text-align: center;
-  width: 100%;
-  padding: 1rem 1rem;
+.footer-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    max-width: 1024px;
+    width: 100%;
+    margin: 0 auto;
 }
 
-.footer-content
-{
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 1rem;
-  height: 100%;
-  max-width: 1024px;
-  width: 100%;
-  margin-left: auto;
-  margin-right: auto;
-  justify-content: center;
-  align-items: center;
+.footer-content-part {
+    width: auto;
+    padding: 0;
+    height: 100%;
 }
 
-.footer-content-part 
-{
-  width: 100%;
-  padding: 1rem;
-  height: 100%;
+.footer-additional {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    max-width: none;
 }
 
-.footer-additional
-{
-  display: flex;
-  flex-direction: column;
-  max-width: 15rem;
-  padding-bottom: 0;
+.footer-link {
+    color: white;
+    text-decoration: none;
+    padding: 0.25rem 0;
+    font-size: 0.9rem;
+    transition: color 0.2s ease;
+    white-space: nowrap;
 }
 
-.footer-link
-{
-  width: 100%;
-  color: white;
-  text-decoration: none;
-  padding: 0.5rem;
+.footer-link:hover {
+    color: var(--primary);
 }
 
-.footer-socials
-{
-  display: flex;
-  flex-direction: row;
-  gap: 1rem;
-  max-width: max-content;
+.footer-socials {
+    display: flex;
+    flex-direction: row;
+    gap: 0.75rem;
+}
+
+.footer-social {
+    color: white;
+    text-decoration: none;
+    font-size: 1.5rem;
+    background-color: var(--gray);
+    height: 2rem;
+    width: 2rem;
+    display: flex;
+    align-items: center;
     justify-content: center;
-  align-items: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
 }
 
-.footer-social
-{
-  color: white;
-  text-decoration: none;
-  font-size: 2.5rem;
-  background-color: var(--error);
-  height: 2.5rem;
-  line-height: 2.5rem;
-  width: 2.5rem;
-  text-align: center;
-  padding: 1rem;
-  box-sizing: content-box;
-  border-radius: 0.5rem;
+.footer-social:hover {
+    background-color: var(--primary);
+    transform: translateY(-2px);
+}
+
+.footer-copyright {
+    font-size: 0.75rem;
+    text-align: center;
+    width: 100%;
+    padding: 1rem 0 0 0;
+    color: var(--light-small);
+    margin-top: 1.5rem;
+    border-top: 1px solid var(--gray);
 }
 
 #instagram::before
@@ -153,27 +193,37 @@ body.modal
 }
 
 
-@media (max-width: 700px) 
-{
-  .footer-content
-  {
-    flex-direction: column;
-    height: max-content;
+@media (max-width: 700px) {
+  .footer {
+      padding: 1rem;
+  }
+  
+  .footer-content {
+      flex-direction: column;
+      gap: 1.5rem;
+  }
+  
+  .footer-additional {
+      justify-content: center;
+      gap: 1rem;
+  }
+  
+  .footer-socials {
+      justify-content: center;
+  }
+  
+  .footer-copyright {
+      margin-top: 1rem;
+      padding-top: 1rem;
   }
 
-  .footer
+  .label
   {
-    height: max-content;
+      font-size: 1rem;
   }
-
-  .footer-additional
+  .logout
   {
-    width: 100%;
-    max-width: 100%;
-  }
-
-  .footer-link
-  {
-    width: 100%;
+      padding: 0.4rem 0.8rem;
+      font-size: 0.9rem;
   }
 }

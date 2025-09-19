@@ -76,10 +76,12 @@
                     <td>{{ part.category }}</td>
                     <td>{{ part.value }}</td>
                     <td>
-                        <div class="description">{{ part.description }}</div>
-                        <span class="description-tooltip" data-full-description="{{ part.description }}">
-                            <img src="{{url_for('static', filename='img/info.svg')}}" alt="info">
-                        </span>
+                        <div class="flex-container">
+                            <div class="description">{{ part.description }}</div>
+                            <span class="description-tooltip" data-full-description="{{ part.description }}">
+                                <img src="{{url_for('static', filename='img/info.svg')}}" alt="info">
+                            </span>
+                        </div>
                     </td>
                     <td>
                         {% if part.available == "Dostępny" %}

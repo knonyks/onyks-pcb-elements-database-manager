@@ -1,64 +1,87 @@
 {% extends "base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{url_for('static', filename='css/settings.css')}}">
+{% endblock %}
+
 {% block content %}
-    <style>
-        form
-        {
-            display: flex;
-            flex-direction: column;
-        }
-    </style>
-    <h1>SETTINGS</h1>
     {% if usersEnabled %}
         {% if current_user.is_authenticated %}
-            <div class="" style="display: flex; flex-direction: row;">
-                <div style="background-color: red; width: 100%;">Zalogowany: {{current_user.name}} {{current_user.family_name}}!</div>
-                <a style="background-color: blue;" href="{{url_for('logout')}}">Wyloguj się</a>
+            <div class="general-box">
+                <div class="label">Witaj {{current_user.name}} {{current_user.family_name}}!</div>
+                <a class="logout" href="{{url_for('logout')}}">Wyloguj się</a>
             </div>
+            <div class="settings-container">
+                <div class="settings-box">
+                    <div class="label">Zmień dane użytkownika</div>
+                    <form method="POST" class="login-form">
+                        {{ changeUserDataForm.hidden_tag()}}
 
-            <form method="POST">
-                {{ changeUserDataForm.hidden_tag()}}
+                        <div class="form-group">
+                            {{ changeUserDataForm.old_username.label}}
+                            {{ changeUserDataForm.old_username(class="form-input")}}
+                        </div>
 
-                {{ changeUserDataForm.old_username.label}}
-                {{ changeUserDataForm.old_username()}}
+                        <div class="form-group">
+                            {{ changeUserDataForm.old_password.label}}
+                            {{ changeUserDataForm.old_password(class="form-input")}}
+                        </div>
 
-                {{ changeUserDataForm.old_password.label}}
-                {{ changeUserDataForm.old_password()}}
+                        <div class="form-group">
+                            {{ changeUserDataForm.new_password.label}}
+                            {{ changeUserDataForm.new_password(class="form-input")}}
+                        </div>
 
-                {{ changeUserDataForm.new_password.label}}
-                {{ changeUserDataForm.new_password()}}
+                        <div class="form-group">
+                            {{ changeUserDataForm.new_email.label}}
+                            {{ changeUserDataForm.new_email(class="form-input")}}
+                        </div>
 
-                {{ changeUserDataForm.new_email.label}}
-                {{ changeUserDataForm.new_email()}}
+                        <div class="form-group">
+                            {{ changeUserDataForm.new_username.label}}
+                            {{ changeUserDataForm.new_username(class="form-input")}}
+                        </div>
 
-                {{ changeUserDataForm.new_username.label}}
-                {{ changeUserDataForm.new_username()}}
-
-                {{ changeUserDataForm.accept()}}
-            </form>
+                        {{ changeUserDataForm.accept()}}
+                    </form>
+                </div>
 
 
+                {% if current_user.is_admin %}
+                <div class="settings-box">
+                    <div class="label">Dodaj użytkownika</div>
+                    <form method="POST">
+                        {{ addUserForm.hidden_tag()}}
 
-            {% if current_user.is_admin %}
-                <form method="POST">
-                    {{ addUserForm.hidden_tag()}}
+                        <div class="form-group">
+                            {{ addUserForm.name.label}}
+                            {{ addUserForm.name(class="form-input")}}
+                        </div>
 
-                    {{ addUserForm.name.label}}
-                    {{ addUserForm.name()}}
+                        <div class="form-group">
+                            {{ addUserForm.family_name.label}}
+                            {{ addUserForm.family_name(class="form-input")}}
+                        </div>
 
-                    {{ addUserForm.family_name.label}}
-                    {{ addUserForm.family_name()}}
+                        <div class="form-group">
+                            {{ addUserForm.email.label}}
+                            {{ addUserForm.email(class="form-input")}}
+                        </div>
 
-                    {{ addUserForm.email.label}}
-                    {{ addUserForm.email()}}
+                        <div class="form-group">
+                            {{ addUserForm.expired_access_time.label}}
+                            {{ addUserForm.expired_access_time(class="form-input")}}
+                        </div>
 
-                    {{ addUserForm.expired_access_time.label}}
-                    {{ addUserForm.expired_access_time()}}
+                        <div class="form-group">
+                            {{ addUserForm.is_admin.label}}
+                            {{ addUserForm.is_admin(class="form-input")}}
+                        </div>
 
-                    {{ addUserForm.is_admin.label}}
-                    {{ addUserForm.is_admin()}}
-
-                    {{ addUserForm.accept()}}
-                </form>
+                        {{ addUserForm.accept()}}
+                    </form>
+                </div>
+            </div>
             {% endif %}
 
         {% endif %}

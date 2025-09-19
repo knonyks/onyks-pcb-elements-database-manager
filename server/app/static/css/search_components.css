@@ -155,6 +155,7 @@
 .table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fit-content;
 }
 
 .table thead {
@@ -175,8 +176,22 @@
   overflow: hidden;
 }
 
+.table th:nth-child(4), /* Opis - OGRANICZONA szerokość */
+.table td:nth-child(4) {
+  width: 450px; /* STAŁA szerokość dla opisu */
+  max-width: 450px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.flex-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .description {
-  max-width: 250px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -259,5 +274,13 @@
   .table th,
   .table td {
     padding: 0.8rem;
+  }
+  .table th:nth-child(4), /* Opis - OGRANICZONA szerokość */
+  .table td:nth-child(4) {
+    width: 250px; /* STAŁA szerokość dla opisu */
+    max-width: 250px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }

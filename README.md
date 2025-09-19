@@ -165,5 +165,10 @@ CREATE TABLE Users (
 INSERT INTO Users (name, family_name, username, email, password, is_admin)
 VALUES ('Jan', 'Kowalski', 'admin', 'jan@example.com',
         '$2b$12$w6Qq.8zs9Go3LLtwwMgN6epxegZMnwtVC3/V/r59QyXh0wlU/j.0S',
-        FALSE);
+            TRUE);
+
+INSERT INTO Users (name, family_name, username, email, password, is_admin)
+VALUES ('Zbyszek', 'Władywostok', 'user', 'zbyszek@example.com',
+        '$2b$12$/Dpf4Rf/Ub992SaHYcD5VuBnjdn315i5c5ChLpDal0vZAR5hAGfMu',
+            FALSE);
 ```

@@ -26,6 +26,27 @@ body {
     color: var(--light);
 }
 
+.form-group {
+    text-align: left;
+    margin-bottom: 15px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    border: 2px solid var(--gray);
+    border-radius: 8px;
+    background-color: var(--dark-light);
+    color: var(--light);
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.form-input:focus {
+    border-color: var(--primary);
+}
+
 #accept {
     width: 100%;
     padding: 12px;

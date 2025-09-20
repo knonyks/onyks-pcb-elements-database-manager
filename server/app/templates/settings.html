@@ -13,7 +13,7 @@
             </div>
             
             <div class="settings-container">
-                <div class="settings-box">
+                <div class="settings-box {% if not current_user.is_admin %}single-box{% endif %}">
                     <div class="settings-header">
                         <h2><i class="bi bi-person-gear"></i> Zmień dane</h2>
                     </div>

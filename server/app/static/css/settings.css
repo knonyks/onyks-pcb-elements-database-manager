@@ -14,6 +14,10 @@
   height: fit-content;
 }
 
+.single-box {
+  max-width: 50%;
+}
+
 .settings-header {
   margin-bottom: 1rem;
   padding-bottom: 0.75rem;
@@ -132,6 +136,10 @@ select.form-input option {
 
   .settings-box {
     padding: 1rem;
+  }
+
+  .single-box {
+    max-width: 100%;
   }
   
   .settings-header h2 {

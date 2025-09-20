@@ -9,23 +9,29 @@
     <title>Logowanie</title>
 </head>
 <body>
-    <div class="login-container">
-        <form method="post" class="login-form">
-            <h2>Zaloguj się</h2>
-            {{ form.hidden_tag() }}
-            
-            <div class="form-group">
-                {{ form.username.label }}
-                {{ form.username(size=32, class="form-input") }}
-            </div>
+    <div class="login-wrapper">
+        <div class="login-logo-top">
+            <img src="{{url_for('static', filename='img/logo.png')}}" alt="ONYKS Logo">
+        </div>
+        
+        <div class="login-container">
+            <form method="post" class="login-form">
+                <h2>Zaloguj się do systemu ONYKS</h2>
+                {{ form.hidden_tag() }}
+                
+                <div class="form-group">
+                    {{ form.username.label }}
+                    {{ form.username(size=32, class="form-input") }}
+                </div>
 
-            <div class="form-group">
-                {{ form.password.label }}
-                {{ form.password(size=32, class="form-input") }}
-            </div>
+                <div class="form-group">
+                    {{ form.password.label }}
+                    {{ form.password(size=32, class="form-input") }}
+                </div>
 
-            {{ form.accept() }}
-        </form>
+                {{ form.accept() }}
+            </form>
+        </div>
     </div>
 </body>
 </html>

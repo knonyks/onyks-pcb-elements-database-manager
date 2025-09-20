@@ -11,81 +11,91 @@
                 <div class="label">Witaj {{current_user.name}} {{current_user.family_name}}!</div>
                 <a class="logout" href="{{url_for('logout')}}">Wyloguj się</a>
             </div>
+            
             <div class="settings-container">
                 <div class="settings-box">
-                    <div class="label">Zmień dane użytkownika</div>
-                    <form method="POST" class="login-form">
-                        {{ changeUserDataForm.hidden_tag()}}
+                    <div class="settings-header">
+                        <h2><i class="bi bi-person-gear"></i> Zmień dane</h2>
+                    </div>
+                    <form method="POST" class="settings-form">
+                        {{ changeUserDataForm.hidden_tag() }}
 
                         <div class="form-group">
-                            {{ changeUserDataForm.old_username.label}}
-                            {{ changeUserDataForm.old_username(class="form-input")}}
+                            {{ changeUserDataForm.old_username.label }}
+                            {{ changeUserDataForm.old_username(class="form-input", placeholder="Obecna nazwa") }}
                         </div>
 
                         <div class="form-group">
-                            {{ changeUserDataForm.old_password.label}}
-                            {{ changeUserDataForm.old_password(class="form-input")}}
+                            {{ changeUserDataForm.new_username.label }}
+                            {{ changeUserDataForm.new_username(class="form-input", placeholder="Nowa nazwa") }}
                         </div>
 
                         <div class="form-group">
-                            {{ changeUserDataForm.new_password.label}}
-                            {{ changeUserDataForm.new_password(class="form-input")}}
+                            {{ changeUserDataForm.old_password.label }}
+                            {{ changeUserDataForm.old_password(class="form-input", placeholder="Obecne hasło") }}
                         </div>
 
                         <div class="form-group">
-                            {{ changeUserDataForm.new_email.label}}
-                            {{ changeUserDataForm.new_email(class="form-input")}}
+                            {{ changeUserDataForm.new_password.label }}
+                            {{ changeUserDataForm.new_password(class="form-input", placeholder="Nowe hasło") }}
                         </div>
 
                         <div class="form-group">
-                            {{ changeUserDataForm.new_username.label}}
-                            {{ changeUserDataForm.new_username(class="form-input")}}
+                            {{ changeUserDataForm.new_email.label }}
+                            {{ changeUserDataForm.new_email(class="form-input", placeholder="Nowy email") }}
                         </div>
 
-                        {{ changeUserDataForm.accept()}}
+                        <div class="form-actions">
+                            {{ changeUserDataForm.accept(class="btn btn-primary") }}
+                        </div>
                     </form>
                 </div>
 
-
                 {% if current_user.is_admin %}
                 <div class="settings-box">
-                    <div class="label">Dodaj użytkownika</div>
-                    <form method="POST">
-                        {{ addUserForm.hidden_tag()}}
+                    <div class="settings-header">
+                        <h2><i class="bi bi-person-plus"></i> Dodaj użytkownika</h2>
+                    </div>
+                    <form method="POST" class="settings-form">
+                        {{ addUserForm.hidden_tag() }}
 
                         <div class="form-group">
-                            {{ addUserForm.name.label}}
-                            {{ addUserForm.name(class="form-input")}}
+                            {{ addUserForm.name.label }}
+                            {{ addUserForm.name(class="form-input", placeholder="Imię") }}
                         </div>
 
                         <div class="form-group">
-                            {{ addUserForm.family_name.label}}
-                            {{ addUserForm.family_name(class="form-input")}}
+                            {{ addUserForm.family_name.label }}
+                            {{ addUserForm.family_name(class="form-input", placeholder="Nazwisko") }}
                         </div>
 
                         <div class="form-group">
-                            {{ addUserForm.email.label}}
-                            {{ addUserForm.email(class="form-input")}}
+                            {{ addUserForm.email.label }}
+                            {{ addUserForm.email(class="form-input", placeholder="Email") }}
                         </div>
 
                         <div class="form-group">
-                            {{ addUserForm.expired_access_time.label}}
-                            {{ addUserForm.expired_access_time(class="form-input")}}
+                            {{ addUserForm.expired_access_time.label }}
+                            {{ addUserForm.expired_access_time(class="form-input") }}
                         </div>
 
                         <div class="form-group">
                             {{ addUserForm.is_admin.label}}
                             {{ addUserForm.is_admin(class="form-input")}}
                         </div>
-
-                        {{ addUserForm.accept()}}
+                        
+                        <div class="form-actions">
+                            {{ addUserForm.accept(class="btn btn-primary") }}
+                        </div>
                     </form>
                 </div>
+                {% endif %}
             </div>
-            {% endif %}
-
         {% endif %}
     {% else %}
-        Ustawienia są wyłączone.
+        <div class="settings-disabled">
+            <i class="bi bi-gear-fill"></i>
+            <h3>Ustawienia są wyłączone</h3>
+        </div>
     {% endif %}
 {% endblock %}

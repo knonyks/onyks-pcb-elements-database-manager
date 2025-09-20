@@ -1,56 +1,98 @@
-.explorer
-{
+.explorer{
     display: flex;
     flex-direction: row;
     gap: 1rem;
     width: 100%;
     height: 100%;
+    box-sizing: border-box;
 }
 
-.explorer-navbar
-{
+.explorer-navbar{
     display: flex;
     flex-direction: column;
-    background-color: var(--primary-light);
-    width: 40%;
-    border-radius: 1rem;
+    background-color: var(--dark-light);
+    width: 300px;
+    border-radius: 0.5rem;
     padding: 1rem;
     gap: 1rem;
+    box-sizing: border-box;
+    border: 1px solid var(--gray);
 }
 
-.explorer-browser
-{
-    display: flex;
-    flex-direction: column;
+.explorer-navbar-search {
     background-color: var(--gray);
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    color: var(--light);
+    font-size: 1rem;
     width: 100%;
-    border-radius: 1rem;
-    padding: 1rem;
-    gap: 1rem;
+    box-sizing: border-box;
 }
 
-.explorer-path
-{
+.explorer-navbar-search:focus {
+    outline: 2px solid var(--primary);
+}
+
+.explorer-navbar-btn {
+    background-color: var(--primary);
+    color: white;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    border: none;
+    box-sizing: border-box;
+}
+
+.explorer-navbar-btn:hover {
+    background-color: var(--primary-light);
+    transform: translateY(-2px);
+}
+
+.explorer-navbar-btn.delete {
+    background-color: var(--error);
+}
+
+.explorer-navbar-btn.delete:hover {
+    background-color: #e53935;
+}
+
+.explorer-browser{
+    display: flex;
+    flex-direction: column;
+    background-color: var(--dark-light);
+    flex: 1;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    gap: 1rem;
+    box-sizing: border-box;
+    border: 1px solid var(--gray);
+    min-width: 0; /* Zapobiega overflow */
+}
+
+.explorer-path{
     display: flex;
     flex-direction: row;
-    background-color: var(--primary);
     width: 100%;
-    padding: 1rem;
+    padding: 0.75rem;
     border-radius: 0.5rem;
-    overflow-y: hidden;
-    font-size: 1.2rem;
+    overflow-x: auto; /* Poziomy scroll jeśli potrzeba */
+    font-size: 1rem;
+    box-sizing: border-box;
+    align-items: center;
 }
 
-.explorer-path::before
-{
+.explorer-path::before{
     display: block;
     height: 2.2rem;
     width: 0;
     content: '';
 }
 
-.explorer-path-obj
-{
+.explorer-path-obj{
     display: flex;
     background-color: var(--dark);
     padding: 0.5rem 1rem;
@@ -61,6 +103,10 @@
     height: 1.2rem;
     line-height: 1.2rem;
     box-sizing: content-box;
+}
+
+.explorer-path-obj:hover {
+    background-color: var(--primary);
 }
 
 .explorer-path-obj::after
@@ -82,6 +128,7 @@
 .explorer-path-obj:last-child
 {
     margin-right: 0;
+    background-color: var(--primary);
 }
 
 .explorer-path-obj:last-child::after
@@ -116,7 +163,7 @@
 
 .explorer-content-obj
 {
-    background-color: #545454;
+    background-color: var(--gray);
     border-radius: 0.5rem;
     display: flex;
     flex-direction: row;
@@ -129,6 +176,12 @@
     white-space: nowrap;
     width: calc(100% - 2rem);
     position: relative;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.explorer-content-obj:hover {
+    background-color: #3a3a3a;
 }
 
 .explorer-content-obj-name
@@ -143,11 +196,10 @@
     display: block;
     font-size: 1.2rem;
     height: 1.2rem;
-    line-height: 1.2rem;
     width: 1.2rem;
-    margin: 0;
-    box-sizing: content-box;
-    margin-right: 1rem;
+    margin-right: 0.75rem;
+    box-sizing: border-box;
+    flex-shrink: 0;
 }
 
 .explorer-content-obj.schlib::before, 
@@ -155,30 +207,35 @@
 {
     font-family: 'bootstrap-icons';
     content: '\F6E7';
+    color: #4fc3f7;
 }
 
 .explorer-content-obj.file::before
 {
     font-family: 'bootstrap-icons';
     content: '\F34C';
+    color: #90a4ae;
 }
 
 .explorer-content-obj.symbol::before
 {
     font-family: 'bootstrap-icons';
     content: '\F2D6';
+    color: #4db6ac;
 }
 
 .explorer-content-obj.footprint::before
 {
     font-family: 'bootstrap-icons';
     content: '\F2D6';
+    color: #aed581;
 }
 
 .explorer-content-obj.folder::before
 {
     font-family: 'bootstrap-icons';
     content: '\F10D';
+    color: #ffb74d;
 }
 
 .explorer-content-obj-info-btn
@@ -186,6 +243,9 @@
     right: 0;
     top: 0;
     position: absolute;
+    opacity: 0.7;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
 }
 
 .explorer-content-obj-info-btn::after
@@ -199,8 +259,12 @@
     position: absolute;
     right: 0;
     top: 0;
-    background-color: #0400ff;
+    /* background-color: #0400ff; */
     padding: 1rem;
+}
+
+.explorer-content-obj-info-btn:hover {
+    opacity: 1;
 }
 
 
@@ -215,6 +279,7 @@
     .explorer
     {
         flex-direction: column;
+        height: auto;
     }
 
     .explorer-navbar
@@ -225,6 +290,10 @@
     .explorer-browser
     {
         width: 100%;
+    }
+    
+    .explorer-content {
+        max-height: 40vh;
     }
 }
 

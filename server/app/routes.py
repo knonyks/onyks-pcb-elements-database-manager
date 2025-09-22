@@ -85,6 +85,14 @@ def setRoutes(server):
         parameters['active_page'] = 'how_to_configure'
         parameters['title'] = 'How to configure'
         return render_template('how_to_configure.html', **parameters)
+    
+    @server.app.route('/error')
+    @conditionDecorator(login_required, server.config['database']['usersEnabled'])
+    def error():
+        parameters = {}
+        parameters['active_page'] = 'error'
+        parameters['title'] = 'error'
+        return render_template('error.html', **parameters)
 
     @server.app.route('/element/create', methods=['GET', 'POST'])
     @conditionDecorator(login_required, server.config['database']['usersEnabled'])

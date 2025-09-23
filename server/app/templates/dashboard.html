@@ -8,7 +8,7 @@
 {% if usersEnabled %}
 
 <div class="general-box">
-    <div class="label">Witaj {{current_user.name}} {{current_user.family_name}}!</div>
+    <div class="label">Witaj {{current_user.name}}!</div>
     <a class="logout" href="{{url_for('logout')}}">Wyloguj się</a>
 </div>
 

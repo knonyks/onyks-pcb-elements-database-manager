@@ -9,25 +9,23 @@
     <link rel="stylesheet" href="{{url_for('static', filename='css/general.css')}}">
     <title>Błąd</title>
 </head>
+
 <body>
     <div class="error-wrapper">
         <div class="error-logo-top">
             <img src="{{url_for('static', filename='img/logo.png')}}" alt="ONYKS Logo">
         </div>
-        
+
         <div class="error-container">
             <div class="error-content">
                 <div class="error-icon">
                     <i class="bi bi-x-circle-fill"></i>
                 </div>
-                
-                <h2>Wystąpił błąd</h2>
-                <p class="error-message">{{ error_message or "Przepraszamy, wystąpił nieoczekiwany błąd." }}</p>
-                
+
+                <h2>ERROR {{error}}</h2>
+                <p class="error-message">{{error_message or "Przepraszamy, wystąpił nieoczekiwany błąd."}}</p>
+
                 <div class="error-actions">
-                    <a href="{{ url_for('login') }}" class="btn-primary">
-                        <div class="bi bi-box-arrow-in-right"></div> Powrót do logowania
-                    </a>
                     <a href="{{ url_for('index') }}" class="btn-secondary">
                         <div class="bi bi-house-door"></div> Strona główna
                     </a>
@@ -36,4 +34,5 @@
         </div>
     </div>
 </body>
+
 </html>

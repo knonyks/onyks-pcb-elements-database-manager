@@ -4,7 +4,7 @@
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto auto;
     grid-template-areas: "large small" "lastchange lastchange";
-    gap: 2rem;
+    gap: 1rem;
     max-width: 1200px;
     margin: 0 auto;
 }
@@ -37,7 +37,7 @@
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: 1fr 1fr;
-    gap: 32px;
+    gap: 1rem;
 }
 
 .last-change-card 
@@ -45,7 +45,7 @@
     grid-area: lastchange;
     display: flex;
     flex-wrap: wrap;
-    gap: 32px;
+    gap: 1rem;
 }
 
 .last-change-card .left, .last-change-card .right 
@@ -125,6 +125,6 @@
         grid-template-columns: 1fr;
         grid-template-rows: auto auto auto;
         grid-template-areas: "large" "small" "lastchange";
-        gap: 2rem;
+        gap: 1rem;
     }
 }

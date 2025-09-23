@@ -159,6 +159,10 @@ def setRoutes(server):
             logout_user()
             print("Wylogowano.", "info")
             return redirect(url_for("login"))
+        
+    @server.app.errorhandler(Exception)
+    def error(e):
+        return render_template('error.html', error=e.code)
 
 def setSocketioRoutes(server):
 

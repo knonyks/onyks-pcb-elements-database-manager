@@ -1,24 +1,193 @@
-    form
-    {
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-        width: 300px;
-    }
-    textarea
-    {
-        resize: none;
-        width: 200px;
-        height: 200px;
-    }
-    .aaa
-    {
-        display: flex;
-        flex-direction: row;
-        gap: 20px;
-    }
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 30px;
+    max-width: 1200px;
+    margin: 0px auto;
+    background: var(--dark-light);
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
 
-    #error-dialog > div
-    {
-        width: fit-content;
+.form-column {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-column label {
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.form-column input,
+.form-column select,
+.form-column textarea {
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    background: var(--gray);
+    color: white;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-column input:focus,
+.form-column select:focus,
+.form-column textarea:focus {
+    outline: 2px solid var(--primary);
+}
+
+.form-column textarea {
+    resize: vertical;
+    min-height: 80px;
+    max-height: 200px;
+}
+
+.form-column .generate-description-btn {
+    background: var(--primary);
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.form-column .generate-description-btn:hover {
+    background: var(--primary-dark);
+}
+
+.description-container {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.description-hint {
+    font-size: 12px;
+    color: #aaa;
+    text-align: center;
+    margin-top: -5px;
+}
+
+.form-column button {
+    margin-top: 4px;
+    padding: 6px 12px;
+    font-size: 13px;
+    border: none;
+    background: var(--primary);
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    align-self: start;
+    transition: background 0.3s ease;
+}
+
+.form-column button:hover {
+    background: var(--primary-dark);
+}
+
+.form-submit {
+    grid-column: span 2;
+    display: flex;
+    justify-content: center;
+}
+
+.form-submit .btn-primary {
+    background: var(--success);
+    padding: 10px 20px;
+    border: none;
+    border-radius: 0.75rem;
+    color: white;
+    font-size: 15px;
+    width: 10.5rem;
+    transition: background 0.3s ease;
+}
+
+.form-submit .btn-primary:hover {
+    background: #448648;
+}
+
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        padding: 12px;
+        margin: 0 10px;
     }
+    
+    .form-column {
+        gap: 8px;
+    }
+    
+    .form-column label {
+        font-size: 13px;
+    }
+    
+    .form-column input,
+    .form-column select,
+    .form-column textarea {
+        font-size: 13px;
+        padding: 8px 10px;
+    }
+    
+    .form-column button:not(.generate-description-btn) {
+        align-self: stretch;
+        text-align: center;
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+    
+    .form-submit {
+        grid-column: span 1;
+    }
+    
+    .form-submit .btn-primary {
+        width: 100%;
+        max-width: 200px;
+        padding: 12px 20px;
+        font-size: 16px;
+    }
+    
+    /* Dostosowanie przycisków pickerów */
+    .form-column button[id$="-picker-btn"] {
+        margin-top: 5px;
+    }
+}
+
+/* Bardzo małe ekrany */
+@media (max-width: 480px) {
+    .form-grid {
+        padding: 10px;
+        margin: 0 5px;
+        gap: 12px;
+    }
+    
+    .form-column input,
+    .form-column select,
+    .form-column textarea {
+        font-size: 12px;
+        padding: 7px 9px;
+    }
+    
+    .generate-description-btn {
+        padding: 10px 12px;
+        font-size: 14px;
+    }
+    
+    .description-hint {
+        font-size: 11px;
+    }
+    
+    .form-submit .btn-primary {
+        max-width: 180px;
+        padding: 11px 18px;
+        font-size: 15px;
+    }
+}
+
+/* Duże ekrany */
+@media (min-width: 1200px) {
+    .form-grid {
+        max-width: 1300px;
+    }
+}

@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, SubmitField, SelectField, PasswordField
+from wtforms import StringField, TextAreaField, SubmitField, SelectField, PasswordField, FileField
 from wtforms.validators import DataRequired, Length, Email
 
 def getCreatingElementForm(categories):
@@ -9,25 +9,27 @@ def getCreatingElementForm(categories):
 
     class CreatingElementForm(FlaskForm):
         
-        category = SelectField('Wybierz opcję', choices=zippedCategories, validators=[DataRequired()])
-        # ('1', 'Opcja 1'), ('2', 'Opcja 2'), ('3', 'Opcja 3')
+        part_name = StringField('Part Name')
+        manufacturer = StringField('Manufacturer')
+        manufacturer_part_name = StringField('Manufacturer Part Name')
+        category = SelectField('Category', choices=zippedCategories)
+        datasheet = FileField('Datasheet')
+        description = TextAreaField('Description')
+        generate_description = SubmitField('Generate')
+        value = StringField('Value')
+        availability = StringField('Availability')
 
-        part_name = StringField('Part Name', validators=[DataRequired(), Length(min=1, max=100)])
+        library_ref = StringField('Library Reference')
+        library_path = StringField('Library Path')
+
+        footprint_ref_1 = StringField('Footprint Ref 1')
+        footprint_path_1 = StringField('Footprint Path 1')
         
-        manufacturer = StringField('Manufacturer', validators=[Length(min=1, max=100)])
-        description = TextAreaField('Description', validators=[Length(max=256)])
+        footprint_ref_2 = StringField('Footprint Ref 2')
+        footprint_path_2 = StringField('Footprint Path 2')
 
-        library_ref = StringField('Library Reference', validators=[Length(max=256)])
-        library_path = StringField('Library Path', validators=[Length(max=256)])
-
-        footprint_ref_1 = StringField('Footprint Ref 1', validators=[Length(max=256)])
-        footprint_path_1 = StringField('Footprint Path 1', validators=[Length(max=256)])
-        
-        footprint_ref_2 = StringField('Footprint Ref 2', validators=[Length(max=256)])
-        footprint_path_2 = StringField('Footprint Path 2', validators=[Length(max=256)])
-
-        footprint_ref_3 = StringField('Footprint Ref 3', validators=[Length(max=256)])
-        footprint_path_3 = StringField('Footprint Path 3', validators=[Length(max=256)])
+        footprint_ref_3 = StringField('Footprint Ref 3')
+        footprint_path_3 = StringField('Footprint Path 3')
 
 
         accept = SubmitField('Accept')

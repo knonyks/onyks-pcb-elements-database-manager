@@ -69,7 +69,6 @@ def setRoutes(server):
 
         return render_template('settings.html', **parameters) 
         
-
     @server.app.route('/explorer')
     @conditionDecorator(login_required, server.config['database']['usersEnabled'])
     def explorer():
@@ -94,35 +93,42 @@ def setRoutes(server):
         parameters['title'] = 'error'
         return render_template('error.html', **parameters)
 
+    def generateDescription(form):
+        print(form.datasheet.data)
+
+    def createElement(form):
+        print(form.category.data)
+        print(server.config['database']['categories'][int(form.category.data) - 1])
+        new_element = server.models[server.config['database']['categories'][int(form.category.data) - 1]](
+            part_name = form.part_name.data,
+            manufacturer = form.manufacturer.data,
+            description = form.description.data,
+            library_ref = form.library_ref.data,
+            library_path = form.library_path.data,
+            footprint_ref_1 = form.footprint_ref_1.data,
+            footprint_path_1 = form.footprint_path_1.data,
+            footprint_ref_2 = form.footprint_ref_2.data,
+            footprint_path_2 = form.footprint_path_2.data,
+            footprint_ref_3 = form.footprint_ref_3.data,
+            footprint_path_3 = form.footprint_path_3.data
+        )
+        server.db.session.add(new_element)
+        server.db.session.commit()
+
     @server.app.route('/element/create', methods=['GET', 'POST'])
     @conditionDecorator(login_required, server.config['database']['usersEnabled'])
     def element_create():
         form = server.forms['creatingElement']()
         if form.validate_on_submit():
-            print(form.category.data)
-            print(server.config['database']['categories'][int(form.category.data) - 1])
-            new_element = server.models[server.config['database']['categories'][int(form.category.data) - 1]](
-                part_name = form.part_name.data,
-                manufacturer = form.manufacturer.data,
-                description = form.description.data,
-                library_ref = form.library_ref.data,
-                library_path = form.library_path.data,
-                footprint_ref_1 = form.footprint_ref_1.data,
-                footprint_path_1 = form.footprint_path_1.data,
-                footprint_ref_2 = form.footprint_ref_2.data,
-                footprint_path_2 = form.footprint_path_2.data,
-                footprint_ref_3 = form.footprint_ref_3.data,
-                footprint_path_3 = form.footprint_path_3.data
-            )
-            server.db.session.add(new_element)
-            server.db.session.commit()
-            
+            if form.accept.data:
+                createElement(form)
+            elif form.generate_description.data:
+                generateDescription(form)
         parameters = {}
         parameters['active_page'] = 'create_element'
         parameters['title'] = 'Create element'
         parameters['form'] = form
         return render_template('element_form.html', **parameters)
-
     if server.config['database']['usersEnabled']:
         
         @server.loginManager.user_loader

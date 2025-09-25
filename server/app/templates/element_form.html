@@ -6,9 +6,6 @@
 {% endblock %}
 
 {% block content %}
-
-
-
 <div class="dialog" id="confirmation-dialog">
     <div>
         <div class="dialog-top-bar-title">Komunikat</div>
@@ -78,58 +75,80 @@
 
 <form method="POST" id="element-form">
     {{ form.hidden_tag()}}
+
+    <!-- PART NAME -->
     {{ form.part_name.label}}
-    {{ form.part_name(size=32, placeholder="Part name")}}
+    {{ form.part_name()}}
 
-    {% for error in form.part_name.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-    {% endfor %}
+    <!-- MANUFACTURER -->
+    {{ form.manufacturer.label}}
+    {{ form.manufacturer()}}
 
+    <!-- MANUFACTURER PART NAME -->
+    {{ form.manufacturer_part_name.label}}
+    {{ form.manufacturer_part_name()}}
+
+    <!-- CATEGORY -->
     {{form.category.label}}
     {{form.category()}}
 
-    {{ form.manufacturer.label}}
-    {{ form.manufacturer(size=32, placeholder="manufacturer")}}
+    <!-- DATASHEET -->
+    {{form.datasheet.label}}
+    {{form.datasheet()}}
 
+    <!-- DESCRIPTION -->
     {{ form.description.label }}
-    {{ form.description(rows=5, cols=32, placeholder="Description (max 256 characters)")}}
-    {% for error in form.description.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-    {% endfor %}
+    {{ form.description()}}
 
+    <!-- GENERATE DESCRIPTION -->
+    {{form.generate_description.label}}
+    {{form.generate_description()}}
+
+    <!-- VALUE -->
+    {{form.value.label}}
+    {{form.value()}}
+
+    <!-- AVAILABILITY -->
+    {{form.availability.label}}
+    {{form.availability()}}
+
+    <!-- LIBRARY REF -->
     {{form.library_ref.label }}
     {{form.library_ref(placeholder="library_ref", id="library-ref")}}
 
+    <!-- LIBRARY PATH -->
     {{form.library_path.label }}
     {{form.library_path(placeholder="library_path", id="library-path")}}
-
     <button id="symbol-picker-btn" type="button">Pick symbol</button>
 
+    <!-- FOOTPRINT REF 1 -->
     {{form.footprint_ref_1.label }}
     {{form.footprint_ref_1(placeholder="footprint_ref_1", id="footprint-ref-1")}}
-
+    
+    <!-- FOOTPRINT PATH 1 -->
     {{form.footprint_path_1.label }}
     {{form.footprint_path_1(placeholder="footprint_path_1", id="footprint-path-1")}}
-
     <button id="footprint-picker-1-btn" type="button">Pick footprint no. 1</button>
 
+    <!-- FOOTPRINT REF 2 -->
     {{form.footprint_ref_2.label }}
     {{form.footprint_ref_2(placeholder="footprint_ref_2", id="footprint-ref-2")}}
-
+    
+    <!-- FOOTPRINT PATH 1 -->
     {{form.footprint_path_2.label }}
     {{form.footprint_path_2(placeholder="footprint_path_2", id="footprint-path-2")}}
-
     <button id="footprint-picker-2-btn" type="button">Pick footprint no. 2</button>
 
+    <!-- FOOTPRINT REF 3 -->
     {{form.footprint_ref_3.label }}
     {{form.footprint_ref_3(placeholder="footprint_ref_3", id="footprint-ref-3")}}
-
+    
+    <!-- FOOTPRINT PATH 3 -->
     {{form.footprint_path_3.label }}
     {{form.footprint_path_3(placeholder="footprint_path_3", id="footprint-path-3")}}
-
     <button id="footprint-picker-3-btn" type="button">Pick footprint no. 3</button>
 
-    {{ form.accept(class="btn btn-primary", id='aaa') }}
+    {{form.accept() }}
 </form>
 {% endblock %}
 

@@ -19,9 +19,7 @@ def set_routes(server):
     @server.app.route('/')
     @condition_decorator(login_required, server.config['database']['users']['is_enabled'])
     def index():
-        parameters = {}
-        parameters['title'] = 'Dashboard'
-        return redirect(url_for('dashboard', **parameters))
+        return redirect(url_for('dashboard'))
 
     @server.app.route('/dashboard')
     @condition_decorator(login_required, server.config['database']['users']['is_enabled'])
@@ -35,6 +33,7 @@ def set_routes(server):
         parameters['elements_todays_amount'] = sum([count_todays_entries(server.models.categories[i]) for i in server.models.categories])
         parameters['last_element_added'] = last_entry(list(server.models.categories.values())).part_name
         parameters['are_users_enabled'] = server.config['database']['users']['is_enabled']
+        parameters['categories_elements_amount'] = {key:server.models.categories[key].query.count() for key in server.models.categories}
         return render_template('dashboard.html', **parameters)
 
     @server.app.route('/search_components')

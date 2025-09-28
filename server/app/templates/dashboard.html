@@ -37,7 +37,12 @@
             <p class="stat-label">Dostępne symbole</p>
         </div>
     </div>
-
+    {% for key, value in categories_elements_amount.items() %}
+        <div class="" style="display: flex; flex-direction: column; background-color: red;">
+            <div class="">{{key}}</div>
+            <div class="">{{value}}</div>
+        </div>
+    {% endfor %}
     <!-- Długa karta -->
     <!-- <div class="last-change-card">
         <div class="left">

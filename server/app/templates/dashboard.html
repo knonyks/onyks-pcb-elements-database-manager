@@ -7,9 +7,9 @@
 {% block content %}
 {% if are_users_enabled %}
 
-<div class="general-box">
-    <div class="label">Witaj {{current_user.name}}!</div>
-    <a class="logout" href="{{url_for('logout')}}">Wyloguj się</a>
+<div class="logout-box">
+    <div class="logout-user-name">Witaj {{current_user.name}}!</div>
+    <a class="logout-btn" href="{{url_for('logout')}}">Wyloguj się</a>
 </div>
 
 {% endif %}
@@ -37,6 +37,7 @@
             <p class="stat-label">Dostępne symbole</p>
         </div>
     </div>
+
     {% for key, value in categories_elements_amount.items() %}
         <div class="" style="display: flex; flex-direction: column; background-color: red;">
             <div class="">{{key}}</div>

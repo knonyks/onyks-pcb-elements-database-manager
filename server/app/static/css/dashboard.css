@@ -12,8 +12,8 @@
 .large-card, .small-card, .last-change-card 
 {
     background-color: var(--dark-light);
-    border-radius: 16px;
-    padding: 32px;
+    border-radius: 1rem;
+    padding: 2rem;
     transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
     border: 1px solid var(--gray);
 }
@@ -21,7 +21,7 @@
 .large-card:hover, .small-card:hover, .last-change-card:hover 
 {
     transform: translateY(-8px);
-    box-shadow: 0 12px 32px var(--dark-light);
+    box-shadow: 0 1rem 2rem var(--dark-light);
     border-color: var(--primary);
 }
 
@@ -82,14 +82,14 @@
     font-weight: bold;
     color: var(--light);
     line-height: 1;
-    margin: 16px 0;
+    margin: 1rem 0;
 }
 
 .stat-label 
 {
     font-size: 1.2rem;
     color: var(--light-small);
-    margin-bottom: 8px;
+    margin-bottom: 0.5rem;
 }
 
 .small-card .stat-number 

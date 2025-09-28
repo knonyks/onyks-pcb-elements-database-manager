@@ -58,7 +58,11 @@ BEGIN
                 uuid VARCHAR(36) PRIMARY KEY DEFAULT uuid_generate_v4(),
                 part_name VARCHAR NOT NULL,
                 manufacturer VARCHAR,
+                manufacturer_part_name VARCHAR,
+                datasheet VARCHAR,
                 description VARCHAR,
+                value VARCHAR,
+                availability VARCHAR,
                 library_ref VARCHAR,
                 library_path VARCHAR,
                 footprint_ref_1 VARCHAR,
@@ -67,8 +71,7 @@ BEGIN
                 footprint_path_2 VARCHAR,
                 footprint_ref_3 VARCHAR,
                 footprint_path_3 VARCHAR,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                last_edited_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );',
             tbl_name
         );
@@ -158,7 +161,6 @@ CREATE TABLE Users (
     username VARCHAR(80) UNIQUE NOT NULL,
     email VARCHAR(120) UNIQUE NOT NULL,
     password VARCHAR(200) NOT NULL,
-    expired_access_time TIMESTAMP NULL,
     is_admin BOOLEAN NOT NULL DEFAULT FALSE
 );
 

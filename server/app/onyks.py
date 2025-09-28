@@ -43,7 +43,7 @@ class OnyksApp:
         self.models = Models()
         self.engines = Engines()
         self.filling_site_data = {}
-        self.loginManager = None
+        self.login_manager = None
         self.bcrypt = None
 
         #svn
@@ -71,10 +71,10 @@ class OnyksApp:
         #USERS
         if self.config['database']['users']['is_enabled']:
             self.bcrypt = Bcrypt(self.app)
-            self.loginManager = LoginManager()
-            self.loginManager.init_app(self.app)
-            self.loginManager.login_view = "login"
-            self.loginManager.login_message_category = "info"
+            self.login_manager = LoginManager()
+            self.login_manager.init_app(self.app)
+            self.login_manager.login_view = "login"
+            self.login_manager.login_message_category = "info"
             self.app.config["SQLALCHEMY_BINDS"] = {}
             self.app.config["SQLALCHEMY_BINDS"]["users"] = postgres_URI(**self.config['database']['users']['settings'])
             self.models.user = get_user_model(self.db, "users", self.config["database"]["users"]["table_name"])
@@ -89,7 +89,8 @@ class OnyksApp:
 
     def __init_repository(self):
         config_copy = copy.deepcopy(self.config['svn']['config'])
-        config_copy['path'] = './.cache/svn'
+        config_copy['path'] = Path('.cache') / Path('svn')
+        config_copy['path'] = str(config_copy['path'])
         self.repository = SVN(**config_copy)
 
         self.repository.init()
@@ -152,12 +153,6 @@ class OnyksApp:
             print('❌ THE SVN HASN\'T HAD AN UPDATE!')
             return None
         
-
-
-
-
-
-
     def __init_forms(self):
         self.forms['creating_element'] = get_creating_element_form(self.config['database']['elements']['categories_tables_name'])
         if self.config['database']['users']['is_enabled']:

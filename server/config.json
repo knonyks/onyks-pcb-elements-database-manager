@@ -9,6 +9,8 @@
     {
         "elements":
         {
+            "is_llm_description_generation_enabled": true,
+            "datasheets_folder_path": "datasheets",
             "categories_tables_name":
             [
                 "Resistors", 
@@ -16,7 +18,7 @@
                 "Inductors", 
                 "ICs", 
                 "Connectors",
-                "Mechanical", 
+                "Mechanical",
                 "Batteries", 
                 "Diodes", 
                 "Antennas", 

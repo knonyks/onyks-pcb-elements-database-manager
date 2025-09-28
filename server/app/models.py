@@ -10,8 +10,14 @@ def get_element_model(db, tablename):
         
         part_name = db.Column(db.String, index=True, unique=False, nullable=False)
         manufacturer = db.Column(db.String, index=True, unique=False, nullable=True)
+        manufacturer_part_name = db.Column(db.String, index=True, unique=False, nullable=True)
+
+        datasheet = db.Column(db.String, index=True, unique=False, nullable=True)
         description = db.Column(db.String, nullable=True)
-       
+
+        value = db.Column(db.String, index=True, unique=False, nullable=True)
+        availability = db.Column(db.String, index=True, unique=False, nullable=True)
+
         library_ref = db.Column(db.String, index=True, unique=False, nullable=True)
         library_path = db.Column(db.String, index=True, unique=False, nullable=True)
         
@@ -25,12 +31,6 @@ def get_element_model(db, tablename):
         footprint_path_3 = db.Column(db.String, index=True, unique=False, nullable=True)
 
         created_at = db.Column(db.DateTime, server_default=db.func.now())
-        last_edited_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
-
-        # value = db.Column(db.String, nullable=False)
-
-        # available = db.Column(db.String, default=True)
-        # atributes = db.Column(db.String, nullable=True)
 
         def __repr__(self):
             return f'<{self.part_name}>'
@@ -49,7 +49,6 @@ def get_user_model(db, bind, tablename):
         username = db.Column(db.String(80), unique=True, nullable=False)
         email = db.Column(db.String(120), unique=True, nullable=False)
         password = db.Column(db.String(200), nullable=False)
-        expired_access_time = db.Column(db.DateTime, nullable=True)
         is_admin = db.Column(db.Boolean, default=False, nullable=False)
 
         def full_name(self):

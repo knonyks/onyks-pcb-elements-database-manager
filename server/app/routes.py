@@ -42,7 +42,7 @@ def set_routes(server):
         parameters = {}
         parameters['active_page'] = 'search_components'
         parameters['title'] = 'Search components'
-        parameters['components'] = [x for i in server.models.categories for x in server.models.categories[i].query.all()]
+        # parameters['components'] = [x for i in server.models.categories for x in server.models.categories[i].query.all()]
         return render_template('search_components.html', **parameters)
 
     @server.app.route('/settings')
@@ -92,67 +92,80 @@ def set_routes(server):
 
     @server.app.errorhandler(HTTPException)
     def handle_http_error(e):
-        return redirect(url_for('show_error', code=e.code))
+        return redirect(url_for('error', code = e.code))
 
     def generate_description(form):
         print(form.datasheet.data)
 
-    # def createElement(form):
-    #     print(form.category.data)
-    #     print(server.config['database']['categories'][int(form.category.data) - 1])
-    #     new_element = server.models[server.config['database']['categories'][int(form.category.data) - 1]](
-    #         part_name = form.part_name.data,
-    #         manufacturer = form.manufacturer.data,
-    #         description = form.description.data,
-    #         library_ref = form.library_ref.data,
-    #         library_path = form.library_path.data,
-    #         footprint_ref_1 = form.footprint_ref_1.data,
-    #         footprint_path_1 = form.footprint_path_1.data,
-    #         footprint_ref_2 = form.footprint_ref_2.data,
-    #         footprint_path_2 = form.footprint_path_2.data,
-    #         footprint_ref_3 = form.footprint_ref_3.data,
-    #         footprint_path_3 = form.footprint_path_3.data
-    #     )
-    #     server.db.session.add(new_element)
-    #     server.db.session.commit()
+    def create_element(form):
+        print(form.category.data)
+        print(server.config['database']['elements']['categories'][int(form.category.data) - 1])
+        new_element = server.models[server.config['database']['elements']['categories'][int(form.category.data) - 1]](
+            part_name = form.part_name.data,
+            manufacturer = form.manufacturer.data,
+            description = form.description.data,
+            library_ref = form.library_ref.data,
+            library_path = form.library_path.data,
+            footprint_ref_1 = form.footprint_ref_1.data,
+            footprint_path_1 = form.footprint_path_1.data,
+            footprint_ref_2 = form.footprint_ref_2.data,
+            footprint_path_2 = form.footprint_path_2.data,
+            footprint_ref_3 = form.footprint_ref_3.data,
+            footprint_path_3 = form.footprint_path_3.data
+        )
+        server.db.session.add(new_element)
+        server.db.session.commit()
 
-    # @server.app.route('/element/create', methods=['GET', 'POST'])
-    # @conditionDecorator(login_required, server.config['database']['usersEnabled'])
-    # def element_create():
-    #     form = server.forms['creatingElement']()
-    #     if form.validate_on_submit():
-    #         if form.accept.data:
-    #             createElement(form)
-    #         elif form.generate_description.data:
-    #             generateDescription(form)
-    #     parameters = {}
-    #     parameters['active_page'] = 'create_element'
-    #     parameters['title'] = 'Create element'
-    #     parameters['form'] = form
-    #     return render_template('element_form.html', **parameters)
+    @server.app.route('/element/create', methods=['GET', 'POST'])
+    @condition_decorator(login_required, server.config['database']['users']['is_enabled'])
+    def element_create():
+        form = server.forms['creating_element']()
+        if form.validate_on_submit():
+            if form.accept.data:
+                create_element(form)
+            elif form.generate_description.data:
+                generate_description(form)
+        parameters = {}
+        parameters['active_page'] = 'create_element'
+        parameters['title'] = 'Create element'
+        parameters['form'] = form
+        return render_template('element_form.html', **parameters)
+    
+    def element_edit():
+        pass
+
+    def element_copy():
+        pass
+
+    def element_delete():
+        pass
+
     if server.config['database']['users']['is_enabled']:
         
-        @server.loginManager.user_loader
+        @server.login_manager.user_loader
         def load_user(user_id):
             try:
                 return server.models.user.query.get(int(user_id))
             except Exception:
                 return None
-            
+        
+        def find_user(username):
+            user = server.models.user.query.filter_by(username = username).first()
+            if user == None:
+                user = server.models.user.query.filter_by(email = username).first()
+            return user
+
         @server.app.route("/login", methods=["GET", "POST"])
         def login():
             form = server.forms['login']()
             if form.validate_on_submit():
-                user = server.models.user.query.filter_by(username=form.username.data).first()
-                if user == None:
-                    user = server.models.user.query.filter_by(email=form.username.data).first()
-                print(datetime.utcnow())
+                user = find_user(form.username.data)
                 print(server.bcrypt.generate_password_hash(form.password.data).decode("utf-8"))
                 if user and server.bcrypt.check_password_hash(user.password, form.password.data):
-                    # sprawdź datę wygaśnięcia
-                    if user.expired_access_time and user.access_expires < datetime.utcnow():
-                        print("Dostęp wygasł dla tego konta.", "warning")
-                        return redirect(url_for("login"))
+                    # # sprawdź datę wygaśnięcia
+                    # if user.expired_access_time and user.access_expires < datetime.utcnow():
+                    #     print("Dostęp wygasł dla tego konta.", "warning")
+                    #     return redirect(url_for("login"))
                     login_user(user)
                     print("Zalogowano pomyślnie.", "success")
                     next_page = request.args.get("next")
@@ -164,10 +177,8 @@ def set_routes(server):
         @login_required
         def logout():
             logout_user()
-            print("Wylogowano.", "info")
             return redirect(url_for("login"))
         
-
 
 def set_socketio_routes(server):
 

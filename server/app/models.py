@@ -1,7 +1,7 @@
 import uuid
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 
-def getElementModel(db, tablename):
+def get_element_model(db, tablename):
 
     class Element(db.Model):
         __tablename__ = tablename
@@ -37,10 +37,12 @@ def getElementModel(db, tablename):
         
     return Element
 
-def getUserModel(db, tablename):
+def get_user_model(db, bind, tablename):
    
     class User(UserMixin, db.Model):
+        __bind_key__ = bind
         __tablename__ = tablename
+
         id = db.Column(db.Integer, primary_key=True)
         name = db.Column(db.String(80), nullable=True)
         family_name = db.Column(db.String(80), nullable=True)

@@ -1,41 +1,55 @@
 {
-    "server": 
+    "server":
     {
         "port": 5000,
-        "randomizeSecretKey": true,
-        "secretKey": "exapleSecretKeyBlaBlaBla"
+        "randomize_secret_key": true,
+        "secret_key": "example_secret_key"
     },
-    "database": 
+    "database":
     {
-        "usersEnabled": true,
-        "usersName": "users",
         "elements":
         {
-            "host": "localhost",
-            "port": 5432,
-            "username": "postgres",
-            "password": "1234",
-            "name": "postgres"
+            "categories_tables_name":
+            [
+                "Resistors", 
+                "Capacitors", 
+                "Inductors", 
+                "ICs", 
+                "Connectors",
+                "Mechanical", 
+                "Batteries", 
+                "Diodes", 
+                "Antennas", 
+                "Modules"
+            ],
+            "settings":
+            {
+                "host": "localhost",
+                "port": 5432,
+                "username": "postgres",
+                "password": "1234",
+                "name": "postgres"
+            }
         },
-        "categories":
-        [
-            "Resistors", 
-            "Capacitors", 
-            "Inductors", 
-            "ICs", 
-            "Connectors",
-            "Mechanical", 
-            "Batteries", 
-            "Diodes", 
-            "Antennas", 
-            "Modules"
-        ]
+        "users":
+        {
+            "is_enabled": true,
+            "table_name": "users",
+            "settings":
+            {
+                "host": "localhost",
+                "port": 5432,
+                "username": "postgres",
+                "password": "1234",
+                "name": "postgres"
+            }
+        }
     },
     "svn": 
     {
-        "config": 
+        "config":
         {
-            "url": "https://svn/svn",
+            "url": "https://ssvn",
             "user": "user",
             "password": "1234"
         },
@@ -44,6 +58,6 @@
             "symbols": "symbols",
             "footprints": "footprints"
         },
-        "update_frequency": 5
+        "update_frequency": 2
     }
 }

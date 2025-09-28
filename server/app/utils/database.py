@@ -2,8 +2,11 @@ from app import models
 from datetime import datetime, timedelta
 from sqlalchemy import func, and_
 from zoneinfo import ZoneInfo
+from sqlalchemy import func
+from sqlalchemy.orm import Session
+from datetime import date, datetime
 
-def postgresURI(username, password, host, name, port):
+def postgres_URI(username, password, host, name, port):
     addr = 'postgresql://'
     addr += username
     addr += ':'
@@ -12,21 +15,18 @@ def postgresURI(username, password, host, name, port):
     addr += name
     return addr
 
-def countTodaysEntries(db, model, timezone_str = 'Europe/Warsaw'):
-    user_tz = ZoneInfo(timezone_str)
-    now_local = datetime.now(user_tz)
-    
-    start_of_day = now_local.replace(hour=0, minute=0, second=0, microsecond=0)
-    end_of_day = start_of_day + timedelta(days=1)
-    
-    start_utc = start_of_day.astimezone(ZoneInfo('UTC'))
-    end_utc = end_of_day.astimezone(ZoneInfo('UTC'))
-    
-    return db.session.query(func.count(model.uuid)).filter \
-    (
-        and_ \
-        (
-            model.created_at >= start_utc,
-            model.created_at < end_utc
-        )
-    ).scalar() or 0
+def count_todays_entries(model):
+    today = date.today()
+    count_today = model.query.filter(
+        model.created_at >= datetime(today.year, today.month, today.day)
+    ).count()
+    return count_today
+
+def last_entry(models):
+    last_entries = []
+    for i in models:
+        last_entries.append(i.query.order_by(i.created_at.desc()).first())
+    latest_entry = max(last_entries, key=lambda x: x.created_at if x else datetime.min)
+    return latest_entry
+
+

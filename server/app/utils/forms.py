@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, SubmitField, SelectField, PasswordField, FileField
 from wtforms.validators import DataRequired, Length, Email
 
-def getCreatingElementForm(categories):
+def get_creating_element_form(categories):
     zippedCategories = [str(i) for i in range(1, len(categories) + 1)]
     zippedCategories = zip(zippedCategories, categories)
     zippedCategories = list(zippedCategories)
@@ -36,7 +36,7 @@ def getCreatingElementForm(categories):
     
     return CreatingElementForm
 
-def getLoginForm():
+def get_login_form():
 
     class LoginForm(FlaskForm):
         username = StringField("Login lub e-mail", validators=[DataRequired()])
@@ -44,7 +44,7 @@ def getLoginForm():
         accept = SubmitField("Zaloguj")
     return LoginForm
 
-def getChangeUserDataForm():
+def get_change_user_data_form():
 
     class ChangeUserData(FlaskForm):
         old_username = StringField("Login lub e-mail", validators=[DataRequired()])
@@ -55,7 +55,7 @@ def getChangeUserDataForm():
         accept = SubmitField("Zmień")
     return ChangeUserData
 
-def getAddUserForm():
+def get_add_user_form():
 
     class ChangeUserData(FlaskForm):
         name = StringField("Name", validators=[DataRequired()])

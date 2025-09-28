@@ -20,10 +20,10 @@
             <div class="navbar">
                 <a class="logo" href="{{url_for('dashboard')}}"><img src="{{url_for('static', filename='img/logo.png')}}" alt="ONYKS Logo"></a>
                 <div class="nav-btns">
-                    <a class="nav-btn {% if active_page == 'dashboard' %}open{% endif %}" href="{{url_for('dashboard')}}">Strona Główna</a>
-                    <a class="nav-btn {% if active_page == 'search_components' %}open{% endif %}" href="{{url_for('search_compontents')}}">Wyszukiwarka</a>
-                    <a class="nav-btn {% if active_page == 'explorer' %}open{% endif %}" href="{{url_for('explorer')}}">Eksplorator</a>
-                    <a class="nav-btn {% if active_page == 'settings' %}open{% endif %}" href="{{url_for('settings')}}">Ustawienia</a>
+                    <a class="nav-btn {% if active_page == 'dashboard' %} open{% endif %}" href="{{url_for('dashboard')}}">Strona Główna</a>
+                    <a class="nav-btn {% if active_page == 'search_components' %} open{% endif %}" href="{{url_for('search_compontents')}}">Wyszukiwarka</a>
+                    <a class="nav-btn {% if active_page == 'explorer' %} open{% endif %}" href="{{url_for('explorer')}}">Eksplorator</a>
+                    <a class="nav-btn {% if active_page == 'settings' %} open{% endif %}" href="{{url_for('settings')}}">Ustawienia</a>
                     <a class="nav-btn" href="https://github.com/knonyks" id="onyks-github-btn" target="_blank">ONYKS</a>
                 </div>
                 <div class="navbar-show-hide-btn"></div>

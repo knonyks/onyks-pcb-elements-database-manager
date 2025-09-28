@@ -13,7 +13,7 @@ def findAllFiles(path, ext):
     
     return foundFiles
 
-def listFilesWithType(path):
+def list_files_with_type(path):
     result = []
     if str(path).lower().endswith('.schlib'):
         schlib_file = pyaltiumlib.read(str(path))

@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-{% if usersEnabled %}
+{% if are_users_enabled %}
 
 <div class="general-box">
     <div class="label">Witaj {{current_user.name}}!</div>
@@ -17,23 +17,23 @@
     <!-- Duża karta -->
     <div class="large-card">
         <h2>Zgromadzone Elementy</h2>
-        <div class="stat-number">{{componentsDatabaseCount}}</div>
+        <div class="stat-number">{{elemenents_amount}}</div>
         <p class="stat-label">Łączna liczba elementów</p>
-        <p><strong>Nowe dzisiaj: </strong>{{componentsDatabaseTodaysCount}}</p>
-        <p><strong>Ostatnio dodany: </strong>{{componentsDatabaseLastAddedPartName}}</p>
+        <p><strong>Nowe dzisiaj: </strong>{{elements_todays_amount}}</p>
+        <p><strong>Ostatnio dodany: </strong>{{last_element_added}}</p>
     </div>
 
     <!-- Małe karty -->
     <div class="small-cards">
         <div class="small-card">
             <h2>Footprinty</h2>
-            <div class="stat-number">{{componentsFootprintsCount}}</div>
+            <div class="stat-number">{{footprints_amount}}</div>
             <p class="stat-label">Dostępne footprinty</p>
         </div>
 
         <div class="small-card">
             <h2>Symbole</h2>
-            <div class="stat-number">{{componentsSymbolsCount}}</div>
+            <div class="stat-number">{{symbols_amount}}</div>
             <p class="stat-label">Dostępne symbole</p>
         </div>
     </div>

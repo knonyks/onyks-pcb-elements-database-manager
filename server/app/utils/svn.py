@@ -18,7 +18,7 @@ class SVN:
 
     def init(self):
         self.remote.checkout(self.path)
-        self.local = LocalClient(self.path)
+        self.local = LocalClient(self.path, username=self.user, password=self.password)
         self.local.cleanup()
 
     def pull(self):

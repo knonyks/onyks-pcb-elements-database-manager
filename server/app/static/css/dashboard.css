@@ -1,15 +1,15 @@
-.dashboard-grid 
-{
+/* Aktualizacja siatki */
+.dashboard-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto;
-    grid-template-areas: "large small" "lastchange lastchange";
+    grid-template-rows: auto auto auto;
+    grid-template-areas: "large small" "categories categories";
     gap: 1rem;
     max-width: 1200px;
     margin: 0 auto;
 }
 
-.large-card, .small-card, .last-change-card 
+.large-card, .small-card
 {
     background-color: var(--dark-light);
     border-radius: 1rem;
@@ -18,7 +18,7 @@
     border: 1px solid var(--gray);
 }
 
-.large-card:hover, .small-card:hover, .last-change-card:hover 
+.large-card:hover, .small-card:hover
 {
     transform: translateY(-8px);
     box-shadow: 0 1rem 2rem var(--dark-light);
@@ -40,21 +40,7 @@
     gap: 1rem;
 }
 
-.last-change-card 
-{
-    grid-area: lastchange;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.last-change-card .left, .last-change-card .right 
-{
-    flex: 1;
-    max-width: 300px;
-}
-
-.large-card h2, .small-card h2, .last-change-card h2 
+.large-card h2, .small-card h2
 {
     font-size: 1.5rem;
     color: var(--primary);
@@ -65,7 +51,7 @@
     width: 100%;
 }
 
-.large-card h2::after, .small-card h2::after, .last-change-card h2::after 
+.large-card h2::after, .small-card h2::after
 {
     content: '';
     position: absolute;
@@ -112,19 +98,54 @@
     animation-delay: 0.3s;
 }
 
-.last-change-card 
-{
-    animation-delay: 0.4s;
+.categories-grid {
+    grid-area: categories;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    width: 100%;
 }
 
-@media (max-width: 900px) 
-{
-    .dashboard-grid 
-    {
+.category-card {
+    background-color: var(--dark-light);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    border: 1px solid var(--gray);
+    text-align: center;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem var(--dark-light);
+    border-color: var(--primary);
+}
+
+.category-card h3 {
+    font-size: 1.1rem;
+    color: var(--primary);
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.category-stat {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--light);
+    line-height: 1;
+    margin: 0.5rem 0;
+}
+
+@media (max-width: 900px) {
+    .dashboard-grid {
         display: grid;
         grid-template-columns: 1fr;
-        grid-template-rows: auto auto auto;
-        grid-template-areas: "large" "small" "lastchange";
+        grid-template-rows: auto auto auto auto;
+        grid-template-areas: "large" "small" "categories" "lastchange";
         gap: 1rem;
+    }
+    
+    .categories-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     }
 }

@@ -6,122 +6,90 @@
 
 {% block content %}
 
-<style>
-    .great-parent
-    {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
-    .parent
-    {
-        display: flex;
-        flex-direction: row;
-    }
-    .child
-    {
-        width: 500px;
-    }
-</style>
+<div class="element-details-container">
+    <div class="details-card">
+        <h1 class="details-title">Szczegóły elementu</h1>
+        
+        <div class="details-grid">
+            <div class="detail-item">
+                <div class="detail-label">UUID:</div>
+                <div class="detail-value uuid">{{uuid}}</div>
+            </div>
 
-<div class="great-parent">
+            <div class="detail-item">
+                <div class="detail-label">Part Name:</div>
+                <div class="detail-value">{{part_name}}</div>
+            </div>
 
-    <div class="parent">
-        <div class="child">UUID:</div>
-        <div class="child">{{uuid}}</div>
+            <div class="detail-item">
+                <div class="detail-label">Manufacturer:</div>
+                <div class="detail-value">{{manufacturer}}</div>
+            </div>
+
+            <div class="detail-item">
+                <div class="detail-label">Manufacturer Part Name:</div>
+                <div class="detail-value">{{manufacturer_part_name}}</div>
+            </div>
+
+            <div class="detail-item">
+                <div class="detail-label">Category:</div>
+                <div class="detail-value">{{category}}</div>
+            </div>
+
+            <div class="detail-item">
+                <div class="detail-label">Description:</div>
+                <div class="detail-value">{{description}}</div>
+            </div>
+
+            <div class="detail-item">
+                <div class="detail-label">Value:</div>
+                <div class="detail-value">{{value}}</div>
+            </div>
+
+            <div class="detail-item">
+                <div class="detail-label">Availability:</div>
+                <div class="detail-value">
+                    {{availability}}
+                </div>
+            </div>
+
+            <div class="detail-item">
+                <div class="detail-label">Library Ref:</div>
+                <div class="detail-value">{{library_ref}}</div>
+            </div>
+
+            <div class="detail-item">
+                <div class="detail-label">Library Path:</div>
+                <div class="detail-value path">{{library_path}}</div>
+            </div>
+
+            <div class="detail-item">
+                <div class="detail-label">Footprint Ref 1:</div>
+                <div class="detail-value">{{footprint_ref_1}}</div>
+            </div>
+
+            <div class="detail-item">
+                <div class="detail-label">Footprint Path 1:</div>
+                <div class="detail-value path">{{footprint_path_1}}</div>
+            </div>
+
+            <div class="detail-item">
+                <div class="detail-label">Footprint Ref 2:</div>
+                <div class="detail-value">{{footprint_ref_2}}</div>
+            </div>
+
+            <div class="detail-item">
+                <div class="detail-label">Footprint Path 2:</div>
+                <div class="detail-value path">{{footprint_path_2}}</div>
+            </div>
+        </div>
+
+        <div class="actions-section">
+            <a href="{{url_for('show_datasheet', category=category, id=uuid)}}" target="_blank" class="action-btn datasheet-btn">Datasheet</a>
+            <a href="{{url_for('dashboard')}}" class="action-btn edit-btn">Edit</a>
+            <a href="{{url_for('dashboard')}}" class="action-btn similar-btn">Create similar</a>
+        </div>
     </div>
-
-    <div class="parent">
-        <div class="child">Part Name:</div>
-        <div class="child">{{part_name}}</div>
-    </div>
-
-    <div class="parent">
-        <div class="child">Manufacturer:</div>
-        <div class="child">{{manufacturer}}</div>
-    </div>
-
-    <div class="parent">
-        <div class="child">Manufacturer Part Name:</div>
-        <div class="child">{{manufacturer_part_name}}</div>
-    </div>
-
-    <div class="parent">
-        <div class="child">Category:</div>
-        <div class="child">{{category}}</div>
-    </div>
-
-    <div class="parent">
-        <div class="child">Description</div>
-        <div class="child">{{description}}</div>
-    </div>
-
-    <div class="parent">
-        <div class="child">Value:</div>
-        <div class="child">{{value}}</div>
-    </div>
-
-    <div class="parent">
-        <div class="child">Availability:</div>
-        <div class="child">{{availability}}</div>
-    </div>
-
-    <div class="parent">
-        <div class="child">Library Ref:</div>
-        <div class="child">{{library_ref}}</div>
-    </div>
-
-    <div class="parent">
-        <div class="child">Library Path:</div>
-        <div class="child">{{library_path}}</div>
-    </div>
-
-
-    <div class="parent">
-        <div class="child">footprint Ref 1:</div>
-        <div class="child">{{footprint_ref_1}}</div>
-    </div>
-
-    <div class="parent">
-        <div class="child">Footprint Path 1:</div>
-        <div class="child">{{footprint_path_1}}</div>
-    </div>
-
-    <div class="parent">
-        <div class="child">footprint Ref 1:</div>
-        <div class="child">{{footprint_ref_1}}</div>
-    </div>
-
-    <div class="parent">
-        <div class="child">Footprint Path 1:</div>
-        <div class="child">{{footprint_path_1}}</div>
-    </div>
-
-    <div class="parent">
-        <div class="child">footprint Ref 2:</div>
-        <div class="child">{{footprint_ref_2}}</div>
-    </div>
-
-    <div class="parent">
-        <div class="child">Footprint Path 3:</div>
-        <div class="child">{{footprint_path_3}}</div>
-    </div>
-
-    <a href="{{url_for('show_datasheet', category=category, id=uuid)}}" target="_blank" style="background-color: red;">Datasheet</a>
-    <a href="{{url_for('dashboard')}}" target="_blank" style="background-color: red;">Edit</a>
-    <a href="{{url_for('dashboard')}}" target="_blank" style="background-color: red;">Create similar</a>
-
 </div>
 
 {% endblock %}
-
-        
-
-        
-        
-        
-
-
-
-
-  

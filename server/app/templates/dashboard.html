@@ -38,24 +38,14 @@
         </div>
     </div>
 
-    {% for key, value in categories_elements_amount.items() %}
-        <div class="" style="display: flex; flex-direction: column; background-color: red;">
-            <div class="">{{key}}</div>
-            <div class="">{{value}}</div>
-        </div>
-    {% endfor %}
-    <!-- Długa karta -->
-    <!-- <div class="last-change-card">
-        <div class="left">
-            <h2>Ostatnia Zmiana</h2>
-            <p><strong>Autor:</strong> Jan Kowalski</p>
-            <p><strong>Data:</strong> 2025-07-21 14:32</p>
-        </div>
-        <div class="right">
-            <h2>&nbsp;</h2>
-            <p><strong>Zmiana:</strong> Dodano footprint do LM317</p>
-            <p><strong>Komentarz:</strong> Aktualizacja zgodnie z datasheet</p>
-        </div>
-    </div> -->
+    <div class="categories-grid">
+        {% for key, value in categories_elements_amount.items() %}
+            <div class="category-card">
+                <h3>{{key}}</h3>
+                <div class="category-stat">{{value}}</div>
+                <!-- <p class="stat-label">elementów</p> -->
+            </div>
+        {% endfor %}
+    </div>
 </div>
 {% endblock %}

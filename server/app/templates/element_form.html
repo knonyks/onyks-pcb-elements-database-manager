@@ -73,7 +73,7 @@
     </div>
 </div>
 
-<form method="POST" id="element-form" class="form-grid">
+<form method="POST" id="element-form" class="form-grid" enctype="multipart/form-data">
     <div class="form-column">
         {{ form.hidden_tag() }}
 
@@ -95,7 +95,7 @@
 
         <!-- DATASHEET -->
         {{ form.datasheet.label }}
-        {{ form.datasheet() }}
+        {{ form.datasheet() }} 
 
         <!-- DESCRIPTION -->
         {{ form.description.label }}

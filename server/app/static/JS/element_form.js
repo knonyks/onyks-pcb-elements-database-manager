@@ -107,6 +107,48 @@ document.querySelector('#footprint-picker-3-btn').addEventListener('click', (e) 
     footprintDialog.show()
 })
 
+elementForm.addEventListener("submit", async (e) => 
+{
+    e.preventDefault();
+
+    const formData = new FormData(elementForm);
+
+    const clickedButton = e.submitter;
+    if (clickedButton && clickedButton.name) 
+    {
+        formData.append(clickedButton.name, clickedButton.value);
+    }
+
+    const response = await fetch(elementForm.action, 
+    {
+        method: "POST",
+        body: formData
+    });
+
+    if(response.headers.get("Content-Type")?.includes("application/json"))
+    {
+        const data = await response.json()
+        if(data.mode == "description" && data.status)
+        {
+            document.querySelector('#description').value = data.content
+        }
+        else
+        {
+
+        }
+        console.log(data)
+    }
+    else
+    {
+        window.location.href = response.url;
+    }
+
+
+    // const text = await response.text();
+    // console.log(text)
+    // console.log(response)
+    // document.getElementById("response").innerHTML = text;
+});
 
 
 // let element_form = document.getElementById('myForm');

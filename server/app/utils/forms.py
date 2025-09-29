@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, SubmitField, SelectField, PasswordField, FileField
 from wtforms.validators import DataRequired, Length, Email
+from wtforms.validators import DataRequired
 
 def get_creating_element_form(categories):
     zippedCategories = [str(i) for i in range(1, len(categories) + 1)]

@@ -19,6 +19,7 @@ from flask_login import LoginManager, UserMixin, login_user, logout_user, login_
 import signal, sys
 from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy import create_engine, Column, Integer, String
+import os
 
 class Models:
 
@@ -171,6 +172,8 @@ class OnyksApp:
 
     def init(self, config):
         self.config = config
+
+        self.app.config['UPLOAD_FOLDER'] = os.path.abspath(config['database']['elements']['datasheets_folder_path'])
 
         self.__init_filling_site_data()
         self.__init_database()

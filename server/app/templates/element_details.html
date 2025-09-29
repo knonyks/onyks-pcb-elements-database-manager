@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{url_for('static', filename='css/element_details.css')}}">
+{% endblock %}
+
+{% block content %}
+
+<style>
+    .great-parent
+    {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .parent
+    {
+        display: flex;
+        flex-direction: row;
+    }
+    .child
+    {
+        width: 500px;
+    }
+</style>
+
+<div class="great-parent">
+
+    <div class="parent">
+        <div class="child">UUID:</div>
+        <div class="child">{{uuid}}</div>
+    </div>
+
+    <div class="parent">
+        <div class="child">Part Name:</div>
+        <div class="child">{{part_name}}</div>
+    </div>
+
+    <div class="parent">
+        <div class="child">Manufacturer:</div>
+        <div class="child">{{manufacturer}}</div>
+    </div>
+
+    <div class="parent">
+        <div class="child">Manufacturer Part Name:</div>
+        <div class="child">{{manufacturer_part_name}}</div>
+    </div>
+
+    <div class="parent">
+        <div class="child">Category:</div>
+        <div class="child">{{category}}</div>
+    </div>
+
+    <div class="parent">
+        <div class="child">Description</div>
+        <div class="child">{{description}}</div>
+    </div>
+
+    <div class="parent">
+        <div class="child">Value:</div>
+        <div class="child">{{value}}</div>
+    </div>
+
+    <div class="parent">
+        <div class="child">Availability:</div>
+        <div class="child">{{availability}}</div>
+    </div>
+
+    <div class="parent">
+        <div class="child">Library Ref:</div>
+        <div class="child">{{library_ref}}</div>
+    </div>
+
+    <div class="parent">
+        <div class="child">Library Path:</div>
+        <div class="child">{{library_path}}</div>
+    </div>
+
+
+    <div class="parent">
+        <div class="child">footprint Ref 1:</div>
+        <div class="child">{{footprint_ref_1}}</div>
+    </div>
+
+    <div class="parent">
+        <div class="child">Footprint Path 1:</div>
+        <div class="child">{{footprint_path_1}}</div>
+    </div>
+
+    <div class="parent">
+        <div class="child">footprint Ref 1:</div>
+        <div class="child">{{footprint_ref_1}}</div>
+    </div>
+
+    <div class="parent">
+        <div class="child">Footprint Path 1:</div>
+        <div class="child">{{footprint_path_1}}</div>
+    </div>
+
+    <div class="parent">
+        <div class="child">footprint Ref 2:</div>
+        <div class="child">{{footprint_ref_2}}</div>
+    </div>
+
+    <div class="parent">
+        <div class="child">Footprint Path 3:</div>
+        <div class="child">{{footprint_path_3}}</div>
+    </div>
+
+    <a href="{{url_for('show_datasheet', category=category, id=uuid)}}" target="_blank" style="background-color: red;">Datasheet</a>
+    <a href="{{url_for('dashboard')}}" target="_blank" style="background-color: red;">Edit</a>
+    <a href="{{url_for('dashboard')}}" target="_blank" style="background-color: red;">Create similar</a>
+
+</div>
+
+{% endblock %}
+
+        
+
+        
+        
+        
+
+
+
+
+  

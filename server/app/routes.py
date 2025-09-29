@@ -1,13 +1,16 @@
-from flask import Blueprint, render_template, redirect, url_for
+from flask import Blueprint, render_template, redirect, url_for, jsonify
 import app.utils.forms as forms
 from app.utils.database import count_todays_entries, last_entry
 from pathlib import Path
 from app.utils import files
 from datetime import datetime, timedelta
 from flask_socketio import emit
+from flask import send_from_directory
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from flask import Flask, render_template, redirect, url_for, flash, request
 from werkzeug.exceptions import HTTPException
+import os
+from flask import send_from_directory
 
 def condition_decorator(decorator, condition):
     def wrapper(func):
@@ -15,7 +18,13 @@ def condition_decorator(decorator, condition):
     return wrapper
 
 def set_routes(server):
-
+    
+    @server.app.route('/datasheets/<category>/<id>')
+    def show_datasheet(category, id):
+        subfolder = os.path.join(server.app.config["UPLOAD_FOLDER"], category)
+        os.makedirs(subfolder, exist_ok=True)
+        return send_from_directory(subfolder, id + '.pdf', mimetype='application/pdf', as_attachment = False)
+    
     @server.app.route('/')
     @condition_decorator(login_required, server.config['database']['users']['is_enabled'])
     def index():
@@ -95,42 +104,98 @@ def set_routes(server):
         return redirect(url_for('error', code = e.code))
 
     def generate_description(form):
-        print(form.datasheet.data)
+        if not server.config['database']['elements']['is_llm_description_generation_enabled']:
+            return {"mode": "description", 'status': False, "content": "None"}
+        else:
+            return {"mode": "description", 'status': True, "content": "Generated description for " + form.part_name.data + "."}
 
     def create_element(form):
-        print(form.category.data)
-        print(server.config['database']['elements']['categories'][int(form.category.data) - 1])
-        new_element = server.models[server.config['database']['elements']['categories'][int(form.category.data) - 1]](
-            part_name = form.part_name.data,
-            manufacturer = form.manufacturer.data,
-            description = form.description.data,
-            library_ref = form.library_ref.data,
-            library_path = form.library_path.data,
-            footprint_ref_1 = form.footprint_ref_1.data,
-            footprint_path_1 = form.footprint_path_1.data,
-            footprint_ref_2 = form.footprint_ref_2.data,
-            footprint_path_2 = form.footprint_path_2.data,
-            footprint_ref_3 = form.footprint_ref_3.data,
-            footprint_path_3 = form.footprint_path_3.data
-        )
-        server.db.session.add(new_element)
-        server.db.session.commit()
+        try:
+            category = server.config['database']['elements']['categories_tables_name'][int(form.category.data) - 1]
+            new_element = server.models.categories[category](
+                part_name = form.part_name.data,
+                manufacturer = form.manufacturer.data,
+                manufacturer_part_name = form.manufacturer_part_name.data,
+                value = form.value.data,
+                availability = form.availability.data,
+                description = form.description.data,
+                library_ref = form.library_ref.data,
+                library_path = form.library_path.data,
+                footprint_ref_1 = form.footprint_ref_1.data,
+                footprint_path_1 = form.footprint_path_1.data,
+                footprint_ref_2 = form.footprint_ref_2.data,
+                footprint_path_2 = form.footprint_path_2.data,
+                footprint_ref_3 = form.footprint_ref_3.data,
+                footprint_path_3 = form.footprint_path_3.data
+            )
+            server.db.session.add(new_element)
+            server.db.session.commit()
+            if form.datasheet.data != "":
+                subfolder = os.path.join("datasheets", category)
+                os.makedirs(subfolder, exist_ok=True)
+                filename = new_element.uuid + ".pdf"
+                filepath = os.path.join(subfolder, filename)
+                form.datasheet.data.save(filepath)
+            else:
+                pass
+            server.db.session.commit()
+            return {"uuid":new_element.uuid, "category":category}
+        except:
+            return None
 
     @server.app.route('/element/create', methods=['GET', 'POST'])
     @condition_decorator(login_required, server.config['database']['users']['is_enabled'])
     def element_create():
         form = server.forms['creating_element']()
+
         if form.validate_on_submit():
-            if form.accept.data:
-                create_element(form)
-            elif form.generate_description.data:
-                generate_description(form)
+            if form.generate_description.data:
+                result = generate_description(form)
+                result = jsonify(result)
+            else:
+                result = create_element(form)
+                print(result)
+                if result != None:
+                    return redirect(url_for("element_details", category=result["category"], id=result["uuid"]))
+                else:
+                    return redirect(url_for('error', code = 400))
+            return result
         parameters = {}
         parameters['active_page'] = 'create_element'
         parameters['title'] = 'Create element'
         parameters['form'] = form
         return render_template('element_form.html', **parameters)
     
+    @server.app.route('/element/details/<category>/<string:id>')
+    @condition_decorator(login_required, server.config['database']['users']['is_enabled'])
+    def element_details(category, id):
+        if category in server.models.categories.keys():
+            element = server.models.categories[category].query.filter_by(uuid=id).first()
+            if element != None:
+                parameters = {}
+                parameters["uuid"] = id
+                parameters['part_name'] = element.part_name
+                parameters['manufacturer'] = element.manufacturer
+                parameters['manufacturer_part_name'] = element.manufacturer_part_name
+                parameters['category'] = category
+                parameters['description'] = element.description
+                parameters['value'] = category
+                parameters['availability'] = element.availability
+                parameters['library_ref'] = element.library_ref
+                parameters['library_path'] = element.library_path
+                parameters['footprint_ref_1'] = element.footprint_ref_1
+                parameters['footprint_path_1'] = element.footprint_path_1
+                parameters['footprint_ref_2'] = element.footprint_ref_2
+                parameters['footprint_path_2'] = element.footprint_path_2
+                parameters['footprint_ref_3'] = element.footprint_ref_3
+                parameters['footprint_path_3'] = element.footprint_path_3
+                return render_template('element_details.html', **parameters)
+        return redirect(url_for('error', code = 400))
+        
+
+        
+
+
     def element_edit():
         pass
 

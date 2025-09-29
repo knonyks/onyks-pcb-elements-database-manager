@@ -4,3 +4,4 @@ svn_repo
 .cache
 *.json
 !config.json
+datasheets

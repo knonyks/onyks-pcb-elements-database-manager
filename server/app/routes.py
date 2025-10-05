@@ -40,7 +40,12 @@ def set_routes(server):
         parameters['symbols_amount'] = server.filling_site_data["footprints_amount"]
         parameters['elemenents_amount'] = sum([server.models.categories[i].query.count() for i in server.models.categories])
         parameters['elements_todays_amount'] = sum([count_todays_entries(server.models.categories[i]) for i in server.models.categories])
-        parameters['last_element_added'] = last_entry(list(server.models.categories.values())).part_name
+        
+        last_element_added = last_entry(list(server.models.categories.values()))
+        if last_element_added != None:
+            parameters['last_element_added'] = last_entry(list(server.models.categories.values())).part_name
+        else:
+            parameters['last_element_added'] = 0
         parameters['are_users_enabled'] = server.config['database']['users']['is_enabled']
         parameters['categories_elements_amount'] = {key:server.models.categories[key].query.count() for key in server.models.categories}
         return render_template('dashboard.html', **parameters)

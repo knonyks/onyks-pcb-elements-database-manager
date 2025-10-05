@@ -30,9 +30,9 @@ def list_files_with_type(path):
                 result.append([entry, "folder"])
             else:
                 ext = os.path.splitext(entry)[1][1:]
-                if ext == 'PcbLib':
+                if ext == 'PcbLib' or ext == 'PCBLIB':
                     ext = 'pcblib'
-                elif ext == 'SchLib':
+                elif ext == 'SchLib' or ext == 'SCHLIB':
                     ext = 'schlib'
                 else:
                     ext = 'file'

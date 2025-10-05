@@ -25,7 +25,7 @@ python run.py --config=my_config.json
 
 Before running we need to set up a config file - config.json. It have to be filled by our input data for database and also for a SVN repository.
 
-### Config file
+### Config file description
 
 Soon.
 
@@ -174,3 +174,81 @@ VALUES ('Zbyszek', 'Władywostok', 'user', 'zbyszek@example.com',
         '$2b$12$/Dpf4Rf/Ub992SaHYcD5VuBnjdn315i5c5ChLpDal0vZAR5hAGfMu',
             FALSE);
 ```
+
+
+
+
+
+## Production server - instruction
+
+### Gunicorn instruction
+Assumption: Python 3.11 and systemd.
+
+Tested on Ubuntu 24.04
+
+1. Download the repository
+
+2. Next, go to a directory ```server``` and create there a python environment: 
+
+```
+cd server
+python -m venv .venv
+```
+
+3. Activate the python environment and install require packages:
+
+```
+source ./.venv/bin/activate
+python3 -m pip install -r requirements.txt
+```
+
+4. If our python environment is ready, we can start creating the system service: 
+
+```sudo nano /etc/systemd/system/onyks_pcb_element_database_manager_server.service```
+
+5. We need to fill the system service file for our server like below:
+
+```
+[Unit]
+Description=Onyks PCB Elements Database Manager
+After=network.target
+
+[Service]
+User=user
+Group=user
+WorkingDirectory=/home/user/onyks-pcb-elements-database-manager/server
+Environment="PATH=/home/user/onyks-pcb-elements-database-manager/server/.venv:/bin/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+Environment="FLASK_ENV=production"
+Environment="ONYKS_CONFIG=my_config.json"
+ExecStart=/home/user/onyks-pcb-elements-database-manager/server/.venv/bin/gunicorn -k eventlet -w 1 wsgi:app  --bind 127.0.0.1:5000
+Restart=always
+RestartSec=5s
+StandardOutput=append:/var/log/onyks_pcb_element_database_manager_server.out.log
+StandardError=append:/var/log/onyks_pcb_element_database_manager_server.err.log
+SyslogIdentifier=onyks_pcb_element_database_manager_server
+
+[Install]
+WantedBy=multi-user.target
+```
+
+We need to adjust these lines to our machine:
+* ```User=*``` - the user of the service;
+* ```Group=*``` - the group of the user which we entered in ```User`` field;
+* ```WorkingDirectory=*``` - the absolute path to the folder ```server```;
+* ```Environment="PATH=*"``` - the line which contains absolute paths to bins where the service can get installed system packages and also our python environment;
+* ```Environment="ONYKS_CONFIG=*"``` - a relative path to the config which we want to use; it's the relative path from ```server``` directory (where we created the ```.venv```);
+* ```ExecStart=*``` - it contains the command which starts the server - it has to be filled with an absolute path to the gunicorn from ```.venv``` in folder ```server```;
+
+6. Reload systemd: ```sudo systemctl daemon-reload```
+7. Run the service: ```sudo systemctl start onyks_pcb_element_database_manager_server```
+8. If we want to start the service everytime when the system turn on we need to type: ```sudo systemctl enable onyks_pcb_element_database_manager_server```
+9. If we want to check the status of the service we need to type: ```sudo systemctl status onyks_pcb_element_database_manager_server```
+10. To watch live the logs: ```journalctl -u onyks_pcb_element_database_manager_server -f```
+
+### Nginx
+
+Soon.
+
+### WSGI
+
+Soon.

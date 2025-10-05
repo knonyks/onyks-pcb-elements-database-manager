@@ -37,7 +37,7 @@ class OnyksApp:
 
     def __init__(self):
         self.app = Flask(__name__)
-        self.socketio = SocketIO(self.app, cors_allowed_origins="*")
+        self.socketio = SocketIO(self.app, cors_allowed_origins="*", async_mode='eventlet')
 
         self.db = SQLAlchemy()
         self.config = None

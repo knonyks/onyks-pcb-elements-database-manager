@@ -20,6 +20,9 @@ import signal, sys
 from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy import create_engine, Column, Integer, String
 import os
+import redis
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 class Models:
 
@@ -47,14 +50,19 @@ class OnyksApp:
         self.login_manager = None
         self.bcrypt = None
 
-        #svn
-        self.repository = None
-        self.repository_updater_flag = True
-        self.repository_updater_thread = None
-
         #forms
         self.forms = {}
+
+        #redis
+        self.r = None
+
+    def __init_redis(self):
+        self.r = redis.Redis(host="localhost", port=6379, db=0)
         
+    def __init_limiter(self):
+        self.limiter = Limiter(get_remote_address, app=self.app)
+        self.limiter.limit("5 per minute")(login_post)
+
     def __init_filling_site_data(self):
         self.filling_site_data["symbols_amount"] = 0
         self.filling_site_data["footprints_amount"] = 0
@@ -88,72 +96,6 @@ class OnyksApp:
         for i in self.config['database']['elements']['categories_tables_name']:
             self.models.categories[i] = get_element_model(self.db, i)
 
-    def __init_repository(self):
-        config_copy = copy.deepcopy(self.config['svn']['config'])
-        config_copy['path'] = Path('.cache') / Path('svn')
-        config_copy['path'] = str(config_copy['path'])
-        self.repository = SVN(**config_copy)
-
-        self.repository.init()
-        self.repository.pull()
-
-        self.repository_updater_thread = threading.Thread(target = self.__repository_updater)
-        self.repository_updater_thread.deamon = True
-        self.repository_updater_thread.start()
-
-    def __repository_updater(self):
-        symbols_path = Path(self.repository.path) / self.config['svn']['source_folders']['symbols']
-        footprints_path = Path(self.repository.path) / self.config['svn']['source_folders']['footprints']
-        rev = 0
-
-        while self.repository_updater_flag:
-            result = self.__detect_repository_update(symbols_path.as_posix(), footprints_path.as_posix(), rev)
-            if result != None:
-                self.filling_site_data["symbols_amount"] = result[0]
-                self.filling_site_data["footprints_amount"] = result[1]
-                rev = result[2]
-            else:
-                pass
-            if not self.repository_updater_flag:
-                break
-            time.sleep(self.config['svn']['update_frequency'])
-        print("❌❌❌  SVN LOOP ENDS!!  ❌❌❌")
-
-    def __detect_repository_update(self, symbols_path, footprints_path, last_rev):
-        self.repository.local.cleanup()
-        self.repository.pull()
-
-
-        if self.repository.getLastCommitIndexAndDate()['rev'] > last_rev or last_rev == 0:
-            print('✅ THE SVN HAS BEEN UPDATED!')
-
-            #rev
-            rev = self.repository.getLastCommitIndexAndDate()['rev']
-
-            #symbols
-            paths = files.findAllFiles(symbols_path, '.SchLib')
-            symbols = 0
-            for i in paths:
-                try:
-                    schlib_file = pyaltiumlib.read(i)
-                    symbols += len(schlib_file.list_parts())
-                except:
-                    pass
-
-            #footprints
-            paths = files.findAllFiles(footprints_path, '.PcbLib')
-            footprints = 0
-            for i in paths:
-                try:
-                    schlib_file = pyaltiumlib.read(i)
-                    footprints += len(schlib_file.list_parts())
-                except:
-                    pass
-            return symbols, footprints, rev
-        else:
-            print('❌ THE SVN HASN\'T HAD AN UPDATE!')
-            return None
-        
     def __init_forms(self):
         self.forms['creating_element'] = get_creating_element_form(self.config['database']['elements']['categories_tables_name'])
         if self.config['database']['users']['is_enabled']:
@@ -172,14 +114,13 @@ class OnyksApp:
 
     def init(self, config):
         self.config = config
-
         self.app.config['UPLOAD_FOLDER'] = os.path.abspath(config['database']['elements']['datasheets_folder_path'])
 
         self.__init_filling_site_data()
         self.__init_database()
-        self.__init_repository()
         self.__init_forms()
         self.__init_routes()
+        self.__init_redis()
 
         signal.signal(signal.SIGINT, self.__signal_exit)
         signal.signal(signal.SIGTERM, self.__signal_exit)

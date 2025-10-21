@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{url_for('static', filename='css/login.css')}}">
     <link rel="stylesheet" href="{{url_for('static', filename='css/general.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/utils/toast.css')}}">
     <title>Logowanie</title>
 </head>
 <body>
@@ -15,7 +16,7 @@
         </div>
         
         <div class="login-container">
-            <form method="post" class="login-form">
+            <form method="post" class="login-form" id="login-form">
                 <h2>Zaloguj się do systemu ONYKS</h2>
                 {{ form.hidden_tag() }}
                 
@@ -33,5 +34,9 @@
             </form>
         </div>
     </div>
+    <script src="{{ url_for('static', filename='js/utils/toast.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
+
 </html>

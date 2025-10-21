@@ -9,7 +9,7 @@
     text-align: center;
     border-radius: 0.5rem 0.5rem 0.5rem 0.5rem;
     backdrop-filter: blur(10px);
-    width: max-content;
+    min-width: 300px;
     border-bottom: 0;
     box-shadow: 0 12px 32px var(--dark-light);
     padding: 1rem;

@@ -36,8 +36,8 @@ def set_routes(server):
         parameters = {}
         parameters['active_page'] = 'dashboard'
         parameters['title'] = 'Dashboard'
-        parameters['footprints_amount'] = server.filling_site_data["symbols_amount"]
-        parameters['symbols_amount'] = server.filling_site_data["footprints_amount"]
+        parameters['footprints_amount'] = int(server.r.get("symbols_amount"))
+        parameters['symbols_amount'] = int(server.r.get("footprints_amount"))
         parameters['elemenents_amount'] = sum([server.models.categories[i].query.count() for i in server.models.categories])
         parameters['elements_todays_amount'] = sum([count_todays_entries(server.models.categories[i]) for i in server.models.categories])
         
@@ -227,20 +227,17 @@ def set_routes(server):
 
         @server.app.route("/login", methods=["GET", "POST"])
         def login():
+            if current_user.is_authenticated:
+                return redirect(url_for("dashboard"))
             form = server.forms['login']()
             if form.validate_on_submit():
                 user = find_user(form.username.data)
-                print(server.bcrypt.generate_password_hash(form.password.data).decode("utf-8"))
                 if user and server.bcrypt.check_password_hash(user.password, form.password.data):
-                    # # sprawdź datę wygaśnięcia
-                    # if user.expired_access_time and user.access_expires < datetime.utcnow():
-                    #     print("Dostęp wygasł dla tego konta.", "warning")
-                    #     return redirect(url_for("login"))
                     login_user(user)
-                    print("Zalogowano pomyślnie.", "success")
-                    next_page = request.args.get("next")
-                    return redirect(next_page or url_for("dashboard"))
-                print("Błędny login lub hasło.", "danger")
+                    next_page = request.args.get("next") or url_for("dashboard")
+                    return jsonify(success=True, redirect=next_page)
+                else:
+                    return jsonify(success=False)
             return render_template("login.html", form=form)
         
         @server.app.route("/logout")

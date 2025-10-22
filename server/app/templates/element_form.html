@@ -73,21 +73,21 @@
     </div>
 </div>
 
-<form method="POST" id="element-form" class="form-grid" enctype="multipart/form-data">
+<form method="POST" id="element-form" class="form-grid" enctype="multipart/form-data" autocomplete="off">
     <div class="form-column">
         {{ form.hidden_tag() }}
 
         <!-- PART NAME -->
         {{ form.part_name.label }}
-        {{ form.part_name(size=32, placeholder="Part name") }}
+        {{ form.part_name(size=32, placeholder="Part name", maxlength=256) }}
 
         <!-- MANUFACTURER -->
         {{ form.manufacturer.label}}
-        {{ form.manufacturer()}}
+        {{ form.manufacturer(placeholder="Manufacturer", maxlength=256)}}
 
         <!-- MANUFACTURER PART NAME -->
         {{ form.manufacturer_part_name.label}}
-        {{ form.manufacturer_part_name()}}
+        {{ form.manufacturer_part_name(placeholder="Manufacturer Part Name", maxlength=256)}}
 
         <!-- CATEGORY -->
         {{ form.category.label }}
@@ -95,66 +95,64 @@
 
         <!-- DATASHEET -->
         {{ form.datasheet.label }}
-        {{ form.datasheet() }} 
+        {{ form.datasheet(accept=".pdf") }} 
 
         <!-- DESCRIPTION -->
         {{ form.description.label }}
-        {{ form.description(rows=4, placeholder="Description") }}
+        {{ form.description(rows=4, placeholder="Description", maxlength=256) }}
         <div style="display: flex; align-items: center; gap: 0.5em;">
-            {{ form.generate_description(class="generate-description-btn") }}
+            {{form.generate_description(class="generate-description-btn") }}
             <span class="description-hint">Kliknij, aby wygenerować opis</span>
         </div>
 
         <!-- VALUE -->
         {{ form.value.label }}
-        {{ form.value() }}
+        {{ form.value(placeholder="e.g. 100 uF", maxlength=256) }}
 
         <!-- AVAILABILITY -->
         {{ form.availability.label }}
-        {{ form.availability() }}
+        {{ form.availability(placeholder="e.g. 124, +1000, A lot", maxlength=256) }}
     </div>
 
     <div class="form-column">
         <!-- LIBRARY REF -->
         {{ form.library_ref.label }}
-        {{ form.library_ref(placeholder="library_ref", id="library-ref") }}
+        {{ form.library_ref(placeholder="Library Reference", id="library-ref") }}
 
         <!-- LIBRARY PATH -->
         {{ form.library_path.label }}
-        {{ form.library_path(placeholder="library_path", id="library-path") }}
-        <button id="symbol-picker-btn" type="button">Pick symbol</button>
+        {{ form.library_path(placeholder="Library Path", id="library-path") }}
+        <button id="symbol-picker-btn" type="button">Select</button>
         
         <!-- FOOTPRINT REF 1 -->
         {{ form.footprint_ref_1.label }}
-        {{ form.footprint_ref_1(placeholder="footprint_ref_1", id="footprint-ref-1") }}
+        {{ form.footprint_ref_1(placeholder="Footprint Reference No. 1", id="footprint-ref-1") }}
 
          <!-- FOOTPRINT PATH 1 -->
         {{ form.footprint_path_1.label }}
-        {{ form.footprint_path_1(placeholder="footprint_path_1", id="footprint-path-1") }}
-        <button id="footprint-picker-1-btn" type="button">Pick footprint no. 1</button>
+        {{ form.footprint_path_1(placeholder="Footprint Path No. 1", id="footprint-path-1") }}
+        <button id="footprint-picker-1-btn" type="button">Select</button>
 
         <!-- FOOTPRINT REF 2 -->
         {{ form.footprint_ref_2.label }}
-        {{ form.footprint_ref_2(placeholder="footprint_ref_2", id="footprint-ref-2") }}
+        {{ form.footprint_ref_2(placeholder="Footprint Reference No. 2", id="footprint-ref-2") }}
 
         <!-- FOOTPRINT PATH 2 -->
         {{ form.footprint_path_2.label }}
-        {{ form.footprint_path_2(placeholder="footprint_path_2", id="footprint-path-2") }}
-        <button id="footprint-picker-2-btn" type="button">Pick footprint no. 2</button>
+        {{ form.footprint_path_2(placeholder="Footprint Path No. 2", id="footprint-path-2") }}
+        <button id="footprint-picker-2-btn" type="button">Select</button>
 
         <!-- FOOTPRINT REF 3 -->
         {{ form.footprint_ref_3.label }}
-        {{ form.footprint_ref_3(placeholder="footprint_ref_3", id="footprint-ref-3") }}
+        {{ form.footprint_ref_3(placeholder="Footprint Reference No. 3", id="footprint-ref-3") }}
 
         <!-- FOOTPRINT PATH 3 -->
         {{ form.footprint_path_3.label }}
-        {{ form.footprint_path_3(placeholder="footprint_path_3", id="footprint-path-3") }}
-        <button id="footprint-picker-3-btn" type="button">Pick footprint no. 3</button>
+        {{ form.footprint_path_3(placeholder="Footprint Path No. 3", id="footprint-path-3") }}
+        <button id="footprint-picker-3-btn" type="button">Select</button>
     </div>
 
-    <div class="form-submit">
-        {{ form.accept(class="btn btn-primary") }}
-    </div>
+    <div class="form-submit">{{form.accept(class="btn btn-primary")}}</div>
 </form>
 {% endblock %}
 

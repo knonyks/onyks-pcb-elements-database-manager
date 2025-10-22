@@ -9,34 +9,30 @@
     <link rel="stylesheet" href="{{url_for('static', filename='css/utils/toast.css')}}">
     <title>Logowanie</title>
 </head>
+
 <body>
     <div class="login-wrapper">
-        <div class="login-logo-top">
-            <img src="{{url_for('static', filename='img/logo.png')}}" alt="ONYKS Logo">
-        </div>
-        
+        <div class="login-logo-top"><img src="{{url_for('static', filename='img/logo.png')}}" alt="ONYKS Logo"></div>
         <div class="login-container">
             <form method="post" class="login-form" id="login-form">
                 <h2>Zaloguj się do systemu ONYKS</h2>
-                {{ form.hidden_tag() }}
-                
+                {{form.hidden_tag()}}
+
                 <div class="form-group">
-                    {{ form.username.label }}
-                    {{ form.username(size=32, class="form-input") }}
+                    {{form.username.label}}
+                    {{form.username(size=32, class="form-input")}}
                 </div>
 
                 <div class="form-group">
-                    {{ form.password.label }}
-                    {{ form.password(size=32, class="form-input") }}
+                    {{form.password.label }}
+                    {{form.password(size=32, class="form-input")}}
                 </div>
 
-                {{ form.accept() }}
+                {{form.accept()}}
             </form>
         </div>
     </div>
     <script src="{{ url_for('static', filename='js/utils/toast.js') }}"></script>
     <script src="{{ url_for('static', filename='js/login.js') }}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
-
 </html>

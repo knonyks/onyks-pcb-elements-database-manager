@@ -1,37 +1,35 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, SubmitField, SelectField, PasswordField, FileField
 from wtforms.validators import DataRequired, Length, Email
-from wtforms.validators import DataRequired
+from flask_wtf.file import FileField, FileRequired, FileAllowed
 
 def get_creating_element_form(categories):
-    zippedCategories = [str(i) for i in range(1, len(categories) + 1)]
-    zippedCategories = zip(zippedCategories, categories)
+    zippedCategories = zip(categories, categories)
     zippedCategories = list(zippedCategories)
 
     class CreatingElementForm(FlaskForm):
         
-        part_name = StringField('Part Name')
-        manufacturer = StringField('Manufacturer')
-        manufacturer_part_name = StringField('Manufacturer Part Name')
+        part_name = StringField('Part Name', validators=[DataRequired(), Length(max=256)])
+        manufacturer = StringField('Manufacturer', validators=[Length(max=256)])
+        manufacturer_part_name = StringField('Manufacturer Part Name', validators=[Length(max=256)])
         category = SelectField('Category', choices=zippedCategories)
-        datasheet = FileField('Datasheet')
-        description = TextAreaField('Description')
+        datasheet = FileField('Datasheet', validators=[FileAllowed(['pdf'], "Tylko pliki PDF są dozwolone!")])
+        description = TextAreaField('Description', validators=[Length(max=256)])
         generate_description = SubmitField('Generate')
-        value = StringField('Value')
-        availability = StringField('Availability')
+        value = StringField('Value', validators=[Length(max=256)])
+        availability = StringField('Availability', validators=[Length(max=256)])
 
         library_ref = StringField('Library Reference')
         library_path = StringField('Library Path')
 
-        footprint_ref_1 = StringField('Footprint Ref 1')
-        footprint_path_1 = StringField('Footprint Path 1')
+        footprint_ref_1 = StringField('Footprint Reference No. 1')
+        footprint_path_1 = StringField('Footprint Path No. 1')
         
-        footprint_ref_2 = StringField('Footprint Ref 2')
-        footprint_path_2 = StringField('Footprint Path 2')
+        footprint_ref_2 = StringField('Footprint Reference No. 2')
+        footprint_path_2 = StringField('Footprint Path No. 2')
 
-        footprint_ref_3 = StringField('Footprint Ref 3')
-        footprint_path_3 = StringField('Footprint Path 3')
-
+        footprint_ref_3 = StringField('Footprint Reference No. 3')
+        footprint_path_3 = StringField('Footprint Path No. 3')
 
         accept = SubmitField('Accept')
     

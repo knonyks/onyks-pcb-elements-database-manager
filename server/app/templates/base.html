@@ -2,45 +2,36 @@
 <html lang="en">
 
 <head>
+    <title>{{title}} - ONYKS PCB Elements Database Manager</title>
     <meta charset="utf-8"/>
-    <title>{{title}}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <link rel="icon" href="{{url_for('static', filename='img/ico.ico')}}">
-
+    <link rel="icon" href="{{url_for('static', filename='img/icon.ico')}}">
     <link rel="stylesheet" href="{{url_for('static', filename='css/general.css')}}">
     <link rel="stylesheet" href="{{url_for('static', filename='css/navbar.css')}}">
     <link rel="stylesheet" href="{{url_for('static', filename='css/utils/toast.css')}}">
     <link rel="stylesheet" href="{{url_for('static', filename='css/utils/dialog.css')}}">
-
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    {% block css %}
+
+    {% endblock %}
 </head>
-
-{% block css %}
-
-{% endblock %}
 
 <body>
     <div class="content-container">
         <div class="navbar">
-            <a class="logo" href="{{url_for('dashboard')}}"><img src="{{url_for('static', filename='img/logo.png')}}"
-                    alt="ONYKS Logo"></a>
+            <a class="logo" href="{{url_for('dashboard')}}">
+                <img src="{{url_for('static', filename='img/logo.png')}}" alt="ONYKS Logo"></a>
             <div class="nav-btns">
-                <a class="nav-btn {% if active_page == 'dashboard' %} open{% endif %}"
-                    href="{{url_for('dashboard')}}">Strona Główna</a>
-                <a class="nav-btn {% if active_page == 'search_components' %} open{% endif %}"
-                    href="{{url_for('search_compontents')}}">Wyszukiwarka</a>
-                <a class="nav-btn {% if active_page == 'explorer' %} open{% endif %}"
-                    href="{{url_for('explorer')}}">Eksplorator</a>
-                <a class="nav-btn {% if active_page == 'settings' %} open{% endif %}"
-                    href="{{url_for('settings')}}">Ustawienia</a>
+                <a class="nav-btn {% if active_page == 'dashboard' %} open{% endif %}" href="{{url_for('dashboard')}}">Strona Główna</a>
+                <a class="nav-btn {% if active_page == 'search_components' %} open{% endif %}" href="{{url_for('search_compontents')}}">Wyszukiwarka</a>
+                <a class="nav-btn {% if active_page == 'explorer' %} open{% endif %}" href="{{url_for('explorer')}}">Eksplorator</a>
+                <a class="nav-btn {% if active_page == 'settings' %} open{% endif %}" href="{{url_for('settings')}}">Ustawienia</a>
                 <a class="nav-btn" href="https://github.com/knonyks" id="onyks-github-btn" target="_blank">ONYKS</a>
             </div>
             <div class="navbar-show-hide-btn"></div>
         </div>
         <div class="main-container">
             {% block content %}
-
             {% endblock %}
         </div>
         <div class="footer">

@@ -14,7 +14,7 @@ from app.utils.svn import SVN
 # args = parser.parse_args()
 
 
-config_path = os.environ.get("ONYKS_CONFIG", "config.json")
+config_path = os.environ.get("ONYKS_CONFIG", "my_config.json")
 config = json.loads(open(config_path).read())
 
 config_copy = copy.deepcopy(config['svn']['config'])

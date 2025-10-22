@@ -86,7 +86,7 @@
 
         <div class="actions-section">
             <a href="{{url_for('show_datasheet', category=category, id=uuid)}}" target="_blank" class="action-btn datasheet-btn">Datasheet</a>
-            <a href="{{url_for('dashboard')}}" class="action-btn edit-btn">Edit</a>
+            <a href="{{url_for('element_edit', category=category, id=uuid)}}" class="action-btn edit-btn">Edit</a>
             <a href="{{url_for('dashboard')}}" class="action-btn similar-btn">Create similar</a>
         </div>
     </div>

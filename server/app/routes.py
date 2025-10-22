@@ -44,8 +44,6 @@ def set_routes(server):
         last_element_added = last_entry(list(server.models.categories.values()))
         if last_element_added != None:
             parameters['last_element_added'] = last_entry(list(server.models.categories.values())).part_name
-        else:
-            parameters['last_element_added'] = 0
         parameters['are_users_enabled'] = server.config['database']['users']['is_enabled']
         parameters['categories_elements_amount'] = {key:server.models.categories[key].query.count() for key in server.models.categories}
         return render_template('dashboard.html', **parameters)
@@ -116,8 +114,8 @@ def set_routes(server):
 
     def create_element(form):
         try:
-            category = server.config['database']['elements']['categories_tables_name'][int(form.category.data) - 1]
-            new_element = server.models.categories[category](
+            # category = server.config['database']['elements']['categories_tables_name'][int(form.category.data) - 1]
+            new_element = server.models.categories[form.category.data](
                 part_name = form.part_name.data,
                 manufacturer = form.manufacturer.data,
                 manufacturer_part_name = form.manufacturer_part_name.data,
@@ -135,8 +133,9 @@ def set_routes(server):
             )
             server.db.session.add(new_element)
             server.db.session.commit()
-            if form.datasheet.data != "":
-                subfolder = os.path.join("datasheets", category)
+            print("aaa ", form.datasheet.data)
+            if form.datasheet.data != "" and form.datasheet.data != None:
+                subfolder = os.path.join("datasheets", form.category.data)
                 os.makedirs(subfolder, exist_ok=True)
                 filename = new_element.uuid + ".pdf"
                 filepath = os.path.join(subfolder, filename)
@@ -144,22 +143,24 @@ def set_routes(server):
             else:
                 pass
             server.db.session.commit()
-            return {"uuid":new_element.uuid, "category":category}
-        except:
+            return {"uuid":new_element.uuid, "category":form.category.data}
+        except Exception as e:
+            print(e)    
             return None
 
     @server.app.route('/element/create', methods=['GET', 'POST'])
     @condition_decorator(login_required, server.config['database']['users']['is_enabled'])
     def element_create():
         form = server.forms['creating_element']()
-
+        print(form.validate_on_submit())
+        print(form.errors)
+        print(form)
         if form.validate_on_submit():
             if form.generate_description.data:
                 result = generate_description(form)
                 result = jsonify(result)
             else:
                 result = create_element(form)
-                print(result)
                 if result != None:
                     return redirect(url_for("element_details", category=result["category"], id=result["uuid"]))
                 else:
@@ -184,7 +185,7 @@ def set_routes(server):
                 parameters['manufacturer_part_name'] = element.manufacturer_part_name
                 parameters['category'] = category
                 parameters['description'] = element.description
-                parameters['value'] = category
+                parameters['value'] = element.value
                 parameters['availability'] = element.availability
                 parameters['library_ref'] = element.library_ref
                 parameters['library_path'] = element.library_path
@@ -198,7 +199,34 @@ def set_routes(server):
         return redirect(url_for('error', code = 400))
         
 
-        
+    @server.app.route('/element/edit/<category>/<string:id>', methods=['GET', 'POST'])
+    @condition_decorator(login_required, server.config['database']['users']['is_enabled'])
+    def element_edit(category, id):
+        form = server.forms['creating_element']()
+        if category in server.models.categories.keys():
+            element = server.models.categories[category].query.filter_by(uuid=id).first()
+            if element != None:
+                form.part_name.data = element.part_name
+                form.manufacturer.data = element.manufacturer
+                form.manufacturer_part_name.data = element.manufacturer_part_name
+                form.category.data = category
+                form.description.data = element.description
+                form.value.data = element.value
+                form.availability.data = element.availability
+                form.library_ref.data = element.library_ref
+                form.library_path.data = element.library_path
+                form.footprint_ref_1.data = element.footprint_ref_1
+                form.footprint_path_1.data = element.footprint_path_1
+                form.footprint_ref_2.data = element.footprint_ref_2
+                form.footprint_path_2.data = element.footprint_path_2
+                form.footprint_ref_3.data = element.footprint_ref_3
+                form.footprint_path_3.data = element.footprint_path_3
+
+        parameters = {}
+        parameters['active_page'] = 'create_element'
+        parameters['title'] = 'Create element'
+        parameters['form'] = form
+        return render_template('element_form.html', **parameters)
 
 
     def element_edit():

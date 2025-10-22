@@ -252,3 +252,32 @@ Soon.
 ### WSGI
 
 Soon.
+
+
+
+```sudo nano /etc/systemd/system/onyks_pcb_element_database_manager_repository_worker.service```
+
+
+
+```
+[Unit]
+Description=Onyks PCB Elements Database Manager Repository Worker
+After=network.target
+
+[Service]
+User=zero-jedynkowy
+Group=zero-jedynkowy
+WorkingDirectory=/home/zero-jedynkowy/onyks-pcb-elements-database-manager/server
+Environment="PATH=/home/zero-jedynkowy/onyks-pcb-elements-database-manager/server/.venv:/bin/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+Environment="FLASK_ENV=production"
+Environment="ONYKS_CONFIG=my_config.json"
+ExecStart=/home/zero-jedynkowy/onyks-pcb-elements-database-manager/server/.venv/bin/python repository_worker.py --config=$ONYKS_CONFIG
+Restart=always
+RestartSec=5s
+StandardOutput=append:/var/log/onyks_pcb_element_database_manager_repository_worker.out.log
+StandardError=append:/var/log/onyks_pcb_element_database_manager_repository_worker.err.log
+SyslogIdentifier=onyks_pcb_element_database_manager_repository_worker
+
+[Install]
+WantedBy=multi-user.target
+```

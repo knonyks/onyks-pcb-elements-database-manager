@@ -158,15 +158,15 @@ def set_routes(server):
             )
             server.db.session.add(new_element)
             server.db.session.commit()
-            print("aaa ", form.datasheet.data)
             if form.datasheet.data != "" and form.datasheet.data != None:
                 subfolder = os.path.join("datasheets", form.category.data)
                 os.makedirs(subfolder, exist_ok=True)
                 filename = new_element.uuid + ".pdf"
                 filepath = os.path.join(subfolder, filename)
                 form.datasheet.data.save(filepath)
+                new_element.datasheet = True
             else:
-                pass
+                new_element.datasheet = False
             server.db.session.commit()
             return {"uuid":new_element.uuid, "category":form.category.data}
         except Exception as e:
@@ -220,6 +220,7 @@ def set_routes(server):
                 parameters['footprint_path_2'] = element.footprint_path_2
                 parameters['footprint_ref_3'] = element.footprint_ref_3
                 parameters['footprint_path_3'] = element.footprint_path_3
+                parameters['datasheet'] = element.datasheet
                 return render_template('element_details.html', **parameters)
         return redirect(url_for('error', code = 400))
         

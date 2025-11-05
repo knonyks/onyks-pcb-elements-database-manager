@@ -12,7 +12,7 @@ def get_element_model(db, tablename):
         manufacturer = db.Column(db.String, index=True, unique=False, nullable=True)
         manufacturer_part_name = db.Column(db.String, index=True, unique=False, nullable=True)
 
-        datasheet = db.Column(db.String, index=True, unique=False, nullable=True)
+        datasheet = db.Column(db.Boolean, index=True, unique=False, nullable=True)
         description = db.Column(db.String, nullable=True)
 
         value = db.Column(db.String, index=True, unique=False, nullable=True)

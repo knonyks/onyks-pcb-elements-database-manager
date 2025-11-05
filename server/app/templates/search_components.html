@@ -4,129 +4,75 @@
     <link rel="stylesheet" href="{{url_for('static', filename='css/search_components.css')}}">
 {% endblock %}
 
-
-
-
 {% block content %}
-
-    <div class="search-container">
-        <div class="" style="display: flex; flex-direction: row; gap: 1rem; margin-bottom: 1rem;">
+    
+    <div class="search-container" style="display: flex; flex-direction: column;">
+        <div style="display: flex; flex-direction: row; gap: 1rem; margin-bottom: 1rem;">
             <a href="{{url_for('element_create')}}" style="padding: 1rem; width: 200px; background-color: red;">Create</a>
             <a href="{{url_for('element_create')}}" style="padding: 1rem; width: 200px; background-color: red;">Edit</a>
             <a href="{{url_for('element_create')}}" style="padding: 1rem; width: 200px; background-color: red;">Create similar</a>
-            <a href="{{url_for('element_create')}}" style="padding: 1rem; width: 200px; background-color: red;">Delete</a>
-            <!-- <a href="{{url_for('element_create')}}" style="padding: 1rem; width: 200px; background-color: red;">Show details</a> -->
         </div>
+        <div style="display: flex; flex-direction: row; gap: 1rem; margin-bottom: 1rem;">
+            <a href="{{url_for('element_create')}}" style="padding: 1rem; width: 200px; background-color: red;">Delete</a>
+            <a href="{{url_for('element_create')}}" style="padding: 1rem; width: 200px; background-color: red;">Print list</a>
+            <a href="{{url_for('element_create')}}" style="padding: 1rem; width: 200px; background-color: red;">Generate labels</a>
+        </div>
+
+        <h4>Search in</h4>
+        <div style="display: flex; flex-direction: row; gap: 1rem; margin-bottom: 1rem;">
+            {% for category in categories %}
+                <div>
+                    <input type="checkbox" class="category" data-name="{{category}}">
+                    <div>{{ category }}</div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <h4>Search in</h4>
+        <div style="display: flex; flex-direction: row; gap: 1rem; margin-bottom: 1rem; width: 100%; overflow-y: auto;">
+            {% for field in fields %}
+                <div>
+                    <input type="checkbox" class="field" data-name="{{field[0]}}">
+                    <div>{{field[1]}}</div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <input type="search" style="width: 200px;" class="search">
     </div>  
 
-    <div class="elements-table-container">
-        <div class="data-table" id="elements-table">
-            <div class="data-table-header">
-                
-                <div class="data-table-header-column" data-index="1">
-                    <div class="data-table-header-column-content"><input type="checkbox"></div>
-                </div>
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th><input type="checkbox"></th>
+                    <th>UUID</th>
+                    <th>Part Name</th>
+                    <th>Manufacturer</th>
+                    <th>Manufacturer Part Name</th>
+                    <th>Datasheet</th>
+                    <th>Description</th>
+                    <th>Value</th>
+                    <th>Availability</th>
+                    <th>Library Reference</th>
+                    <th>Library Path</th>
+                    <th>Footprint Reference 1</th>
+                    <th>Footprint Path 1</th>
+                    <th>Footprint Reference 2</th>
+                    <th>Footprint Path 2</th>
+                    <th>Footprint Reference 3</th>
+                    <th>Footprint Path 3</th>
+                    <th>Created At</th>
+                </tr>
+            </thead>
+            <tbody>
 
-                <div class="data-table-header-column" data-index="2">
-                    <div class="data-table-header-column-content">UUID</div>
-                    <div class="data-table-header-column-resize-handle"></div>
-                </div>
-
-                <div class="data-table-header-column" data-index="3">
-                    <div class="data-table-header-column-content">Part Name</div>
-                    <div class="data-table-header-column-resize-handle"></div>
-                </div>
-
-                <div class="data-table-header-column" data-index="4">
-                    <div class="data-table-header-column-content">Manufacturer</div>
-                    <div class="data-table-header-column-resize-handle"></div>
-                </div>
-
-                <div class="data-table-header-column"  data-index="5">
-                    <div class="data-table-header-column-content">Manufacturer Part Name</div>
-                    <div class="data-table-header-column-resize-handle"></div>
-                </div>
-
-                <div class="data-table-header-column"  data-index="6">
-                    <div class="data-table-header-column-content">Category</div>
-                    <div class="data-table-header-column-resize-handle"></div>
-                </div>
-
-                <div class="data-table-header-column"  data-index="7">
-                    <div class="data-table-header-column-content">Datasheet</div>
-                    <div class="data-table-header-column-resize-handle"></div>
-                </div>
-
-                <div class="data-table-header-column" data-index="8">
-                    <div class="data-table-header-column-content">Description</div>
-                    <div class="data-table-header-column-resize-handle"></div>
-                </div>
-
-                <div class="data-table-header-column" data-index="9">
-                    <div class="data-table-header-column-content">Value</div>
-                    <div class="data-table-header-column-resize-handle"></div>
-                </div>
-
-                <div class="data-table-header-column" data-index="10">
-                    <div class="data-table-header-column-content">Availability</div>
-                    <div class="data-table-header-column-resize-handle"></div>
-                </div>
-
-                <div class="data-table-header-column" data-index="11">
-                    <div class="data-table-header-column-content">Library_ref</div>
-                    <div class="data-table-header-column-resize-handle"></div>
-                </div>
-
-                <div class="data-table-header-column" data-index="12">
-                    <div class="data-table-header-column-content">Library_path</div>
-                    <div class="data-table-header-column-resize-handle"></div>
-                </div>
-
-                <div class="data-table-header-column" data-index="13">
-                    <div class="data-table-header-column-content">Footprint_ref_1</div>
-                    <div class="data-table-header-column-resize-handle"></div>
-                </div>
-
-                <div class="data-table-header-column" data-index="14">
-                    <div class="data-table-header-column-content">Footprint_path_1</div>
-                    <div class="data-table-header-column-resize-handle"></div>
-                </div>
-
-                <div class="data-table-header-column"  data-index="15">
-                    <div class="data-table-header-column-content">Footprint_ref_2</div>
-                    <div class="data-table-header-column-resize-handle"></div>
-                </div>
-
-                <div class="data-table-header-column"  data-index="16">
-                    <div class="data-table-header-column-content">Footprint_path_2</div>
-                    <div class="data-table-header-column-resize-handle"></div>
-                </div>
-
-                <div class="data-table-header-column"  data-index="17">
-                    <div class="data-table-header-column-content">Footprint_ref_3</div>
-                    <div class="data-table-header-column-resize-handle"></div>
-                </div>
-
-                <div class="data-table-header-column"  data-index="18">
-                    <div class="data-table-header-column-content">Footprint_path_3</div>
-                    <div class="data-table-header-column-resize-handle"></div>
-                </div>
-
-                <div class="data-table-header-column"  data-index="19">
-                    <div class="data-table-header-column-content">Created at</div>
-                    <div class="data-table-header-column-resize-handle"></div>
-                </div>
-            </div>
-            <div class="data-table-content">
-
-            </div>
-        </div>
+            </tbody>
+        </table>
     </div>
-
 
 {% endblock %}
 
 {% block js %}
-    <script src="{{url_for('static', filename='js/utils/table.js')}}"></script>
     <script src="{{url_for('static', filename='js/search_components.js')}}"></script>
 {% endblock %}

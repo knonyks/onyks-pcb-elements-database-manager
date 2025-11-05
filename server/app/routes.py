@@ -11,6 +11,29 @@ from flask import Flask, render_template, redirect, url_for, flash, request
 from werkzeug.exceptions import HTTPException
 import os
 from flask import send_from_directory
+from sqlalchemy import Table, MetaData, select, inspect
+import random
+from sqlalchemy import MetaData, Table, select, inspect, or_, cast, String
+
+row_keys = [
+    "uuid",
+    "part_name",
+    "manufacturer",
+    "manufacturer_part_name",
+    "datasheet",
+    "description",
+    "value",
+    "availability",
+    "library_ref",
+    "library_path",
+    "footprint_ref_1",
+    "footprint_path_1",
+    "footprint_ref_2",
+    "footprint_path_2",
+    "footprint_ref_3",
+    "footprint_path_3",
+    "created_at"
+]
 
 def condition_decorator(decorator, condition):
     def wrapper(func):
@@ -54,7 +77,9 @@ def set_routes(server):
         parameters = {}
         parameters['active_page'] = 'search_components'
         parameters['title'] = 'Search components'
-        # parameters['components'] = [x for i in server.models.categories for x in server.models.categories[i].query.all()]
+        parameters['categories'] = server.config['database']['elements']['categories_tables_name']
+
+        parameters['fields'] = server.models.categories[random.choice(list(server.models.categories.keys()))].get_parameter_names()
         return render_template('search_components.html', **parameters)
 
     @server.app.route('/settings')
@@ -198,7 +223,6 @@ def set_routes(server):
                 return render_template('element_details.html', **parameters)
         return redirect(url_for('error', code = 400))
         
-
     @server.app.route('/element/edit/<category>/<string:id>', methods=['GET', 'POST'])
     @condition_decorator(login_required, server.config['database']['users']['is_enabled'])
     def element_edit(category, id):
@@ -228,15 +252,50 @@ def set_routes(server):
         parameters['form'] = form
         return render_template('element_form.html', **parameters)
 
+    @server.app.route('/api/get_entries', methods=['GET', 'POST'])
+    @condition_decorator(login_required, server.config['database']['users']['is_enabled'])
+    def get_entries():
+        data = request.get_json()
 
-    def element_edit():
-        pass
+        categories = data.get("categories", [])
+        offset = data.get("offset", 0)
+        limit = data.get("limit", 50)
+        search = data.get("search", "")
 
-    def element_copy():
-        pass
 
-    def element_delete():
-        pass
+        metadata = MetaData()
+        result = []
+
+        with server.db.engine.connect() as conn:
+            inspector = inspect(conn)
+            
+            for category in categories:
+                if category not in inspector.get_table_names(schema="public"):
+                    continue
+
+                table = Table(category, metadata, autoload_with=server.db.engine, schema="public")
+
+                query = select(table).offset(offset).limit(limit)
+
+                if search and row_keys:
+                    conditions = []
+                    for col_name in row_keys:
+                            if hasattr(table.c, col_name):
+                                col = getattr(table.c, col_name)
+                                # jeśli typ tekstowy lub timestamp → cast na string
+                                if str(col.type) in ["VARCHAR", "TEXT", "CHAR"]:
+                                    conditions.append(col.ilike(f"%{search}%"))
+                                elif str(col.type) in ["TIMESTAMP", "TIMESTAMP WITHOUT TIME ZONE"]:
+                                    conditions.append(cast(col, String).ilike(f"%{search}%"))
+                    if conditions:
+                        query = query.where(or_(*conditions))
+
+                rows = conn.execute(query).fetchall()
+
+                # dodanie wyników
+                result.extend([dict(r._mapping) for r in rows])
+
+        return jsonify(result)
 
     if server.config['database']['users']['is_enabled']:
         

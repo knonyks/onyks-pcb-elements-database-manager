@@ -34,6 +34,70 @@ def get_element_model(db, tablename):
 
         def __repr__(self):
             return f'<{self.part_name}>'
+
+        def get_parameters_dict(self):
+            return {
+                "uuid": self.uuid,
+                "part_name": self.part_name,
+                "manufacturer": self.manufacturer,
+                "manufacturer_part_name": self.manufacturer_part_name,
+                "datasheet": self.datasheet,
+                "description": self.description,
+                "value": self.value,
+                "availability": self.availability,
+                "library_ref": self.library_ref,
+                "library_path": self.library_path,
+                "footprint_ref_1": self.footprint_ref_1,
+                "footprint_path_1": self.footprint_path_1,
+                "footprint_ref_2": self.footprint_ref_2,
+                "footprint_path_2": self.footprint_path_2,
+                "footprint_ref_3": self.footprint_ref_3,
+                "footprint_path_3": self.footprint_path_3,
+                "created_at": self.created_at
+            }
+
+        def get_parameters_list(self):
+            def get_parameters_list(self):
+                return [
+                    self.uuid,
+                    self.part_name,
+                    self.manufacturer,
+                    self.manufacturer_part_name,
+                    self.datasheet,
+                    self.description,
+                    self.value,
+                    self.availability,
+                    self.library_ref,
+                    self.library_path,
+                    self.footprint_ref_1,
+                    self.footprint_path_1,
+                    self.footprint_ref_2,
+                    self.footprint_path_2,
+                    self.footprint_ref_3,
+                    self.footprint_path_3,
+                    self.created_at
+                ]
+
+        def get_parameter_names():
+            return [
+                ["uuid", "UUID"],
+                ["part_name", "Part Name"],
+                ["manufacturer", "Manufacturer"],
+                ["manufacturer_part_name", "Manufacturer Part Name"],
+                ["datasheet", "Datasheet"],
+                ["description", "Description"],
+                ["value", "Value"],
+                ["availability", "Availability"],
+                ["library_ref", "Library Reference"],
+                ["library_path", "Library Path"],
+                ["footprint_ref_1", "Footprint Reference 1"],
+                ["footprint_path_1", "Footprint Path 1"],
+                ["footprint_ref_2", "Footprint Reference 2"],
+                ["footprint_path_2", "Footprint Path 2"],
+                ["footprint_ref_3", "Footprint Reference 3"],
+                ["footprint_path_3", "Footprint Path 3"],
+                ["created_at", "Created At"]
+            ]
         
     return Element
 

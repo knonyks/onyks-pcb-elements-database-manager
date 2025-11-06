@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, SubmitField, SelectField, PasswordField, FileField
+from wtforms import StringField, TextAreaField, SubmitField, SelectField, PasswordField, FileField, BooleanField
 from wtforms.validators import DataRequired, Length, Email
 from flask_wtf.file import FileField, FileRequired, FileAllowed
 
@@ -21,6 +21,8 @@ def get_creating_element_form(categories):
 
         library_ref = StringField('Library Reference')
         library_path = StringField('Library Path')
+
+        datasheet_must_be_deleted = BooleanField('Do not change and delete the current datasheet', default=False)
 
         footprint_ref_1 = StringField('Footprint Reference No. 1')
         footprint_path_1 = StringField('Footprint Path No. 1')

@@ -94,8 +94,37 @@
         {{ form.category() }}
 
         <!-- DATASHEET -->
+
         {{ form.datasheet.label }}
-        {{ form.datasheet(accept=".pdf") }} 
+
+        {% if active_page == "edit_element" %}
+
+            {% if datasheet %}
+            Datasheet has already existed.
+
+            <a href="{{url_for('show_datasheet', category=category, id=uuid)}}" target="_blank">Preview</a>
+
+            {{form.datasheet_must_be_deleted.label}} 
+            {{form.datasheet_must_be_deleted()}}
+
+            {% else %}
+            
+
+            {% endif %}
+
+        {% endif %}
+
+        
+        {{ form.datasheet(accept=".pdf") }}
+        <button type="button" id="remove_attachment">Remove</button>
+
+        <script>
+            document.querySelector('#remove_attachment').addEventListener('click', function() {
+                const datasheetInput = document.querySelector('input[name="datasheet"]');
+                datasheetInput.value = '';
+            });
+        </script>
+        
 
         <!-- DESCRIPTION -->
         {{ form.description.label }}

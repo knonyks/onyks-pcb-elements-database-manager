@@ -45,6 +45,7 @@ def set_routes(server):
     @server.app.route('/datasheets/<category>/<id>')
     def show_datasheet(category, id):
         subfolder = os.path.join(server.app.config["UPLOAD_FOLDER"], category)
+        subfolder = os.path.join(server.app.config["UPLOAD_FOLDER"])
         os.makedirs(subfolder, exist_ok=True)
         return send_from_directory(subfolder, id + '.pdf', mimetype='application/pdf', as_attachment = False)
     
@@ -137,7 +138,7 @@ def set_routes(server):
         else:
             return {"mode": "description", 'status': True, "content": "Generated description for " + form.part_name.data + "."}
 
-    def create_element(form):
+    def create_element(form, uuid=None):
         try:
             # category = server.config['database']['elements']['categories_tables_name'][int(form.category.data) - 1]
             new_element = server.models.categories[form.category.data](
@@ -156,10 +157,13 @@ def set_routes(server):
                 footprint_ref_3 = form.footprint_ref_3.data,
                 footprint_path_3 = form.footprint_path_3.data
             )
+            if uuid != None:
+                new_element.uuid = uuid
             server.db.session.add(new_element)
             server.db.session.commit()
             if form.datasheet.data != "" and form.datasheet.data != None:
-                subfolder = os.path.join("datasheets", form.category.data)
+                # subfolder = os.path.join("datasheets", form.category.data)
+                subfolder = os.path.join("datasheets")
                 os.makedirs(subfolder, exist_ok=True)
                 filename = new_element.uuid + ".pdf"
                 filepath = os.path.join(subfolder, filename)
@@ -222,15 +226,37 @@ def set_routes(server):
                 parameters['footprint_path_3'] = element.footprint_path_3
                 parameters['datasheet'] = element.datasheet
                 return render_template('element_details.html', **parameters)
+
         return redirect(url_for('error', code = 400))
         
     @server.app.route('/element/edit/<category>/<string:id>', methods=['GET', 'POST'])
     @condition_decorator(login_required, server.config['database']['users']['is_enabled'])
     def element_edit(category, id):
         form = server.forms['creating_element']()
+        element = None
         if category in server.models.categories.keys():
             element = server.models.categories[category].query.filter_by(uuid=id).first()
-            if element != None:
+        if element != None:
+            if form.validate_on_submit():
+                if form.datasheet_must_be_deleted.data:
+                    try:
+                        element.datasheet = False
+                        form.datasheet.data = None
+                        subfolder = os.path.join("datasheets")
+                        filename = element.uuid + ".pdf"
+                        filepath = os.path.join(subfolder, filename)
+                        if os.path.exists(filepath):
+                            os.remove(filepath)
+                    except Exception as e:
+                        print(e)
+
+                server.db.session.delete(element)
+                create_element(form, uuid=id)
+                server.db.session.commit()
+                category = form.category.data
+                return redirect(url_for('element_details', category=category, id=id))
+            else:
+                parameters = {}
                 form.part_name.data = element.part_name
                 form.manufacturer.data = element.manufacturer
                 form.manufacturer_part_name.data = element.manufacturer_part_name
@@ -246,12 +272,21 @@ def set_routes(server):
                 form.footprint_path_2.data = element.footprint_path_2
                 form.footprint_ref_3.data = element.footprint_ref_3
                 form.footprint_path_3.data = element.footprint_path_3
+                parameters['datasheet'] = element.datasheet
+                parameters['category'] = category
+                parameters['uuid'] = id
+                parameters['active_page'] = 'edit_element'
+                parameters['title'] = 'Edit element'
+                parameters['form'] = form
+                return render_template('element_form.html', **parameters)
+        else:
+            return redirect(url_for('error', code = 400))
 
-        parameters = {}
-        parameters['active_page'] = 'create_element'
-        parameters['title'] = 'Create element'
-        parameters['form'] = form
-        return render_template('element_form.html', **parameters)
+
+
+
+
+
 
     @server.app.route('/api/get_entries', methods=['GET', 'POST'])
     @condition_decorator(login_required, server.config['database']['users']['is_enabled'])

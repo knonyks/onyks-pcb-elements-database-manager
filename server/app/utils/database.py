@@ -30,3 +30,16 @@ def last_entry(models):
     return latest_entry
 
 
+def find_uuid_in_selected_models(uuid_value, models):
+    results = []
+
+    for model in models:
+        # upewniamy się, że to model z tabelą
+        if hasattr(model, '__table__'):
+            # sprawdzamy czy model ma kolumnę 'uuid'
+            if 'uuid' in model.__table__.columns:
+                rows = model.query.filter_by(uuid=uuid_value).all()
+                if rows:
+                    results.append((model.__tablename__, rows))
+
+    return results

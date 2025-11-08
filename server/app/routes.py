@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, jsonify
 import app.utils.forms as forms
-from app.utils.database import count_todays_entries, last_entry
+from app.utils.database import count_todays_entries, last_entry, find_uuid_in_selected_models
 from pathlib import Path
 from app.utils import files
 from datetime import datetime, timedelta
@@ -204,6 +204,7 @@ def set_routes(server):
     @server.app.route('/element/details/<category>/<string:id>')
     @condition_decorator(login_required, server.config['database']['users']['is_enabled'])
     def element_details(category, id):
+        # print(find_uuid_in_selected_models(id, list(server.models.categories.values())))
         if category in server.models.categories.keys():
             element = server.models.categories[category].query.filter_by(uuid=id).first()
             if element != None:
@@ -238,6 +239,7 @@ def set_routes(server):
             element = server.models.categories[category].query.filter_by(uuid=id).first()
         if element != None:
             if form.validate_on_submit():
+                datasheet_flag = True
                 if form.datasheet_must_be_deleted.data:
                     try:
                         element.datasheet = False
@@ -247,11 +249,18 @@ def set_routes(server):
                         filepath = os.path.join(subfolder, filename)
                         if os.path.exists(filepath):
                             os.remove(filepath)
+                        datasheet_flag = False
                     except Exception as e:
                         print(e)
+                else:
+                    datasheet_flag = element.datasheet
 
                 server.db.session.delete(element)
+                category = form.category.data
                 create_element(form, uuid=id)
+                element = server.models.categories[category].query.filter_by(uuid=id).first()
+                if not element.datasheet:
+                    element.datasheet = datasheet_flag
                 server.db.session.commit()
                 category = form.category.data
                 return redirect(url_for('element_details', category=category, id=id))
@@ -282,7 +291,65 @@ def set_routes(server):
         else:
             return redirect(url_for('error', code = 400))
 
+    @server.app.route('/element/duplicate/<category>/<string:id>', methods=['GET', 'POST'])
+    @condition_decorator(login_required, server.config['database']['users']['is_enabled'])
+    def element_duplicate(category, id):
+        form = server.forms['creating_element']()
+        element = None
+        if category in server.models.categories.keys():
+            element = server.models.categories[category].query.filter_by(uuid=id).first()
+        if element != None:
+            if form.validate_on_submit():            
+                result = create_element(form)
+                if form.datasheet_the_same.data and element.datasheet:
+                    try:
+                        subfolder = os.path.join("datasheets")
+                        os.makedirs(subfolder, exist_ok=True)
+                        filename = element.uuid + ".pdf"
+                        filepath = os.path.join(subfolder, filename)
+                        new_filename = result["uuid"] + ".pdf"
+                        new_filepath = os.path.join(subfolder, new_filename)
+                        if os.path.exists(filepath):
+                            from shutil import copyfile
+                            copyfile(filepath, new_filepath)
+                            new_element = server.models.categories[form.category.data].query.filter_by(uuid=result["uuid"]).first()
+                            new_element.datasheet = True
+                            server.db.session.commit()
+                    except Exception as e:
+                        print(e)
 
+                if result != None:
+                    return redirect(url_for("element_details", category=result["category"], id=result["uuid"]))
+                else:
+                    return redirect(url_for('error', code = 400))
+            
+            else:
+                parameters = {}
+                form.part_name.data = element.part_name
+                form.manufacturer.data = element.manufacturer
+                form.manufacturer_part_name.data = element.manufacturer_part_name
+                form.category.data = category
+                form.description.data = element.description
+                form.value.data = element.value
+                form.availability.data = element.availability
+                form.library_ref.data = element.library_ref
+                form.library_path.data = element.library_path
+                form.footprint_ref_1.data = element.footprint_ref_1
+                form.footprint_path_1.data = element.footprint_path_1
+                form.footprint_ref_2.data = element.footprint_ref_2
+                form.footprint_path_2.data = element.footprint_path_2
+                form.footprint_ref_3.data = element.footprint_ref_3
+                form.footprint_path_3.data = element.footprint_path_3
+                parameters['datasheet'] = element.datasheet
+                parameters['category'] = category
+                parameters['uuid'] = id
+                parameters['active_page'] = 'duplicate_element'
+                parameters['title'] = 'Edit element'
+                parameters['form'] = form
+                return render_template('element_form.html', **parameters)
+        else:
+            return redirect(url_for('error', code = 400))
+        
 
 
 

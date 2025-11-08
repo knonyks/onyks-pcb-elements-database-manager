@@ -23,6 +23,7 @@ def get_creating_element_form(categories):
         library_path = StringField('Library Path')
 
         datasheet_must_be_deleted = BooleanField('Do not change and delete the current datasheet', default=False)
+        datasheet_the_same = BooleanField('The same datasheet like the original?', default=False)
 
         footprint_ref_1 = StringField('Footprint Reference No. 1')
         footprint_path_1 = StringField('Footprint Path No. 1')

@@ -59,7 +59,7 @@ BEGIN
                 part_name VARCHAR NOT NULL,
                 manufacturer VARCHAR,
                 manufacturer_part_name VARCHAR,
-                datasheet VARCHAR,
+                datasheet BOOLEAN,
                 description VARCHAR,
                 value VARCHAR,
                 availability VARCHAR,

@@ -114,6 +114,23 @@
 
         {% endif %}
 
+            {% if active_page == "duplicate_element" %}
+
+            {% if datasheet %}
+            Datasheet has already existed.
+
+            <a href="{{url_for('show_datasheet', category=category, id=uuid)}}" target="_blank">Preview</a>
+
+            {{form.datasheet_the_same.label}} 
+            {{form.datasheet_the_same()}}
+
+            {% else %}
+            
+
+            {% endif %}
+
+        {% endif %}
+
         
         {{ form.datasheet(accept=".pdf") }}
         <button type="button" id="remove_attachment">Remove</button>

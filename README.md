@@ -103,7 +103,7 @@ BEGIN
 
         EXECUTE format($f$
             INSERT INTO %I (
-                uuid, part_name, manufacturer, description, 
+                uuid, part_name, manufacturer, datasheet, description,
                 library_ref, library_path, 
                 footprint_ref_1, footprint_path_1, 
                 footprint_ref_2, footprint_path_2, 
@@ -119,6 +119,7 @@ BEGIN
                     WHEN 3 THEN 'NXP Semiconductors'
                     WHEN 4 THEN 'Analog Devices'
                 END,
+                (random() > 0.5)::BOOLEAN,
                 CASE (seq %% 4)
                     WHEN 0 THEN 'High-performance microcontroller'
                     WHEN 1 THEN 'Power management IC'

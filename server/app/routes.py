@@ -5,6 +5,7 @@ from pathlib import Path
 from app.utils import files
 from datetime import datetime, timedelta
 from flask_socketio import emit
+from sqlalchemy import or_, union_all
 from flask import send_from_directory
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from flask import Flask, render_template, redirect, url_for, flash, request
@@ -14,6 +15,10 @@ from flask import send_from_directory
 from sqlalchemy import Table, MetaData, select, inspect
 import random
 from sqlalchemy import MetaData, Table, select, inspect, or_, cast, String
+from sqlalchemy import String
+from sqlalchemy import select, union_all, func, or_
+from sqlalchemy.sql import Select
+
 
 row_keys = [
     "uuid",
@@ -350,55 +355,101 @@ def set_routes(server):
         else:
             return redirect(url_for('error', code = 400))
         
-
-
-
-
-
     @server.app.route('/api/get_entries', methods=['GET', 'POST'])
     @condition_decorator(login_required, server.config['database']['users']['is_enabled'])
     def get_entries():
         data = request.get_json()
-
+        
         categories = data.get("categories", [])
+        fields = data.get("fields", [])
         offset = data.get("offset", 0)
         limit = data.get("limit", 50)
-        search = data.get("search", "")
+        search_value = data.get("search_value", "")
 
+        # jeśli nie podano pól do przeszukania, domyślnie szukamy we wszystkich kolumnach row_keys
+        if search_value != "" and not fields:
+            fields = row_keys.copy()
 
-        metadata = MetaData()
-        result = []
+        # get suitable models as (category_name, Model)
+        models = []
+        for category in categories:
+            model = server.models.categories.get(category)
+            if model:
+                models.append((category, model))
+        
+        if models == []:
+            return jsonify({"error": "No valid tables"}), 400
 
-        with server.db.engine.connect() as conn:
-            inspector = inspect(conn)
+        extended_row_keys = row_keys + ["category"]
+
+        if search_value == "":
+            # brak filtra wyszukiwania - proste łączenie wyników z różnych tabel
+            selects = []
+            for category, Model in models:
+                tbl = Model.__table__
+                stmt = select(*[tbl.c[col] for col in row_keys], cast(category, String).label("category"))
+                selects.append(stmt)
             
-            for category in categories:
-                if category not in inspector.get_table_names(schema="public"):
-                    continue
+            union_stmt = union_all(*selects).alias("u")
 
-                table = Table(category, metadata, autoload_with=server.db.engine, schema="public")
+            total_count = server.db.session.execute(
+                select(func.count()).select_from(union_stmt)
+            ).scalar_one()
 
-                query = select(table).offset(offset).limit(limit)
+            rows = server.db.session.execute(
+                select(*[union_stmt.c[col] for col in extended_row_keys]).offset(offset).limit(limit)
+            ).mappings().all()
 
-                if search and row_keys:
-                    conditions = []
-                    for col_name in row_keys:
-                            if hasattr(table.c, col_name):
-                                col = getattr(table.c, col_name)
-                                # jeśli typ tekstowy lub timestamp → cast na string
-                                if str(col.type) in ["VARCHAR", "TEXT", "CHAR"]:
-                                    conditions.append(col.ilike(f"%{search}%"))
-                                elif str(col.type) in ["TIMESTAMP", "TIMESTAMP WITHOUT TIME ZONE"]:
-                                    conditions.append(cast(col, String).ilike(f"%{search}%"))
-                    if conditions:
-                        query = query.where(or_(*conditions))
+            items = [{col: row[col] for col in extended_row_keys} for row in rows]
 
-                rows = conn.execute(query).fetchall()
+            return jsonify({
+                "total_count": total_count,
+                "offset": offset,
+                "limit": limit,
+                "items": items
+            })
+        else:
+            # z filtrami wyszukiwania - osobne zapytania do każdej tabeli
+            selects = []
+            for category, Model in models:
+                tbl = Model.__table__
+                stmt = select(*[tbl.c[col] for col in row_keys], cast(category, String).label("category"))
 
-                # dodanie wyników
-                result.extend([dict(r._mapping) for r in rows])
+                # tylko kolumny tekstowe
+                search_cols = [
+                    tbl.c[c] for c in fields 
+                    if c in row_keys and c in tbl.c and isinstance(tbl.c[c].type, String)
+                ]
 
-        return jsonify(result)
+                if search_cols:
+                    pattern = f"%{search_value}%"
+                    stmt = stmt.where(or_(*(col.ilike(pattern) for col in search_cols)))
+                else:
+                    continue  # jeśli nie ma żadnej tekstowej kolumny do przeszukania, pomijamy tabelę
+
+                selects.append(stmt)
+            
+            if not selects:
+                return jsonify({"total_count": 0, "offset": offset, "limit": limit, "items": []}), 200
+
+            union_stmt = union_all(*selects).alias("u")
+
+            total_count = server.db.session.execute(
+                select(func.count()).select_from(union_stmt)
+            ).scalar_one()
+
+            rows = server.db.session.execute(
+                select(*[union_stmt.c[col] for col in extended_row_keys]).offset(offset).limit(limit)
+            ).mappings().all()
+
+            items = [{col: row[col] for col in extended_row_keys} for row in rows]
+
+            return jsonify({
+                "total_count": total_count,
+                "offset": offset,
+                "limit": limit,
+                "items": items
+            })
 
     if server.config['database']['users']['is_enabled']:
         

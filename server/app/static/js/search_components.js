@@ -1,39 +1,24 @@
-let search_container = document.querySelector('.search-container')
-let categories = document.querySelectorAll('.category')
-let fields = document.querySelectorAll('.field')
-let search = document.querySelector('.search')
+let edit_btn = document.getElementById('edit-btn')
+let duplicate_btn = document.getElementById('duplicate-btn')
+let delete_btn = document.getElementById('delete-btn')
+let print_list_btn = document.getElementById('print-list-btn')
+let generate_labels_btn = document.getElementById('generate-labels-btn')
+let details_btn = document.getElementById('details-btn')
+
+let categories_container = document.getElementById('categories')
+let fields_container = document.getElementById('fields')
+let search_input = document.getElementById('search')
+let counter = document.getElementById('counter')
 let table_container = document.querySelector('.table-container')
 let tbody = table_container.querySelector('tbody')
 
 let offset = 0
-let limit = 10
-
-function get_all_settings()
-{
-    let result = {}
-    result.categories = {}
-    result.fields = {}
-
-    for(let category of categories)
-    {
-        if(category.checked)
-        {
-            result.categories[category.dataset.name] = true
-        }
-    }
-    for(let field of fields)
-    {
-        if(field.checked)
-        {
-            result.fields[field.dataset.name] = true
-        }
-    }
-    result['search'] = search.value
-    return result
-}
+let current = 0
+let total = 0
 
 const row_keys = [
     "uuid",
+    "category",
     "part_name",
     "manufacturer",
     "manufacturer_part_name",
@@ -52,6 +37,99 @@ const row_keys = [
     "created_at"
 ]
 
+search_input.addEventListener('input', (e) =>
+{
+    offset = 0
+    send_and_process_query(0).then((data) =>
+    {
+        console.log("Loaded more data:", data)
+        update_ui(data)
+    })
+})
+
+categories_container.addEventListener('click', (e) =>
+{
+    if(e.target.classList.contains('category'))
+    {
+        offset = 0
+        send_and_process_query(0).then((data) =>
+        {
+            console.log("Loaded more data:", data)
+            update_ui(data)
+        })
+    }
+})
+
+fields_container.addEventListener('click', (e) =>
+{
+    if(e.target.classList.contains('field'))
+    {
+        offset = 0
+        send_and_process_query(0).then((data) =>
+        {
+            console.log("Loaded more data:", data)
+            update_ui(data)
+        })
+    }
+})
+
+
+function get_marked_rows()
+{
+    let marked = []
+    for(let row of tbody.querySelectorAll('tr'))
+    {
+        let checkbox = row.querySelector('td input[type="checkbox"]')
+        if(checkbox.checked)
+        {
+            let uuid = row.querySelector('td:nth-child(2)').innerText
+            marked.push(uuid)
+        }
+    }
+    return marked
+}
+
+edit_btn.addEventListener('click', () =>
+{
+//     result = get_marked_rows()
+
+
+
+//       const paths = [
+//         "/page1",
+//         "/page2",
+//         "/page3"
+//     ];
+
+//   paths.forEach(path => window.open(path, "_blank"));
+
+}) 
+
+duplicate_btn.addEventListener('click', () =>
+{
+    console.log("Duplicate button clicked")
+})
+
+delete_btn.addEventListener('click', () =>
+{
+    console.log("Delete button clicked")
+})
+
+print_list_btn.addEventListener('click', () =>
+{
+    console.log("Print list button clicked")
+})
+
+generate_labels_btn.addEventListener('click', () =>
+{
+    console.log("Generate labels button clicked")
+})
+
+details_btn.addEventListener('click', () =>
+{
+    console.log("Details button clicked")
+})
+
 function create_table_tow(row)
 {
     let result = document.createElement('tr')
@@ -69,57 +147,89 @@ function create_table_tow(row)
     return result
 }
 
-async function query_search_elements(config) 
+function update_ui(data)
 {
-    config.limit = limit
-    config.offset = offset
-    config.search = search.value
-
-    const response = await fetch("/api/get_entries", 
+    if(offset === 0)
     {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(config)
-    })
+        tbody.innerHTML = ""
+        current = data.items.length
+        total = data.total_count
+        counter.innerText = `${current}/${total}`
+    }
+    else
+    {
+        current += data.items.length
+        counter.innerText = `${current}/${total}`
+    }
 
-    const data = await response.json();
-    console.log(data)
-
-    for(let row of data)
+    for(let row of data.items)
     {
         let row_ui = create_table_tow(row)
         tbody.appendChild(row_ui)
     }
-}   
+}
 
-
-
-search_container.addEventListener('click', (e) => 
+function create_query(offset)
 {
-    let truth_table = e.target.classList.contains('category')
-    truth_table ||= e.target.classList.contains('field')
-
-    if(truth_table)
-    {   
-        let result = get_all_settings()
-        offset = 0
-        tbody.innerHTML = ""
-        query_search_elements(result)
-        console.log(result)
+    let query = {}
+    query.offset = offset
+    query.limit = 50
+    query.fields = []
+    query.categories = []
+    for(let category of categories_container.querySelectorAll('.category'))
+    {
+        if(category.checked)
+        {
+            query.categories.push(category.dataset.name)
+        }
     }
-})
+    for(let field of fields_container.querySelectorAll('.field'))
+    {
+        if(field.checked)
+        {
+            query.fields.push(field.dataset.name)
+        }
+    }
+    query.search_value = search_input.value
+    return query
+}
 
-
+async function send_and_process_query(offset)
+{
+    let query = create_query(offset)
+    console.log("Sending query:", query)
+    const response = await fetch("/api/get_entries", 
+    {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(query)
+    })
+    const data = await response.json();
+    return data
+}
 
 table_container.addEventListener("scroll", () => 
 {
-    if (table_container.scrollTop + table_container.clientHeight >= table_container.scrollHeight - 1) 
+    let lastTop = table_container._lastScrollTop || 0
+    let currentTop = table_container.scrollTop
+
+    if (currentTop === lastTop) return
+    table_container._lastScrollTop = currentTop
+
+    if (currentTop + table_container.clientHeight >= table_container.scrollHeight - 1) 
     {
-        let result = get_all_settings()
-        offset += 10
-        result.offset = offset
-        query_search_elements(result)
+        offset += 50
+        send_and_process_query(offset).then((data) =>
+        {
+            console.log("Loaded more data:", data)
+            update_ui(data)
+        })
+        console.log('aa')
     }
 });
 
-   
+send_and_process_query(0).then((data) =>
+{
+    console.log("Initial data load:", data)
+    update_ui(data)
+})

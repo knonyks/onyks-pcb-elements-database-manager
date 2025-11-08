@@ -9,36 +9,43 @@
     <div class="search-container" style="display: flex; flex-direction: column;">
         <div style="display: flex; flex-direction: row; gap: 1rem; margin-bottom: 1rem;">
             <a href="{{url_for('element_create')}}" style="padding: 1rem; width: 200px; background-color: red;">Create</a>
-            <a href="{{url_for('element_create')}}" style="padding: 1rem; width: 200px; background-color: red;">Edit</a>
-            <a href="{{url_for('element_create')}}" style="padding: 1rem; width: 200px; background-color: red;">Create similar</a>
+            <div style="padding: 1rem; width: 200px; background-color: red;" id="edit-btn">Edit</div>
+            <div style="padding: 1rem; width: 200px; background-color: red;" id="duplicate-btn">Duplicate</div>
+            <div style="padding: 1rem; width: 200px; background-color: red;" id="details-btn">Details</div>
         </div>
         <div style="display: flex; flex-direction: row; gap: 1rem; margin-bottom: 1rem;">
-            <a href="{{url_for('element_create')}}" style="padding: 1rem; width: 200px; background-color: red;">Delete</a>
-            <a href="{{url_for('element_create')}}" style="padding: 1rem; width: 200px; background-color: red;">Print list</a>
-            <a href="{{url_for('element_create')}}" style="padding: 1rem; width: 200px; background-color: red;">Generate labels</a>
+            <div style="padding: 1rem; width: 200px; background-color: red;" id="delete-btn">Delete</div>
+            <div style="padding: 1rem; width: 200px; background-color: red;" id="print-list-btn">Print list</div>
+            <div style="padding: 1rem; width: 200px; background-color: red;" id="generate-labels-btn">Generate labels</div>
         </div>
 
         <h4>Search in</h4>
-        <div style="display: flex; flex-direction: row; gap: 1rem; margin-bottom: 1rem;">
+        <div style="display: flex; flex-direction: row; gap: 1rem; margin-bottom: 1rem;" id="categories">
             {% for category in categories %}
                 <div>
-                    <input type="checkbox" class="category" data-name="{{category}}">
+                    <input type="checkbox" class="category" data-name="{{category}}" checked>
                     <div>{{ category }}</div>
                 </div>
             {% endfor %}
         </div>
 
         <h4>Search in</h4>
-        <div style="display: flex; flex-direction: row; gap: 1rem; margin-bottom: 1rem; width: 100%; overflow-y: auto;">
+        <div style="display: flex; flex-direction: row; gap: 1rem; margin-bottom: 1rem; width: 100%; overflow-y: auto;" id="fields">
             {% for field in fields %}
-                <div>
-                    <input type="checkbox" class="field" data-name="{{field[0]}}">
-                    <div>{{field[1]}}</div>
-                </div>
+                
+                    
+                    {% if field[0] != 'datasheet' %}
+                    <div>
+                        <input type="checkbox" class="field" data-name="{{field[0]}}">
+                        <div>{{ field[1] }}</div>
+                    </div>
+                    {% endif %}
+                
             {% endfor %}
         </div>
 
-        <input type="search" style="width: 200px;" class="search">
+        <input type="search" style="width: 200px;" id="search">
+        <div id="counter">0/0</div>
     </div>  
 
     <div class="table-container">
@@ -47,6 +54,7 @@
                 <tr>
                     <th><input type="checkbox"></th>
                     <th>UUID</th>
+                    <th>Category</th>
                     <th>Part Name</th>
                     <th>Manufacturer</th>
                     <th>Manufacturer Part Name</th>

@@ -91,28 +91,50 @@ function get_marked_rows()
 
 edit_btn.addEventListener('click', () =>
 {
-//     result = get_marked_rows()
+    result = get_marked_rows()
 
-
-
-//       const paths = [
-//         "/page1",
-//         "/page2",
-//         "/page3"
-//     ];
-
-//   paths.forEach(path => window.open(path, "_blank"));
-
+    if(result.length > 0)
+    {
+        window.open(`/element/edit/${result[0]}`, "_blank");
+    }
 }) 
 
 duplicate_btn.addEventListener('click', () =>
 {
-    console.log("Duplicate button clicked")
+    result = get_marked_rows()
+
+    if(result.length > 0)
+    {
+        window.open(`/element/duplicate/${result[0]}`, "_blank");
+    }
 })
 
-delete_btn.addEventListener('click', () =>
+delete_btn.addEventListener('click', async () =>
 {
-    console.log("Delete button clicked")
+    result = get_marked_rows()
+    offset = 0
+
+    if(result.length != 0)
+    {
+        let query = {}
+        query.uuids = result
+
+        const response = await fetch("/api/remove_entries", 
+        {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(query)
+        })
+
+        const data = await response.json();
+        console.log("Delete response:", data) 
+        
+        send_and_process_query(0).then((data) =>
+        {
+            console.log("Loaded more data:", data)
+            update_ui(data)
+        })
+    }
 })
 
 print_list_btn.addEventListener('click', () =>
@@ -127,7 +149,12 @@ generate_labels_btn.addEventListener('click', () =>
 
 details_btn.addEventListener('click', () =>
 {
-    console.log("Details button clicked")
+    result = get_marked_rows()
+
+    if(result.length > 0)
+    {
+        window.open(`/element/details/${result[0]}`, "_blank");
+    }
 })
 
 function create_table_tow(row)

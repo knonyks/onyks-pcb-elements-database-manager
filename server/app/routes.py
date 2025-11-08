@@ -47,9 +47,9 @@ def condition_decorator(decorator, condition):
 
 def set_routes(server):
     
-    @server.app.route('/datasheets/<category>/<id>')
-    def show_datasheet(category, id):
-        subfolder = os.path.join(server.app.config["UPLOAD_FOLDER"], category)
+    @server.app.route('/datasheets/<id>')
+    def show_datasheet(id):
+        # subfolder = os.path.join(server.app.config["UPLOAD_FOLDER"], category)
         subfolder = os.path.join(server.app.config["UPLOAD_FOLDER"])
         os.makedirs(subfolder, exist_ok=True)
         return send_from_directory(subfolder, id + '.pdf', mimetype='application/pdf', as_attachment = False)
@@ -206,19 +206,20 @@ def set_routes(server):
         parameters['form'] = form
         return render_template('element_form.html', **parameters)
     
-    @server.app.route('/element/details/<category>/<string:id>')
+    @server.app.route('/element/details/<string:id>')
     @condition_decorator(login_required, server.config['database']['users']['is_enabled'])
-    def element_details(category, id):
+    def element_details(id):
         # print(find_uuid_in_selected_models(id, list(server.models.categories.values())))
-        if category in server.models.categories.keys():
-            element = server.models.categories[category].query.filter_by(uuid=id).first()
+        element = None
+        for i in server.models.categories.keys():
+            element = server.models.categories[i].query.filter_by(uuid=id).first()
             if element != None:
                 parameters = {}
                 parameters["uuid"] = id
                 parameters['part_name'] = element.part_name
                 parameters['manufacturer'] = element.manufacturer
                 parameters['manufacturer_part_name'] = element.manufacturer_part_name
-                parameters['category'] = category
+                parameters['category'] = i
                 parameters['description'] = element.description
                 parameters['value'] = element.value
                 parameters['availability'] = element.availability
@@ -235,125 +236,127 @@ def set_routes(server):
 
         return redirect(url_for('error', code = 400))
         
-    @server.app.route('/element/edit/<category>/<string:id>', methods=['GET', 'POST'])
+    @server.app.route('/element/edit/<string:id>', methods=['GET', 'POST'])
     @condition_decorator(login_required, server.config['database']['users']['is_enabled'])
-    def element_edit(category, id):
+    def element_edit(id):
         form = server.forms['creating_element']()
         element = None
-        if category in server.models.categories.keys():
-            element = server.models.categories[category].query.filter_by(uuid=id).first()
-        if element != None:
-            if form.validate_on_submit():
-                datasheet_flag = True
-                if form.datasheet_must_be_deleted.data:
-                    try:
-                        element.datasheet = False
-                        form.datasheet.data = None
-                        subfolder = os.path.join("datasheets")
-                        filename = element.uuid + ".pdf"
-                        filepath = os.path.join(subfolder, filename)
-                        if os.path.exists(filepath):
-                            os.remove(filepath)
-                        datasheet_flag = False
-                    except Exception as e:
-                        print(e)
+        for i in server.models.categories.keys():
+            element = server.models.categories[i].query.filter_by(uuid=id).first()
+            if element != None:
+                category = i
+                if form.validate_on_submit():
+                    datasheet_flag = True
+                    if form.datasheet_must_be_deleted.data:
+                        try:
+                            element.datasheet = False
+                            form.datasheet.data = None
+                            subfolder = os.path.join("datasheets")
+                            filename = element.uuid + ".pdf"
+                            filepath = os.path.join(subfolder, filename)
+                            if os.path.exists(filepath):
+                                os.remove(filepath)
+                            datasheet_flag = False
+                        except Exception as e:
+                            print(e)
+                    else:
+                        datasheet_flag = element.datasheet
+
+                    server.db.session.delete(element)
+                    category = form.category.data
+                    create_element(form, uuid=id)
+                    element = server.models.categories[category].query.filter_by(uuid=id).first()
+                    if not element.datasheet:
+                        element.datasheet = datasheet_flag
+                    server.db.session.commit()
+                    category = form.category.data
+                    return redirect(url_for('element_details', category=category, id=id))
                 else:
-                    datasheet_flag = element.datasheet
+                    parameters = {}
+                    form.part_name.data = element.part_name
+                    form.manufacturer.data = element.manufacturer
+                    form.manufacturer_part_name.data = element.manufacturer_part_name
+                    form.category.data = category
+                    form.description.data = element.description
+                    form.value.data = element.value
+                    form.availability.data = element.availability
+                    form.library_ref.data = element.library_ref
+                    form.library_path.data = element.library_path
+                    form.footprint_ref_1.data = element.footprint_ref_1
+                    form.footprint_path_1.data = element.footprint_path_1
+                    form.footprint_ref_2.data = element.footprint_ref_2
+                    form.footprint_path_2.data = element.footprint_path_2
+                    form.footprint_ref_3.data = element.footprint_ref_3
+                    form.footprint_path_3.data = element.footprint_path_3
+                    parameters['datasheet'] = element.datasheet
+                    parameters['category'] = category
+                    parameters['uuid'] = id
+                    parameters['active_page'] = 'edit_element'
+                    parameters['title'] = 'Edit element'
+                    parameters['form'] = form
+                    return render_template('element_form.html', **parameters)
 
-                server.db.session.delete(element)
-                category = form.category.data
-                create_element(form, uuid=id)
-                element = server.models.categories[category].query.filter_by(uuid=id).first()
-                if not element.datasheet:
-                    element.datasheet = datasheet_flag
-                server.db.session.commit()
-                category = form.category.data
-                return redirect(url_for('element_details', category=category, id=id))
-            else:
-                parameters = {}
-                form.part_name.data = element.part_name
-                form.manufacturer.data = element.manufacturer
-                form.manufacturer_part_name.data = element.manufacturer_part_name
-                form.category.data = category
-                form.description.data = element.description
-                form.value.data = element.value
-                form.availability.data = element.availability
-                form.library_ref.data = element.library_ref
-                form.library_path.data = element.library_path
-                form.footprint_ref_1.data = element.footprint_ref_1
-                form.footprint_path_1.data = element.footprint_path_1
-                form.footprint_ref_2.data = element.footprint_ref_2
-                form.footprint_path_2.data = element.footprint_path_2
-                form.footprint_ref_3.data = element.footprint_ref_3
-                form.footprint_path_3.data = element.footprint_path_3
-                parameters['datasheet'] = element.datasheet
-                parameters['category'] = category
-                parameters['uuid'] = id
-                parameters['active_page'] = 'edit_element'
-                parameters['title'] = 'Edit element'
-                parameters['form'] = form
-                return render_template('element_form.html', **parameters)
-        else:
-            return redirect(url_for('error', code = 400))
+        return redirect(url_for('error', code = 400))
 
-    @server.app.route('/element/duplicate/<category>/<string:id>', methods=['GET', 'POST'])
+    @server.app.route('/element/duplicate/<string:id>', methods=['GET', 'POST'])
     @condition_decorator(login_required, server.config['database']['users']['is_enabled'])
-    def element_duplicate(category, id):
+    def element_duplicate(id):
         form = server.forms['creating_element']()
         element = None
-        if category in server.models.categories.keys():
-            element = server.models.categories[category].query.filter_by(uuid=id).first()
-        if element != None:
-            if form.validate_on_submit():            
-                result = create_element(form)
-                if form.datasheet_the_same.data and element.datasheet:
-                    try:
-                        subfolder = os.path.join("datasheets")
-                        os.makedirs(subfolder, exist_ok=True)
-                        filename = element.uuid + ".pdf"
-                        filepath = os.path.join(subfolder, filename)
-                        new_filename = result["uuid"] + ".pdf"
-                        new_filepath = os.path.join(subfolder, new_filename)
-                        if os.path.exists(filepath):
-                            from shutil import copyfile
-                            copyfile(filepath, new_filepath)
-                            new_element = server.models.categories[form.category.data].query.filter_by(uuid=result["uuid"]).first()
-                            new_element.datasheet = True
-                            server.db.session.commit()
-                    except Exception as e:
-                        print(e)
+        for i in server.models.categories.keys():
+            element = server.models.categories[i].query.filter_by(uuid=id).first()
+            if element != None:
+                category = i
+                if form.validate_on_submit():            
+                    result = create_element(form)
+                    if form.datasheet_the_same.data and element.datasheet:
+                        try:
+                            subfolder = os.path.join("datasheets")
+                            os.makedirs(subfolder, exist_ok=True)
+                            filename = element.uuid + ".pdf"
+                            filepath = os.path.join(subfolder, filename)
+                            new_filename = result["uuid"] + ".pdf"
+                            new_filepath = os.path.join(subfolder, new_filename)
+                            if os.path.exists(filepath):
+                                from shutil import copyfile
+                                copyfile(filepath, new_filepath)
+                                new_element = server.models.categories[form.category.data].query.filter_by(uuid=result["uuid"]).first()
+                                new_element.datasheet = True
+                                server.db.session.commit()
+                        except Exception as e:
+                            print(e)
 
-                if result != None:
-                    return redirect(url_for("element_details", category=result["category"], id=result["uuid"]))
+                    if result != None:
+                        return redirect(url_for("element_details", category=result["category"], id=result["uuid"]))
+                    else:
+                        return redirect(url_for('error', code = 400))
+                
                 else:
-                    return redirect(url_for('error', code = 400))
-            
-            else:
-                parameters = {}
-                form.part_name.data = element.part_name
-                form.manufacturer.data = element.manufacturer
-                form.manufacturer_part_name.data = element.manufacturer_part_name
-                form.category.data = category
-                form.description.data = element.description
-                form.value.data = element.value
-                form.availability.data = element.availability
-                form.library_ref.data = element.library_ref
-                form.library_path.data = element.library_path
-                form.footprint_ref_1.data = element.footprint_ref_1
-                form.footprint_path_1.data = element.footprint_path_1
-                form.footprint_ref_2.data = element.footprint_ref_2
-                form.footprint_path_2.data = element.footprint_path_2
-                form.footprint_ref_3.data = element.footprint_ref_3
-                form.footprint_path_3.data = element.footprint_path_3
-                parameters['datasheet'] = element.datasheet
-                parameters['category'] = category
-                parameters['uuid'] = id
-                parameters['active_page'] = 'duplicate_element'
-                parameters['title'] = 'Edit element'
-                parameters['form'] = form
-                return render_template('element_form.html', **parameters)
-        else:
-            return redirect(url_for('error', code = 400))
+                    parameters = {}
+                    form.part_name.data = element.part_name
+                    form.manufacturer.data = element.manufacturer
+                    form.manufacturer_part_name.data = element.manufacturer_part_name
+                    form.category.data = category
+                    form.description.data = element.description
+                    form.value.data = element.value
+                    form.availability.data = element.availability
+                    form.library_ref.data = element.library_ref
+                    form.library_path.data = element.library_path
+                    form.footprint_ref_1.data = element.footprint_ref_1
+                    form.footprint_path_1.data = element.footprint_path_1
+                    form.footprint_ref_2.data = element.footprint_ref_2
+                    form.footprint_path_2.data = element.footprint_path_2
+                    form.footprint_ref_3.data = element.footprint_ref_3
+                    form.footprint_path_3.data = element.footprint_path_3
+                    parameters['datasheet'] = element.datasheet
+                    parameters['category'] = category
+                    parameters['uuid'] = id
+                    parameters['active_page'] = 'duplicate_element'
+                    parameters['title'] = 'Edit element'
+                    parameters['form'] = form
+                    return render_template('element_form.html', **parameters)
+
+        return redirect(url_for('error', code = 400))
         
     @server.app.route('/api/get_entries', methods=['GET', 'POST'])
     @condition_decorator(login_required, server.config['database']['users']['is_enabled'])
@@ -450,6 +453,27 @@ def set_routes(server):
                 "limit": limit,
                 "items": items
             })
+
+    @server.app.route('/api/remove_entries', methods=['GET', 'POST'])
+    @condition_decorator(login_required, server.config['database']['users']['is_enabled'])
+    def remove_entries():
+        data = request.get_json()
+        uuids = data.get("uuids", [])
+        removed_count = 0
+
+        for uuid in uuids:
+            element = None
+            for i in server.models.categories.keys():
+                element = server.models.categories[i].query.filter_by(uuid=uuid).first()
+                if element != None:
+                    server.db.session.delete(element)
+                    server.db.session.commit()
+                    removed_count += 1
+                    break
+
+        return jsonify({"removed_count": removed_count})
+
+
 
     if server.config['database']['users']['is_enabled']:
         

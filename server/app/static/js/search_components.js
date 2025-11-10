@@ -1,8 +1,6 @@
 let edit_btn = document.getElementById('edit-btn')
 let duplicate_btn = document.getElementById('duplicate-btn')
 let delete_btn = document.getElementById('delete-btn')
-let print_list_btn = document.getElementById('print-list-btn')
-let generate_labels_btn = document.getElementById('generate-labels-btn')
 let details_btn = document.getElementById('details-btn')
 
 let categories_container = document.getElementById('categories')
@@ -135,16 +133,6 @@ delete_btn.addEventListener('click', async () =>
             update_ui(data)
         })
     }
-})
-
-print_list_btn.addEventListener('click', () =>
-{
-    console.log("Print list button clicked")
-})
-
-generate_labels_btn.addEventListener('click', () =>
-{
-    console.log("Generate labels button clicked")
 })
 
 details_btn.addEventListener('click', () =>

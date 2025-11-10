@@ -282,3 +282,10 @@ SyslogIdentifier=onyks_pcb_element_database_manager_repository_worker
 [Install]
 WantedBy=multi-user.target
 ```
+
+
+
+```
+npm init
+browserify npm_files/labels_generating.js -o app/static/temp/bundle1.js
+```

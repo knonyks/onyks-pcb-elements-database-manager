@@ -6,21 +6,21 @@
 
 {% block content %}
     
-    <div class="search-container" style="display: flex; flex-direction: column;">
+    <div class="search-container" style="display: flex; flex-direction: column; overflow: auto;">
         <div style="display: flex; flex-direction: row; gap: 1rem; margin-bottom: 1rem;">
             <a href="{{url_for('element_create')}}" style="padding: 1rem; width: 200px; background-color: red;">Create</a>
             <div style="padding: 1rem; width: 200px; background-color: red;" id="edit-btn">Edit</div>
             <div style="padding: 1rem; width: 200px; background-color: red;" id="duplicate-btn">Duplicate</div>
             <div style="padding: 1rem; width: 200px; background-color: red;" id="details-btn">Details</div>
         </div>
-        <div style="display: flex; flex-direction: row; gap: 1rem; margin-bottom: 1rem;">
+        <div style="display: flex; flex-direction: row; gap: 1rem; margin-bottom: 1rem;" id="other-btn">
             <div style="padding: 1rem; width: 200px; background-color: red;" id="delete-btn">Delete</div>
             <div style="padding: 1rem; width: 200px; background-color: red;" id="print-list-btn">Print list</div>
             <div style="padding: 1rem; width: 200px; background-color: red;" id="generate-labels-btn">Generate labels</div>
         </div>
 
         <h4>Search in</h4>
-        <div style="display: flex; flex-direction: row; gap: 1rem; margin-bottom: 1rem;" id="categories">
+        <div style="display: flex; flex-direction: row; gap: 1rem; margin-bottom: 1rem; width: 100%; overflow-y: auto;" id="categories">
             {% for category in categories %}
                 <div>
                     <input type="checkbox" class="category" data-name="{{category}}" checked>
@@ -79,9 +79,74 @@
         </table>
     </div>
 
+    <style>
+        .cam
+        {
+            position: fixed;
+            bottom: -600px;
+            width: 100%;
+            background-color: rgb(31, 19, 102);
+            height: 500px;
+            left: 0;
+            border-top-left-radius: 1rem;
+            border-top-right-radius: 1rem;
+        }
+
+        #qr
+        {
+            width: 250px;
+            height: 250px;
+            /* background-color: black; */
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+            border-radius: 2rem;
+            margin-top: 2rem;
+        }
+    </style>
+
+    <div class="cam">
+        <video id="qr" width="200" height="200"></video>
+    </div>
+
 {% endblock %}
 
 {% block js %}
     <script src="{{url_for('static', filename='js/search_components.js')}}"></script>
     <script src="{{url_for('static', filename='temp/bundle1.js')}}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qr-scanner/1.4.2/qr-scanner.umd.min.js" integrity="sha512-a/IwksuXdv0Q60tVkQpwMk5qY+6cJ0FJgi33lrrIddoFItTRiRfSdU1qogP3uYjgHfrGY7+AC+4LU4J+b9HcgQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+                const qrScanner = new QrScanner(
+                    document.querySelector('#qr'),
+                    result => 
+                    {
+                        window.location.href = "/element/details/" + result
+                    }
+                    
+                );
+        
+        const isMobile = (
+            /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+            window.innerWidth <= 768
+        );
+
+        if (isMobile) {
+            let btn = document.createElement('div')
+            btn.innerHTML = 'QR'
+            btn.style = 'padding: 1rem; width: 200px; background-color: red;'
+
+            btn.addEventListener('click', (e) => {
+                console.log('dasd')
+                document.querySelector('.cam').style.bottom = '0px'
+
+                qrScanner.start();
+            })
+
+            document.querySelector('#other-btn').appendChild(btn)
+        }
+        else {
+            console.log("Desktop 💻");
+        }
+    </script>
+    <!-- <script src="{{url_for('static', filename='temp/bundle2.js')}}"></script> -->
 {% endblock %}

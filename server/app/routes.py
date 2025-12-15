@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, jsonify
 import app.utils.forms as forms
 from app.utils.database import count_todays_entries, last_entry, find_uuid_in_selected_models
 from pathlib import Path
+from flask_login import current_user
 from app.utils import files
 from datetime import datetime, timedelta
 from flask_socketio import emit
@@ -88,7 +89,7 @@ def set_routes(server):
         parameters['fields'] = server.models.categories[random.choice(list(server.models.categories.keys()))].get_parameter_names()
         return render_template('search_components.html', **parameters)
 
-    @server.app.route('/settings')
+    @server.app.route('/settings', methods=['GET', 'POST'])
     @condition_decorator(login_required, server.config['database']['users']['is_enabled'])
     def settings():
         parameters = {}
@@ -103,7 +104,18 @@ def set_routes(server):
 
             change_user_data_form = server.forms['change_user_data']()
             if change_user_data_form.validate_on_submit():
-                pass
+                if change_user_data_form.old_password.data and not server.bcrypt.check_password_hash(current_user.password, change_user_data_form.old_password.data):
+                    flash("Old password is incorrect!", "error")
+                    return redirect(url_for('settings'))
+                else:
+                    if change_user_data_form.new_password.data:
+                        current_user.password = server.bcrypt.generate_password_hash(change_user_data_form.new_password.data).decode('utf-8')
+                    if change_user_data_form.new_email.data:
+                        current_user.email = change_user_data_form.new_email.data
+                    if change_user_data_form.new_username.data:
+                        current_user.username = change_user_data_form.new_username.data
+                    server.db.session.commit()
+                    logout_user()
             parameters['change_user_data_form'] = change_user_data_form
 
             add_user_form = server.forms['add_user']()
@@ -472,7 +484,6 @@ def set_routes(server):
                     break
 
         return jsonify({"removed_count": removed_count})
-
 
 
     if server.config['database']['users']['is_enabled']:

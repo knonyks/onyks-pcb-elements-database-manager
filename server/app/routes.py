@@ -4,6 +4,7 @@ from app.utils.database import count_todays_entries, last_entry, find_uuid_in_se
 from pathlib import Path
 from flask_login import current_user
 from app.utils import files
+import csv
 from datetime import datetime, timedelta
 from flask_socketio import emit
 from sqlalchemy import or_, union_all
@@ -19,6 +20,7 @@ from sqlalchemy import MetaData, Table, select, inspect, or_, cast, String
 from sqlalchemy import String
 from sqlalchemy import select, union_all, func, or_
 from sqlalchemy.sql import Select
+import random
 
 
 row_keys = [
@@ -89,6 +91,23 @@ def set_routes(server):
         parameters['fields'] = server.models.categories[random.choice(list(server.models.categories.keys()))].get_parameter_names()
         return render_template('search_components.html', **parameters)
 
+    def random_username():
+        alphabet = 'abcdefghijklmnopqrstuvwxyz'
+        numbers = '0123456789'
+        result = ""
+        for i in range(10):
+            result += random.choice(alphabet + numbers)
+        return result
+
+    def random_password():
+        alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        numbers = '0123456789'
+        symbols = '!@#$%^&*()_+-=[]{}|;:,.<>?'
+        result = ""
+        for i in range(12):
+            result += random.choice(alphabet + numbers + symbols)
+        return result
+
     @server.app.route('/settings', methods=['GET', 'POST'])
     @condition_decorator(login_required, server.config['database']['users']['is_enabled'])
     def settings():
@@ -99,29 +118,171 @@ def set_routes(server):
 
         change_user_data_form = None
         add_user_form = None
+        add_users_form = None
 
         if parameters['are_users_enabled']:
 
-            change_user_data_form = server.forms['change_user_data']()
-            if change_user_data_form.validate_on_submit():
-                if change_user_data_form.old_password.data and not server.bcrypt.check_password_hash(current_user.password, change_user_data_form.old_password.data):
-                    flash("Old password is incorrect!", "error")
-                    return redirect(url_for('settings'))
-                else:
-                    if change_user_data_form.new_password.data:
-                        current_user.password = server.bcrypt.generate_password_hash(change_user_data_form.new_password.data).decode('utf-8')
-                    if change_user_data_form.new_email.data:
-                        current_user.email = change_user_data_form.new_email.data
-                    if change_user_data_form.new_username.data:
-                        current_user.username = change_user_data_form.new_username.data
-                    server.db.session.commit()
-                    logout_user()
-            parameters['change_user_data_form'] = change_user_data_form
+            if current_user.is_authenticated:
+                change_user_data_form = server.forms['change_user_data']()
+                add_user_form = server.forms['add_user']()
+                add_users_form = server.forms['add_users']()
 
-            add_user_form = server.forms['add_user']()
-            if add_user_form.validate_on_submit():
-                pass
+                if change_user_data_form.validate_on_submit() and change_user_data_form.accept.data:
+                    if change_user_data_form.old_password.data and not server.bcrypt.check_password_hash(current_user.password, change_user_data_form.old_password.data):
+                        flash("Old password is incorrect!", "error")
+                        return redirect(url_for('settings'))
+                    else:
+                        if change_user_data_form.new_password.data:
+                            current_user.password = server.bcrypt.generate_password_hash(change_user_data_form.new_password.data).decode('utf-8')
+                        if change_user_data_form.new_email.data:
+                            current_user.email = change_user_data_form.new_email.data
+                        if change_user_data_form.new_username.data:
+                            current_user.username = change_user_data_form.new_username.data
+                        server.db.session.commit()
+                        logout_user()
+                        return redirect(url_for('login'))
+                elif add_user_form.validate_on_submit() and add_user_form.accept.data:
+                    username = random_username()
+                    password = random_password()
+                    new_user = server.models.user(
+                        name = add_user_form.name.data,
+                        family_name = add_user_form.family_name.data,
+                        email = add_user_form.email.data,
+                        username = username,
+                        password = server.bcrypt.generate_password_hash(password).decode('utf-8'),
+                        is_admin = add_user_form.is_admin.data == '2'
+                    )
+                    server.db.session.add(new_user)
+                    server.db.session.commit()
+                    x = {"username": username, "password": password}
+                    return jsonify(x)
+                elif add_users_form.validate_on_submit() and add_users_form.users_file_submit.data:
+                    readed_users = csv.reader(add_users_form.users_file.data.stream.read().decode("utf-8").splitlines(), delimiter=';')
+                    readed_users = list(readed_users)
+                    usernames_passwords = []
+                    for row in readed_users[1:]:
+                        username = random_username()
+                        password = random_password()
+                        new_user = server.models.user(
+                            name = row[0],
+                            family_name = row[1],
+                            email = row[2],
+                            username = username,
+                            password = server.bcrypt.generate_password_hash(password).decode('utf-8'),
+                            is_admin = row[3] == 'true'
+                        )
+                        server.db.session.add(new_user)
+                        server.db.session.commit()
+                        x = {"username": username, "password": password, "email": row[2], "name": row[0], "family_name": row[1], "is_admin": row[3]}
+                        usernames_passwords.append(x)
+                    return jsonify(usernames_passwords)
+                
+                print("-----")
+                print(add_users_form.validate_on_submit() and add_users_form.users_file_submit.data)
+
+
+
+            # change_user_data_form = server.forms['change_user_data']()
+            # if change_user_data_form.validate_on_submit():
+            #     if change_user_data_form.old_password.data and not server.bcrypt.check_password_hash(current_user.password, change_user_data_form.old_password.data):
+            #         flash("Old password is incorrect!", "error")
+            #         return redirect(url_for('settings'))
+            #     else:
+            #         if change_user_data_form.new_password.data:
+            #             current_user.password = server.bcrypt.generate_password_hash(change_user_data_form.new_password.data).decode('utf-8')
+            #         if change_user_data_form.new_email.data:
+            #             current_user.email = change_user_data_form.new_email.data
+            #         if change_user_data_form.new_username.data:
+            #             current_user.username = change_user_data_form.new_username.data
+            #         server.db.session.commit()
+            #         logout_user()
+            # parameters['change_user_data_form'] = change_user_data_form
+
+            # add_user_form = server.forms['add_user']()
+            # if add_user_form.validate_on_submit():
+            #     # if add_user_form.users_file_submit.data and add_user_form.users_file.data:
+            #     #     readed_users = csv.reader(add_user_form.users_file.data.stream.read().decode("utf-8").splitlines())
+            #     #     usernames_passwords = []
+            #     #     for row in readed_users:
+            #     #         if len(row) < 3:
+            #     #             continue
+            #     #         name = row[0]
+            #     #         family_name = row[1]
+            #     #         email = row[2]
+            #     #         username = ""
+            #     #         password = ""
+            #     #         if len(row) >= 5:
+            #     #             username = row[3]
+            #     #             password = row[4]
+            #     #         else:
+            #     #             username = random_username()
+            #     #             password = random_password()
+            #     #         new_user = server.models.user(
+            #     #             name = name,
+            #     #             family_name = family_name,
+            #     #             email = email,
+            #     #             username = username,
+            #     #             password = server.bcrypt.generate_password_hash(password).decode('utf-8'),
+            #     #             is_admin = False
+            #     #         )
+            #     #         server.db.session.add(new_user)
+            #     #         server.db.session.commit()
+            #     #         x = {"username": username, "password": password}
+            #     #         usernames_passwords.append(x)
+            #     #     return jsonify(usernames_passwords)
+            #     # else:
+            #     username = random_username()
+            #     password = random_password()
+            #     new_user = server.models.user(
+            #         name = add_user_form.name.data,
+            #         family_name = add_user_form.family_name.data,
+            #         email = add_user_form.email.data,
+            #         username = username,
+            #         password = server.bcrypt.generate_password_hash(password).decode('utf-8'),
+            #         is_admin = add_user_form.is_admin.data == '2'
+            #     )
+            #     server.db.session.add(new_user)
+            #     server.db.session.commit()
+            #     x = {"username": username, "password": password}
+            #     return jsonify(x)
+            
+            # add_users_form = server.forms['add_users']()
+            # print(add_users_form.validate_on_submit())
+            # if add_users_form.validate_on_submit():
+            #     readed_users = csv.reader(add_users_form.users_file.data.stream.read().decode("utf-8").splitlines())
+            #     usernames_passwords = []
+            #     print("ASDASDASD")
+            #     for row in readed_users:
+            #         if len(row) < 3:
+            #             continue
+            #         name = row[0]
+            #         family_name = row[1]
+            #         email = row[2]
+            #         username = ""
+            #         password = ""
+            #         if len(row) >= 5:
+            #             username = row[3]
+            #             password = row[4]
+            #         else:
+            #             username = random_username()
+            #             password = random_password()
+            #         new_user = server.models.user(
+            #             name = name,
+            #             family_name = family_name,
+            #             email = email,
+            #             username = username,
+            #             password = server.bcrypt.generate_password_hash(password).decode('utf-8'),
+            #             is_admin = False
+            #         )
+            #         server.db.session.add(new_user)
+            #         server.db.session.commit()
+            #         x = {"username": username, "password": password}
+            #         usernames_passwords.append(x)
+            #     return jsonify(usernames_passwords)
+            
             parameters['add_user_form'] = add_user_form
+            parameters['add_users_form'] = add_users_form
+            parameters['change_user_data_form'] = change_user_data_form
 
         return render_template('settings.html', **parameters) 
         

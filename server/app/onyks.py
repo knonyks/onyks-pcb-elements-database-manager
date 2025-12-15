@@ -13,7 +13,7 @@ import time
 import threading
 import logging
 from .routes import set_routes, set_socketio_routes
-from .utils.forms import get_creating_element_form, get_login_form, get_change_user_data_form, get_add_user_form
+from .utils.forms import get_creating_element_form, get_login_form, get_change_user_data_form, get_add_user_form, get_add_users_form
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 import signal, sys
@@ -102,6 +102,7 @@ class OnyksApp:
             self.forms['login'] = get_login_form()
             self.forms['change_user_data'] = get_change_user_data_form()
             self.forms['add_user'] = get_add_user_form()
+            self.forms['add_users'] = get_add_users_form()
 
     def __init_routes(self):
         set_routes(self)

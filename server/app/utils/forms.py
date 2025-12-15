@@ -62,10 +62,16 @@ def get_add_user_form():
         name = StringField("Name", validators=[DataRequired()])
         family_name = StringField("Family name", validators=[DataRequired()])
         email = StringField("Email", validators=[DataRequired()])
-        expired_access_time = SelectField('Wybierz opcję', choices=[('1', '30 dni'), ('2', '90 dni'), ('3', '6 miesięcy'), ('4', '12 miesięcy'), ('5', 'Na zawsze')], validators=[DataRequired()])
+        # expired_access_time = SelectField('Wybierz opcję', choices=[('1', '30 dni'), ('2', '90 dni'), ('3', '6 miesięcy'), ('4', '12 miesięcy'), ('5', 'Na zawsze')], validators=[DataRequired()])
         is_admin = SelectField('Wybierz opcję', choices=[('1', 'Nie'), ('2', 'Tak')], validators=[DataRequired()])
         accept = SubmitField("Dodaj")
-        users_file = FileField('Plik uzytkowników', validators=[FileAllowed(['pdf'], "Tylko pliki CSV są dozwolone!")])
-        users_file_submit = SubmitField("Dodaj przez plik CSV")
 
     return AddUserForm
+
+def get_add_users_form():
+
+    class AddUsers(FlaskForm):
+        users_file = FileField('Plik uzytkowników', validators=[FileRequired(), FileAllowed(['csv'], "Tylko pliki CSV są dozwolone!")])
+        users_file_submit = SubmitField("Dodaj userów z pliku CSV")
+
+    return AddUsers

@@ -1,291 +1,123 @@
-# Onyks PCB Elements Database Manager
+# ONYKS Bloodstone
 
-A Web browser designed to manage multiple PCB schematics and footprints. 
-Altium Designer SchLib (Schematic Library) and PcbLib (Footprints Library) are also compatible with KiCad. 
+### 📖 Description
 
-Web browser library informations are stored in database while SchLib and PcbLib are stored in SVN repository.
+A centralized database system for Altium PCB components, integrated with an SVN repository for `SchLib` and `PcbLib` files. This project provides a web interface for managing component data (footprints, symbols, stock quantities) and ensures seamless access control for organizational users.
 
-### Requirements
-- Python 3.11
-- installed postgreSQL: psqlodbc_x64.msi
+The system acts as a bridge between the Altium Designer environment and a Postgres database, managed via a web application.
 
-### How to install and run
+---
 
-#### Example for Windows 11
-```
-cd server
-python3.11 -m venv .venv
-.\.venv\Scripts\activate
-pip install -r requirements.txt
-#with default config config.json
-python run.py
-#with a custom config, for example: my_config.json
-python run.py --config=my_config.json
-```
+### 🚀 Current Status
 
-Before running we need to set up a config file - config.json. It have to be filled by our input data for database and also for a SVN repository.
+#### ✅ Working Features
+- [x] **SVN Repository Initialization**: Automated setup of the Subversion repository.
+- [x] **User Authentication**: Access to SVN via database credentials (login/password).
+- [x] **RBAC (Role-Based Access Control)**:
+    - User ranking system.
+    - Commit and update permissions based on user rank.
+- [x] **Database Integration**: PostgreSQL backend for user and component data.
+- [x] **Server Configuration**:
+    - **Nginx**: Serving the SVN repository.
+    - **Apache**: Handling user management for SVN access.
+- [x] **Docker Integration**: Basic containerization support for easy deployment.
 
-### Config file description
+#### 🚧 Todo / Roadmap
+- [ ] **Backend Migration**: Implement **FastAPI** to replace the legacy Flask system.
+- [ ] **Frontend Framework**: Implement **Vue.js** for a modern web interface.
+- [ ] **Time-Limited Access**: Implement SVN access checks based on `expiration_time`.
+- [ ] **Management App**: Develop a dedicated dashboard for system administration.
+- [ ] **AI Integration**: Implement LLM (Large Language Model) for automatic component description generation.
+- [ ] **Auth System Overhaul**: Modernize the logging and authentication system.
 
-Soon.
+---
 
-### Database
+### 🛠 Tech Stack
+*   **Version Control:** Subversion (SVN)
+*   **Database:** PostgreSQL
+*   **Infrastructure:** Docker, Nginx, Apache
+*   **Backend:** Python (Flask → moving to FastAPI)
+*   **Frontend:** Vue.js (planned)
 
-### PostgreSQL query for components data
-For the creation of the table we need type the below query:
-```
-DO $$
-DECLARE
-    tbl_name TEXT;
-    names TEXT[] := ARRAY[
-            'Resistors', 
-            'Capacitors', 
-            'Inductors', 
-            'ICs', 
-            'Connectors',
-            'Mechanical', 
-            'Batteries', 
-            'Diodes', 
-            'Antennas', 
-            'Modules'];
-BEGIN
-    CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+### Installation Guide
 
-    FOREACH tbl_name IN ARRAY names
-    LOOP
-        EXECUTE format(
-            'CREATE TABLE IF NOT EXISTS %I (
-                uuid VARCHAR(36) PRIMARY KEY DEFAULT uuid_generate_v4(),
-                part_name VARCHAR NOT NULL,
-                manufacturer VARCHAR,
-                manufacturer_part_name VARCHAR,
-                datasheet BOOLEAN,
-                description VARCHAR,
-                value VARCHAR,
-                availability VARCHAR,
-                library_ref VARCHAR,
-                library_path VARCHAR,
-                footprint_ref_1 VARCHAR,
-                footprint_path_1 VARCHAR,
-                footprint_ref_2 VARCHAR,
-                footprint_path_2 VARCHAR,
-                footprint_ref_3 VARCHAR,
-                footprint_path_3 VARCHAR,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );',
-            tbl_name
-        );
-    END LOOP;
-END $$;
-```
-For the generate test data in the created table we need to type the below query
-```
-DO $$
-DECLARE
-    tbl_name TEXT;
-    names TEXT[] := ARRAY[
-            'Resistors', 
-            'Capacitors', 
-            'Inductors', 
-            'ICs', 
-            'Connectors',
-            'Mechanical', 
-            'Batteries', 
-            'Diodes', 
-            'Antennas', 
-            'Modules'];
-    n_rows INT;
-BEGIN
-    FOREACH tbl_name IN ARRAY names
-    LOOP
+Follow the steps below to set up the environment, configure the database, and start the services.
 
-        n_rows := floor(random() * (1000 - 200 + 1) + 200)::INT;
+#### 1. Generate SSL Certificates
+First, create a directory for the certificates and generate a self-signed SSL certificate (or place your own valid certificates in the directory).
 
-        EXECUTE format($f$
-            INSERT INTO %I (
-                uuid, part_name, manufacturer, datasheet, description,
-                library_ref, library_path, 
-                footprint_ref_1, footprint_path_1, 
-                footprint_ref_2, footprint_path_2, 
-                footprint_ref_3, footprint_path_3
-            )
-            SELECT 
-                gen_random_uuid(),
-                'Part_' || (seq + 1000),
-                CASE (seq %% 5) 
-                    WHEN 0 THEN 'Texas Instruments'
-                    WHEN 1 THEN 'STMicroelectronics'
-                    WHEN 2 THEN 'Infineon'
-                    WHEN 3 THEN 'NXP Semiconductors'
-                    WHEN 4 THEN 'Analog Devices'
-                END,
-                (random() > 0.5)::BOOLEAN,
-                CASE (seq %% 4)
-                    WHEN 0 THEN 'High-performance microcontroller'
-                    WHEN 1 THEN 'Power management IC'
-                    WHEN 2 THEN 'Voltage regulator'
-                    WHEN 3 THEN 'Digital signal processor'
-                END,
-                'LibRef_' || (seq + 2000),
-                '/libraries/components/lib_' || (seq + 2000) || '.lib',
-                'FootprintRef_' || (seq + 3000) || '_1',
-                '/footprints/smd/fp_' || (seq + 3000) || '_1.pretty',
-                'FootprintRef_' || (seq + 4000) || '_2', 
-                '/footprints/tht/fp_' || (seq + 4000) || '_2.pretty',
-                'FootprintRef_' || (seq + 5000) || '_3',
-                '/footprints/bga/fp_' || (seq + 5000) || '_3.pretty'
-            FROM generate_series(0, %s) AS seq;
-        $f$, tbl_name, n_rows);
-    END LOOP;
-END $$;
+```bash
+mkdir -p /home/xyz/certs
+openssl req -x509 -nodes -days 365 \
+  -newkey rsa:2048 \
+  -keyout /home/xyz/certs/privkey.pem \
+  -out /home/xyz/certs/fullchain.pem \
+  -subj "/CN=localhost"
 ```
 
-### What do they all mean?
-```
-uuid - universally unique identifier for every compontent,
-part_name - a manufacturer name of the compontent,
-category - a component type (Capacitor, Resistor etc.),
-value - a component value (10uF, 10mH etc.),
-description - essential basic information about the component,
-available - availability of the component on the market,
-atributes - link to the manufacturer datasheet,
-created_at - a date when the component was created,
-edited_at - a date when the last time the component was edited
-```
+#### 2. Configuration
+Create an environment file (e.g., `example.env`) in the root of your project repository. Customize the paths and credentials to match your system configuration.
 
+**File:** `example.env`
+```dotenv
+# PostgreSQL Configuration
+POSTGRES_USER=appuser
+POSTGRES_PASSWORD=strongpassword
+POSTGRES_DB=appdb
+POSTGRES_DATA_PATH=/home/xyz/postgres
+POSTGRES_PORT=8112
 
-```
-CREATE TABLE Users (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(80) NOT NULL,
-    family_name VARCHAR(80) NOT NULL,
-    username VARCHAR(80) UNIQUE NOT NULL,
-    email VARCHAR(120) UNIQUE NOT NULL,
-    password VARCHAR(200) NOT NULL,
-    is_admin BOOLEAN NOT NULL DEFAULT FALSE
-);
+# SVN / Apache Configuration
+SVN_REPO_NAME=elements
+SVN_DATA_PATH=/home/xyz/svn
+SVN_PORT=8111
 
-INSERT INTO Users (name, family_name, username, email, password, is_admin)
-VALUES ('Jan', 'Kowalski', 'admin', 'jan@example.com',
-        '$2b$12$w6Qq.8zs9Go3LLtwwMgN6epxegZMnwtVC3/V/r59QyXh0wlU/j.0S',
-            TRUE);
-
-INSERT INTO Users (name, family_name, username, email, password, is_admin)
-VALUES ('Zbyszek', 'Władywostok', 'user', 'zbyszek@example.com',
-        '$2b$12$/Dpf4Rf/Ub992SaHYcD5VuBnjdn315i5c5ChLpDal0vZAR5hAGfMu',
-            FALSE);
+# Nginx / SSL Configuration
+DOMAIN=localhost   # Local IP address or domain name
+SSL_CERT_PATH=/home/xyz/certs
+FRONTEND_PORT=8110
+SVN_PATH=/svn
 ```
 
+#### 3. Build and Start Services
+Navigate to the project folder and run the following command to build and start the containers using the specified environment file:
 
-
-
-
-## Production server - instruction
-
-### Gunicorn instruction
-Assumption: Python 3.11 and systemd.
-
-Tested on Ubuntu 24.04
-
-1. Download the repository
-
-2. Next, go to a directory ```server``` and create there a python environment: 
-
-```
-cd server
-python -m venv .venv
+```bash
+CONFIG_FILE=example.env docker-compose --env-file example.env up -d --build
 ```
 
-3. Activate the python environment and install require packages:
+#### 4. Create Initial User
+Once the containers are running, you need to create the first user in the database.
 
-```
-source ./.venv/bin/activate
-python3 -m pip install -r requirements.txt
-```
+1. Access the PostgreSQL container:
+   ```bash
+   docker exec -it postgres psql -U appuser -d appdb
+   ```
 
-4. If our python environment is ready, we can start creating the system service: 
+2. Insert the user record (you can assign ranks like `user`, `editor`, or `admin`):
+   ```sql
+   INSERT INTO private.users (login, password, email, rank)
+   VALUES ('admin', crypt('admin', gen_salt('bf')), 'admin@test.pl', 'editor');
+   ```
 
-```sudo nano /etc/systemd/system/onyks_pcb_element_database_manager_server.service```
+3. Exit the database console:
+   ```bash
+   exit
+   ```
 
-5. We need to fill the system service file for our server like below:
+#### 5. SVN Usage Examples
+You can now interact with the SVN repository using the following commands:
 
-```
-[Unit]
-Description=Onyks PCB Elements Database Manager
-After=network.target
+```bash
+# Checkout the repository
+svn checkout https://localhost:8111/svn/elements --username admin --password admin --trust-server-cert --non-interactive
 
-[Service]
-User=user
-Group=user
-WorkingDirectory=/home/user/onyks-pcb-elements-database-manager/server
-Environment="PATH=/home/user/onyks-pcb-elements-database-manager/server/.venv:/bin/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-Environment="FLASK_ENV=production"
-Environment="ONYKS_CONFIG=my_config.json"
-ExecStart=/home/user/onyks-pcb-elements-database-manager/server/.venv/bin/gunicorn -k eventlet -w 1 wsgi:app  --bind 127.0.0.1:5000
-Restart=always
-RestartSec=5s
-StandardOutput=append:/var/log/onyks_pcb_element_database_manager_server.out.log
-StandardError=append:/var/log/onyks_pcb_element_database_manager_server.err.log
-SyslogIdentifier=onyks_pcb_element_database_manager_server
+# Add files
+svn add --force .
 
-[Install]
-WantedBy=multi-user.target
-```
+# Commit changes
+svn commit -m "Initial commit" --username admin --password admin --trust-server-cert --non-interactive
 
-We need to adjust these lines to our machine:
-* ```User=*``` - the user of the service;
-* ```Group=*``` - the group of the user which we entered in ```User`` field;
-* ```WorkingDirectory=*``` - the absolute path to the folder ```server```;
-* ```Environment="PATH=*"``` - the line which contains absolute paths to bins where the service can get installed system packages and also our python environment;
-* ```Environment="ONYKS_CONFIG=*"``` - a relative path to the config which we want to use; it's the relative path from ```server``` directory (where we created the ```.venv```);
-* ```ExecStart=*``` - it contains the command which starts the server - it has to be filled with an absolute path to the gunicorn from ```.venv``` in folder ```server```;
-
-6. Reload systemd: ```sudo systemctl daemon-reload```
-7. Run the service: ```sudo systemctl start onyks_pcb_element_database_manager_server```
-8. If we want to start the service everytime when the system turn on we need to type: ```sudo systemctl enable onyks_pcb_element_database_manager_server```
-9. If we want to check the status of the service we need to type: ```sudo systemctl status onyks_pcb_element_database_manager_server```
-10. To watch live the logs: ```journalctl -u onyks_pcb_element_database_manager_server -f```
-
-### Nginx
-
-Soon.
-
-### WSGI
-
-Soon.
-
-
-
-```sudo nano /etc/systemd/system/onyks_pcb_element_database_manager_repository_worker.service```
-
-
-
-```
-[Unit]
-Description=Onyks PCB Elements Database Manager Repository Worker
-After=network.target
-
-[Service]
-User=zero-jedynkowy
-Group=zero-jedynkowy
-WorkingDirectory=/home/zero-jedynkowy/onyks-pcb-elements-database-manager/server
-Environment="PATH=/home/zero-jedynkowy/onyks-pcb-elements-database-manager/server/.venv:/bin/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-Environment="FLASK_ENV=production"
-Environment="ONYKS_CONFIG=my_config.json"
-ExecStart=/home/zero-jedynkowy/onyks-pcb-elements-database-manager/server/.venv/bin/python repository_worker.py --config=$ONYKS_CONFIG
-Restart=always
-RestartSec=5s
-StandardOutput=append:/var/log/onyks_pcb_element_database_manager_repository_worker.out.log
-StandardError=append:/var/log/onyks_pcb_element_database_manager_repository_worker.err.log
-SyslogIdentifier=onyks_pcb_element_database_manager_repository_worker
-
-[Install]
-WantedBy=multi-user.target
-```
-
-
-
-```
-npm init
-browserify npm_files/labels_generating.js -o app/static/temp/bundle1.js
+# Update repository
+svn update --username admin --password admin --trust-server-cert --non-interactive
 ```

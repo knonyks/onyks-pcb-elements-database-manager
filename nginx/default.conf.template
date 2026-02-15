@@ -1,0 +1,15 @@
+server 
+{
+    listen ${FRONTEND_PORT} ssl;
+    server_name ${DOMAIN};
+
+    ssl_certificate ${SSL_CERT_PATH}/fullchain.pem;
+    ssl_certificate_key ${SSL_CERT_PATH}/privkey.pem;
+
+    # SVN proxy
+    location ${SVN_PATH}/ {
+        proxy_pass https://apache:443;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $remote_addr;
+    }
+}

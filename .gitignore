@@ -8,6 +8,7 @@ datasheets
 !package.json
 node_modules
 server/app/static/temp
+temp
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,node,yarn,flask
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,node,yarn,flask

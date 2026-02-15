@@ -24,7 +24,7 @@ envsubst '\$POSTGRES_USER \$POSTGRES_PASSWORD \$POSTGRES_DB \$SVN_REPO_NAME' \
     < /usr/local/apache2/conf/httpd.conf.template \
     > /usr/local/apache2/conf/httpd.conf
 
-4. Loop for syncing authz file from PostgreSQL
+# 4. Loop for syncing authz file from PostgreSQL
 sync_authz_file() {
     echo "Uruchamiam proces synchronizacji uprawnień w tle..."
     

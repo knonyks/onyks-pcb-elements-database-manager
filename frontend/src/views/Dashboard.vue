@@ -1,51 +1,35 @@
 <script setup lang="ts">
     import { ref, onMounted } from 'vue'
+    import { fetch_data } from '../utils/database'
     const total_elements = ref(0)
     const total_tables = ref(0)
     const last_added_element = ref({"part_name": "N/A", "uuid": "N/A"})
     const repository_stats = ref({
-        total_footprints: 0,
-        total_symbols: 0,
-        total_pcblibs: 0,
-        total_schlibs: 0
+        footprints_total: 0,
+        symbols_total: 0,
+        pcblibs_files_total: 0,
+        schlibs_files_total: 0
     })
+
     const total_manufacturers = ref(0)
     const total_suppliers = ref(0)
     const tables_amounts = ref({})
     const manufacturers_amounts = ref({})
     const suppliers_amounts = ref({})
-
-    const fetch_data = async (endpoint) => 
-    {
-        try 
-        {
-            const response = await fetch(`/api${endpoint}`)
-    
-            if (!response.ok) 
-            {
-                throw new Error(`Błąd serwera: ${response.status}`)
-            }
-            console.log(`Odpowiedź z ${endpoint}:`, response)
-            return await response.json();
-        } 
-        catch (err) 
-        {
-            console.error("Błąd podczas pobierania danych:", err)
-        }
-    }
-    
+    console.log("Fetching data...")
     onMounted(() => 
     {
-        fetch_data("/elements/total").then(data => total_elements.value = data.value)
-        fetch_data("/tables/total").then(data => total_tables.value = data.value)
-        fetch_data("/elements/last_added").then(data => last_added_element.value = data.last_added_element)
-        fetch_data("/repository/total").then(data => repository_stats.value = data)
-        fetch_data("/manufacturers/total").then(data => total_manufacturers.value = data.value)
-        fetch_data("/suppliers/total").then(data => total_suppliers.value = data.value)
-        fetch_data("/tables/amounts").then(data => tables_amounts.value = data)
-        fetch_data("/manufacturers/amounts").then(data => manufacturers_amounts.value = data)
-        fetch_data("/suppliers/amounts").then(data => suppliers_amounts.value = data)
-        
+        console.log("Mounted, fetching data...")
+        fetch_data("/elements/total").then(data => total_elements.value = data.total)
+        fetch_data("/tables/total").then(data => total_tables.value = data.total)
+        fetch_data("/elements/last_added").then(data => last_added_element.value = data)
+        fetch_data("/repository/summary").then(data => repository_stats.value = data)
+        fetch_data("/manufacturers/total").then(data => total_manufacturers.value = data.total)
+        fetch_data("/suppliers/total").then(data => total_suppliers.value = data.total)
+        fetch_data("/tables/amounts").then(data => tables_amounts.value = data.tables)
+        fetch_data("/manufacturers/amounts").then(data => manufacturers_amounts.value = data.manufacturers)
+        fetch_data("/suppliers/amounts").then(data => suppliers_amounts.value = data.suppliers)
+        // fetch_data("/suppliers/create", {name: "Supplier " + Math.floor(Math.random() * 1000)}).then(data => console.log(data))
     })
 </script>
 
@@ -87,10 +71,10 @@
                     <p>SchLib Files</p>
                 </div>
                 <div class="col">
-                    <p>{{ repository_stats.total_symbols }}</p>
-                    <p>{{ repository_stats.total_footprints }}</p>
-                    <p>{{ repository_stats.total_pcblibs }}</p>
-                    <p>{{ repository_stats.total_schlibs }}</p>
+                    <p>{{ repository_stats.symbols_total }}</p>
+                    <p>{{ repository_stats.footprints_total }}</p>
+                    <p>{{ repository_stats.pcblibs_files_total }}</p>
+                    <p>{{ repository_stats.schlibs_files_total }}</p>
                 </div>
             </div>
         </div>

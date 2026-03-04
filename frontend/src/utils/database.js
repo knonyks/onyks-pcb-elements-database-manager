@@ -1,33 +1,20 @@
-const fetch_data = async (endpoint, data = null) => 
+import axios from "axios";
+
+async function api_call(endpoint, method = 'GET', data = null) 
 {
     try 
     {
-        let response;
-        if(data)
-        {
-            response = await fetch(`/api${endpoint}`, 
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            })
-        }
-        else
-        {
-            response = await fetch(`/api${endpoint}`)
-            if (!response.ok) 
-            {
-                throw new Error(`ERROR: ${response.status}`)
-            }
-        }
-        return await response.json()
+        const response = await axios({
+            method: method,
+            url: endpoint,
+            data: data
+        });
+        return {data: response.data, status: response.status};
     } 
     catch (err) 
     {
-        console.error("ERROR:", err)
+        console.error(`ERROR ${endpoint}:`, err);
+        return {data: null, status: err.status};
     }
 }
-
-export {fetch_data};
+export {api_call};

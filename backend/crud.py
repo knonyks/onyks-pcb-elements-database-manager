@@ -1,8 +1,10 @@
 from sqlalchemy.orm import Session
 import models
 import schemas
+from sqlalchemy.orm import Session
+from sqlalchemy import or_, cast, String
+from typing import List, Tuple
 
-# DASHBOARD
 def total_elements(db: Session):
     return -20
 
@@ -19,6 +21,8 @@ def last_added_element(db: Session):
     return {
         "uuid": "-123e4567-e89b-12d3-a456-426614174000",
         "part_name": "-Resistor 10kΩ",
+        "manufacturer": "Texas Instruments",
+        "created_at": "14:30:321, 01.01.1970"
     }
 
 def repository_summary(db: Session):
@@ -31,10 +35,11 @@ def repository_summary(db: Session):
 
 def tables_amounts(db: Session):
     return {
-        "table1": -100,
-        "table2": -50,
-        "table3": -30,
-        "table4": -20,
+        "Inductors": -100,
+        "Transistors": -50,
+        "Mechanical": -30,
+        "Capacitors": -20,
+        "ICs": -20,
     }
 
 def manufacturers_amounts(db: Session):
@@ -43,6 +48,7 @@ def manufacturers_amounts(db: Session):
         "manufacturer2": -50,
         "manufacturer3": -30,
         "manufacturer4": -20,
+        "manufacturer5": -20,
     }
 
 def suppliers_amounts(db: Session):
@@ -53,38 +59,43 @@ def suppliers_amounts(db: Session):
         "supplier4": -20,
     }
 
-# def create_supplier(db: Session, supplier: schemas.Supplier_Create):
-#     db_supplier = models.Supplier(name=supplier.name)
-#     db.add(db_supplier)
-#     db.commit()
-#     db.refresh(db_supplier)
-#     return db_supplier
+################################################################################
 
-# def create_manufacturer(db: Session, manufacturer: schemas.Manufacturer_Create):
-#     db_manufacturer = models.Manufacturer(name=manufacturer.name)
-#     db.add(db_manufacturer)
-#     db.commit()
-#     db.refresh(db_manufacturer)
-#     return db_manufacturer
+def get_supplier_by_name(db: Session, name: str):
+    return db.query(models.Supplier).filter(models.Supplier.name == name).first()
 
+def create_supplier(db: Session, supplier: schemas.Supplier_Create):
+    db_supplier = models.Supplier(name=supplier.name)
+    db.add(db_supplier)
+    db.commit()
+    db.refresh(db_supplier)
+    return db_supplier
 
+def get_suppliers(
+        db: Session, 
+        cursor: int = None, 
+        limit: int = 20, 
+        search_query: str = None, 
+        search_columns: List[str] = None
+    ):
+    
+    query = db.query(models.Supplier)
 
-# def create_supplier(db: Session, supplier: schemas.Supplier_Create):
-#     db_supplier = models.Supplier(name=supplier.name)
-#     db.add(db_supplier)
-#     db.commit()
-#     db.refresh(db_supplier)
-#     return db_supplier
+    if search_query and search_columns:
+        conditions = []
+        search_term = f"%{search_query}%"
 
-# def create_manufacturer(db: Session, manufacturer: schemas.Manufacturer_Create):
-#     db_manufacturer = models.Manufacturer(name=manufacturer.name)
-#     db.add(db_manufacturer)
-#     db.commit()
-#     db.refresh(db_manufacturer)
-#     return db_manufacturer
+        if "name" in search_columns:
+            conditions.append(models.Supplier.name.ilike(search_term))
+            
+        if "created_at" in search_columns:
+            conditions.append(cast(models.Supplier.created_at, String).ilike(search_term))
 
-# def get_suppliers(db: Session, skip: int = 0, limit: int = 100, response_model=schemas.Supplier):
-#     temp = db.query(models.Supplier).offset(skip).limit(limit).all()
-#     return [response_model.from_orm(supplier) for supplier in temp]
+        if conditions:
+            query = query.filter(or_(*conditions))
 
-
+    total_count = query.count()
+    if cursor:
+        query = query.filter(models.Supplier.id < cursor)
+    items = query.order_by(models.Supplier.id.asc()).limit(limit + 1).all()
+    return items, total_count

@@ -5,11 +5,11 @@
     <onyks-nav size="l">
         <onyks-logo></onyks-logo>
         <onyks-nav-content maxviewitems="5">
-            <router-link to="/dashboard"><onyks-nav-option>Dashboard</onyks-nav-option></router-link>
-            <router-link to="/management"><onyks-nav-option>Management</onyks-nav-option></router-link>
-            <router-link to="/repository"><onyks-nav-option>Repository</onyks-nav-option></router-link>
-            <router-link to="/settings"><onyks-nav-option>Settings</onyks-nav-option></router-link>
-            <router-link to="/admin"><onyks-nav-option>Admin</onyks-nav-option></router-link>
+            <router-link to="/dashboard"><onyks-nav-option :selected="$route.path === '/dashboard'">Dashboard</onyks-nav-option></router-link>
+            <router-link to="/management"><onyks-nav-option :selected="$route.path === '/management'">Management</onyks-nav-option></router-link>
+            <router-link to="/repository"><onyks-nav-option :selected="$route.path === '/repository'">Repository</onyks-nav-option></router-link>
+            <router-link to="/settings"><onyks-nav-option :selected="$route.path === '/settings'">Settings</onyks-nav-option></router-link>
+            <router-link to="/admin"><onyks-nav-option :selected="$route.path === '/admin'">Admin</onyks-nav-option></router-link>
         </onyks-nav-content>
     </onyks-nav>
 </template>

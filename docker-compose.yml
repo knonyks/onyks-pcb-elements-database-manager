@@ -1,4 +1,30 @@
 services:
+
+  proxy:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+        - ./proxy/default.conf.template:/etc/nginx/templates/default.conf.template:ro
+    depends_on:
+      - frontend
+      - svn
+      - backend
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    env_file:
+      - ${CONFIG_FILE}
+    depends_on:
+      - database
+
   database:
     image: postgres:16-alpine
     container_name: postgres
@@ -8,54 +34,15 @@ services:
       - "${POSTGRES_PORT}:5432"
     volumes:
       - ${POSTGRES_DATA_PATH}:/var/lib/postgresql/data
-      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
 
-  backend:
-    build: ./backend
-    restart: always
-    env_file:
-      - ${CONFIG_FILE}
+  svn:
+    build: ./svn
+    restart: unless-stopped
+    env_file: ${CONFIG_FILE}
+    ports:
+      - "${SVN_PORT}:443"
+    volumes:
+      - ${SVN_DATA_PATH}:/var/svn
     depends_on:
       - database
-
-  frontend:
-    build: ./frontend
-    restart: always
-    ports:
-      - "80:80"
-    depends_on:
-      - backend
-
-
-  # apache:
-  #   build: ./apache
-  #   container_name: apache-svn
-  #   restart: unless-stopped
-  #   env_file: ${CONFIG_FILE}
-  #   ports:
-  #     - "${SVN_PORT}:443"
-  #   volumes:
-  #     - ${SVN_DATA_PATH}:/var/svn
-  #     - ${SSL_CERT_PATH}:/etc/ssl/certs
-  #   depends_on:
-  #     - postgres
-  #   networks:
-  #     - backend
-
-  # nginx:
-  #   image: nginx:1.25-alpine
-  #   container_name: nginx
-  #   restart: unless-stopped
-  #   env_file: ${CONFIG_FILE}
-  #   ports:
-  #     - "${FRONTEND_PORT}:${FRONTEND_PORT}"
-  #   volumes:
-  #     - ./nginx/default.conf:/etc/nginx/templates/default.conf.template
-  #     - ${SSL_CERT_PATH}:/etc/ssl/certs
-  #   depends_on:
-  #     - apache
-  #   networks:
-  #     - backend
-
-# networks:
-#   backend:

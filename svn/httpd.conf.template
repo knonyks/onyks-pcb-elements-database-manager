@@ -27,13 +27,6 @@ ErrorLog /proc/self/fd/2
 LogLevel warn
 CustomLog /proc/self/fd/1 common
 
-SSLEngine on
-SSLCertificateFile /etc/ssl/certs/fullchain.pem
-SSLCertificateKeyFile /etc/ssl/certs/privkey.pem 
-
-SSLSessionCache shmcb:/usr/local/apache2/logs/ssl_scache(512000)
-SSLSessionCacheTimeout 300
-
 KeepAlive On
 MaxKeepAliveRequests 100
 KeepAliveTimeout 5

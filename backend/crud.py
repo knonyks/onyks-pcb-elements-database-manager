@@ -4,6 +4,7 @@ import schemas
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, cast, String
 from typing import List, Tuple
+import utils
 
 def total_elements(db: Session):
     return -20
@@ -59,8 +60,6 @@ def suppliers_amounts(db: Session):
         "supplier4": -20,
     }
 
-################################################################################
-
 def get_supplier_by_name(db: Session, name: str):
     return db.query(models.Supplier).filter(models.Supplier.name == name).first()
 
@@ -71,31 +70,66 @@ def create_supplier(db: Session, supplier: schemas.Supplier_Create):
     db.refresh(db_supplier)
     return db_supplier
 
-def get_suppliers(
-        db: Session, 
-        cursor: int = None, 
-        limit: int = 20, 
-        search_query: str = None, 
-        search_columns: List[str] = None
-    ):
-    
+def get_infinite_sorted_suppliers_items(db: Session, cursor_str: str = None, limit: int = 20):
     query = db.query(models.Supplier)
 
-    if search_query and search_columns:
-        conditions = []
-        search_term = f"%{search_query}%"
+    total_count = None
+    if not cursor_str:
+        total_count = query.count()
 
-        if "name" in search_columns:
-            conditions.append(models.Supplier.name.ilike(search_term))
-            
-        if "created_at" in search_columns:
-            conditions.append(cast(models.Supplier.created_at, String).ilike(search_term))
+    cursor_data = utils.decode_cursor(cursor_str)
 
-        if conditions:
-            query = query.filter(or_(*conditions))
+    if cursor_data:
+        query = query.filter(models.Supplier.id > cursor_data["id"])
 
-    total_count = query.count()
-    if cursor:
-        query = query.filter(models.Supplier.id < cursor)
-    items = query.order_by(models.Supplier.id.asc()).limit(limit + 1).all()
-    return items, total_count
+    query = query.order_by(models.Supplier.id.asc())
+
+    items = query.limit(limit + 1).all()
+
+    has_more = len(items) > limit
+    if has_more:
+        items = items[:-1]
+
+    next_cursor = None
+    if items:
+        last_item = items[-1]
+        next_cursor = utils.encode_cursor({"name" : last_item.name, "id" : last_item.id})
+
+    return items, next_cursor, has_more, total_count
+
+def get_manufacturer_by_name(db: Session, name: str):
+    return db.query(models.Manufacturer).filter(models.Manufacturer.name == name).first()
+
+def create_manufacturer(db: Session, manufacturer: schemas.Manufacturer_Create):
+    db_manufacturer = models.Manufacturer(name=manufacturer.name)
+    db.add(db_manufacturer)
+    db.commit()
+    db.refresh(db_manufacturer)
+    return db_manufacturer
+
+def get_infinite_sorted_manufacturers_items(db: Session, cursor_str: str = None, limit: int = 20):
+    query = db.query(models.Manufacturer)
+
+    total_count = None
+    if not cursor_str:
+        total_count = query.count()
+
+    cursor_data = utils.decode_cursor(cursor_str)
+
+    if cursor_data:
+        query = query.filter(models.Manufacturer.id > cursor_data["id"])
+
+    query = query.order_by(models.Manufacturer.id.asc())
+
+    items = query.limit(limit + 1).all()
+
+    has_more = len(items) > limit
+    if has_more:
+        items = items[:-1]
+
+    next_cursor = None
+    if items:
+        last_item = items[-1]
+        next_cursor = utils.encode_cursor({"name" : last_item.name, "id" : last_item.id})
+
+    return items, next_cursor, has_more, total_count

@@ -64,11 +64,9 @@ def read_manufacturers_amounts(db: Session = Depends(get_db)):
 def read_suppliers_amounts(db: Session = Depends(get_db)):
     return schemas.Supplier_Amounts_Response(suppliers = crud.suppliers_amounts(db = db))
 
-###############################################################################################
-
 @app.post("/suppliers/create", response_model = schemas.Supplier_Create_Response, status_code = status.HTTP_201_CREATED)
 def write_suppliers_create(supplier: schemas.Supplier_Create, db: Session = Depends(get_db)):
-    if utils.is_string_valid(supplier.name):
+    if utils.is_supplier_name_valid(supplier.name):
         db_supplier = crud.get_supplier_by_name(db, name = supplier.name)
         if db_supplier:
             raise HTTPException(status_code = status.HTTP_409_CONFLICT, detail="The supplier already exists.")    
@@ -76,39 +74,40 @@ def write_suppliers_create(supplier: schemas.Supplier_Create, db: Session = Depe
     else:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Wrong a format of the name.")  
 
-    
-@app.get("/suppliers/", response_model=schemas.Supplier_Pagination_Response)
-def read_items(params: schemas.Supplier_Pagination = Depends(), db: Session = Depends(get_db)):
-
-    raw_items, total_count = crud.get_suppliers(
-        db, 
-        cursor=params.cursor, 
-        limit=params.limit, 
-        search_query=params.search_query, 
-        search_columns=params.search_columns
+@app.get("/suppliers/", response_model=schemas.Infinite_Scroll_Response[schemas.Supplier_Infinite_Scroll_Response])
+def read_suppliers(params: schemas.Infinite_Scroll = Depends(), db: Session = Depends(get_db)):
+    items, next_cursor, has_more, total_count = crud.get_infinite_sorted_suppliers_items(
+        db=db, 
+        cursor_str=params.cursor, 
+        limit=params.limit
     )
+    return {
+        "items": items,
+        "next_cursor": next_cursor,
+        "has_more": has_more,
+        "total": total_count
+    }
 
-    next_cursor = None
-    if len(raw_items) > params.limit:
-        items_to_return = raw_items[:-1]
-        next_cursor = items_to_return[-1].id
+@app.post("/manufacturers/create", response_model = schemas.Manufacturer_Infinite_Scroll_Response, status_code = status.HTTP_201_CREATED)
+def write_manufacturers_create(manufacturer: schemas.Manufacturer_Create, db: Session = Depends(get_db)):
+    if utils.is_manufacturer_name_valid(manufacturer.name):
+        db_manufacturer = crud.get_manufacturer_by_name(db, name = manufacturer.name)
+        if db_manufacturer:
+            raise HTTPException(status_code = status.HTTP_409_CONFLICT, detail="The manufacturer already exists.")    
+        return crud.create_manufacturer(db = db, manufacturer = manufacturer)
     else:
-        items_to_return = raw_items
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Wrong a format of the name.")  
 
-    return schemas.Supplier_Pagination_Response(
-        suppliers=items_to_return,
-        next_cursor=next_cursor,
-        total_count=total_count
+@app.get("/manufacturers/", response_model=schemas.Infinite_Scroll_Response[schemas.Manufacturer_Infinite_Scroll_Response])
+def read_manufacturers(params: schemas.Infinite_Scroll = Depends(), db: Session = Depends(get_db)):
+    items, next_cursor, has_more, total_count = crud.get_infinite_sorted_manufacturers_items(
+        db=db, 
+        cursor_str=params.cursor, 
+        limit=params.limit
     )
-
-
-
-
-
-
-
-
-
-
-
-
+    return {
+        "items": items,
+        "next_cursor": next_cursor,
+        "has_more": has_more,
+        "total": total_count
+    }

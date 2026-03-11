@@ -1,4 +1,5 @@
 <script setup>
+
 </script>
 
 <template>
@@ -8,9 +9,8 @@
 <style scoped>
     h1
     {
-        font-size: 3rem;
-        display: block;
         margin: 0;
-        padding: var(--spacing-lg) 0 0 0;
+        padding: 0;
+        font-size: 1.5rem;
     }
 </style>

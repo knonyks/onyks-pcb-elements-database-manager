@@ -1,7 +1,9 @@
 from pydantic import BaseModel, ConfigDict, Field, constr, field_validator
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Generic, TypeVar
 from fastapi import Query
+
+T = TypeVar('T')
 
 class Element_Total_Response(BaseModel):
     total: int
@@ -36,45 +38,27 @@ class Manufacturer_Amounts_Response(BaseModel):
 class Supplier_Amounts_Response(BaseModel):
     suppliers: dict[str, int]
 
-########################################################################################
-
 class Supplier_Create(BaseModel):
-    name: str = constr(strip_whitespace=True, min_length=3, max_length=50)
+    name: str = constr(strip_whitespace=True, min_length=1, max_length=50)
 
 class Supplier_Create_Response(BaseModel):
     name: str
 
-class Supplier_Response(BaseModel):
-    id: int
+class Infinite_Scroll(BaseModel):
+    cursor: Optional[str] = Field(None, description = "Base64")
+    limit: int = Field(20, ge=1, le=100)
+
+class Infinite_Scroll_Response(BaseModel, Generic[T]):
+    items: List[T]
+    next_cursor: Optional[str] = None
+    has_more: bool
+    total: Optional[int] = None
+
+class Supplier_Infinite_Scroll_Response(BaseModel):
     name: str
-    created_at: datetime
-    class Config:
-        from_attributes = True
-        
-    @field_validator('created_at', mode='before')
-    @classmethod
-    def fix_datetime_format(cls, value):
-        if isinstance(value, str):
-            value = value.replace(" ", "T")
-            if value.endswith("+00"):
-                value = value.replace("+00", "+00:00")
-        return value
 
-class Supplier_Pagination:
-    def __init__(
-        self,
-        cursor: Optional[int] = Query(None, description="Last loaded ID supplier"),
-        limit: int = Query(20, ge=1, le=100, description="How many entries to load"),
-        search_query: Optional[str] = Query(None, description="What it's looking for"),
-        search_columns: Optional[List[str]] = Query(None, description="Where it's looking for")):
-        self.cursor = cursor
-        self.limit = limit
-        self.search_query = search_query
-        self.search_columns = search_columns
+class Manufacturer_Create(BaseModel):
+    name: str = constr(strip_whitespace=True, min_length=1, max_length=50)
 
-class Supplier_Pagination_Response(BaseModel):
-    suppliers: List[Supplier_Response]
-    next_cursor: Optional[int] = None
-    total_count: int
-
-
+class Manufacturer_Infinite_Scroll_Response(BaseModel):
+    name: str

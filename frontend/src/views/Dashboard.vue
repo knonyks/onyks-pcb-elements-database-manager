@@ -2,7 +2,7 @@
     import { ref, onMounted } from 'vue'
     import { api_call } from '../utils/database'
     import Title from '@/components/Title.vue'
-    
+    import Panel_Content from '@/components/Panel_Content.vue'
 
     const total_elements = ref(0)
     const total_tables = ref(0)
@@ -40,73 +40,74 @@
 </script>
 
 <template>
-<Title>Dashboard</Title>
-<onyks-grid cols="9">
+    <Panel_Content>
+        <Title>Dashboard</Title>
+    <onyks-grid cols="9">
 
-    <onyks-card title="Total Elements" span="3">
-        <div class="desc counter">{{ total_elements }}</div>
-    </onyks-card>
+        <onyks-card title="Total Elements" span="3">
+            <div class="desc counter">{{ total_elements }}</div>
+        </onyks-card>
 
-    <onyks-card title="Total Tables" span="3">
-        <div class="desc counter">{{ total_tables }}</div>
-    </onyks-card>
+        <onyks-card title="Total Tables" span="3">
+            <div class="desc counter">{{ total_tables }}</div>
+        </onyks-card>
 
-    <onyks-card title="Total Manufacturers" span="3">
-        <div class="desc counter">{{ total_manufacturers }}</div>
-    </onyks-card>
+        <onyks-card title="Total Manufacturers" span="3">
+            <div class="desc counter">{{ total_manufacturers }}</div>
+        </onyks-card>
 
-    <onyks-card title="Total Suppliers" span="4">
-        <div class="desc counter">{{ total_suppliers }}</div>
-    </onyks-card>
+        <onyks-card title="Total Suppliers" span="4">
+            <div class="desc counter">{{ total_suppliers }}</div>
+        </onyks-card>
 
-    <onyks-card title="Repository Summary" span="5">
-        <div class="desc text">
-            <div class="row">
-                <div class="col">
-                    <p>Symbols</p>
-                    <p>Footprints</p>
-                    <p>PcbLib Files</p>
-                    <p>SchLib Files</p>
-                </div>
-                <div class="col">
-                    <p>{{ repository_summary.symbols_total }}</p>
-                    <p>{{ repository_summary.footprints_total }}</p>
-                    <p>{{ repository_summary.pcblibs_files_total }}</p>
-                    <p>{{ repository_summary.schlibs_files_total }}</p>
-                </div>
-            </div>
-        </div>
-    </onyks-card>
-
-
-    <onyks-card title="Last added element" span="9">
-        <div class="desc text">
-            <div class="row">
-                <div class="col">
-                    <p>UUID</p>
-                    <p>Part Name</p>
-                    <p>Manufacturer</p>
-                    <p>Created at</p>
-                </div>
-                <div class="col">
-                    <p>{{ last_added_element.uuid }}</p>
-                    <p>{{ last_added_element.part_name }}</p>
-                    <p>{{ last_added_element.manufacturer }}</p>
-                    <p>{{ last_added_element.created_at }}</p>
+        <onyks-card title="Repository Summary" span="5">
+            <div class="desc text">
+                <div class="row">
+                    <div class="col">
+                        <p>Symbols</p>
+                        <p>Footprints</p>
+                        <p>PcbLib Files</p>
+                        <p>SchLib Files</p>
+                    </div>
+                    <div class="col">
+                        <p>{{ repository_summary.symbols_total }}</p>
+                        <p>{{ repository_summary.footprints_total }}</p>
+                        <p>{{ repository_summary.pcblibs_files_total }}</p>
+                        <p>{{ repository_summary.schlibs_files_total }}</p>
+                    </div>
                 </div>
             </div>
-        </div>
-    </onyks-card>
-</onyks-grid>
+        </onyks-card>
 
-<h2>Tables</h2>
 
-<onyks-grid cols="4">
-    <onyks-card v-for="(count, name) in tables_amounts" :key="name" span="1" :title="name">
-        <div class="desc table-counter">{{ count }}</div>
-    </onyks-card>
-</onyks-grid>
+        <onyks-card title="Last added element" span="9">
+            <div class="desc text">
+                <div class="row">
+                    <div class="col">
+                        <p>UUID</p>
+                        <p>Part Name</p>
+                        <p>Manufacturer</p>
+                        <p>Created at</p>
+                    </div>
+                    <div class="col">
+                        <p>{{ last_added_element.uuid }}</p>
+                        <p>{{ last_added_element.part_name }}</p>
+                        <p>{{ last_added_element.manufacturer }}</p>
+                        <p>{{ last_added_element.created_at }}</p>
+                    </div>
+                </div>
+            </div>
+        </onyks-card>
+    </onyks-grid>
 
+    <h2>Tables</h2>
+
+    <onyks-grid cols="4">
+        <onyks-card v-for="(count, name) in tables_amounts" :key="name" span="1" :title="name">
+            <div class="desc table-counter">{{ count }}</div>
+        </onyks-card>
+    </onyks-grid>
+</Panel_Content>
 </template>
 
 <style lang="css" scoped>

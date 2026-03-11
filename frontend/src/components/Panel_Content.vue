@@ -9,7 +9,7 @@
     {
         display: flex;
         flex-direction: column;
-        gap: var(--spacing-md);
+        gap: var(--spacing-lg);
         height: 100%;
     }
 </style>

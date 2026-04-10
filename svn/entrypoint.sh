@@ -3,13 +3,16 @@ set -e
 
 echo "--- START ENTRYPOINT ---"
 
-# 1. Wait for PostgreSQL to be ready
-echo "Czekam na uruchomienie PostgreSQL..."
-until pg_isready -h postgres -p 5432 -U "$POSTGRES_USER"; do
-  echo "Postgres nie gotowy... czekam..."
+# 1. Wait for PostgreSQL and the specific table to be ready
+echo "Czekam na pełną gotowość bazy danych i tabel..."
+export PGPASSWORD=$POSTGRES_PASSWORD
+
+until psql -h postgres -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT 1 FROM private.users LIMIT 1;" > /dev/null 2>&1; do
+  echo "Baza danych lub tabela private.users jeszcze nie istnieje... czekam 2s..."
   sleep 2
 done
-echo "Postgres jest gotowy!"
+
+echo "Baza danych jest w pełni gotowa, tabela private.users znaleziona!"
 
 # 2. Create SVN repository if it doesn't exist
 if [ ! -d "/var/svn/$SVN_REPO_NAME" ]; then
@@ -48,6 +51,7 @@ sync_authz_file() {
            psql "host=postgres dbname=$POSTGRES_DB user=$POSTGRES_USER" -Atc \
            "SELECT login, rank FROM private.users;" | while IFS='|' read login rank; do
                 case $rank in
+                    server) echo "$login = rw" ;;
                     admin) echo "$login = rw" ;;
                     editor) echo "$login = rw" ;;
                     user) echo "$login = r" ;;

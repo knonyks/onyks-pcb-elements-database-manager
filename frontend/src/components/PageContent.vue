@@ -4,12 +4,11 @@
     </div>
 </template>
 
-<style scoped>
+<style lang="css" scoped>
     .content
     {
         display: flex;
         flex-direction: column;
         gap: var(--spacing-lg);
-        height: 100%;
     }
 </style>

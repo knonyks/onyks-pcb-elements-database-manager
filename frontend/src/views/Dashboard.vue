@@ -1,8 +1,6 @@
 <script setup lang="ts">
     import { ref, onMounted } from 'vue'
     import { api_call } from '../utils/database'
-    import Title from '@/components/Title.vue'
-    import Panel_Content from '@/components/Panel_Content.vue'
 
     const total_elements = ref(0)
     const total_tables = ref(0)
@@ -40,7 +38,7 @@
 </script>
 
 <template>
-    <Panel_Content>
+    <PanelContent>
         <Title>Dashboard</Title>
     <onyks-grid cols="9">
 
@@ -107,7 +105,7 @@
             <div class="desc table-counter">{{ count }}</div>
         </onyks-card>
     </onyks-grid>
-</Panel_Content>
+</PanelContent>
 </template>
 
 <style lang="css" scoped>

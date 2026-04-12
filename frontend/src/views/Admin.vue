@@ -1,10 +1,9 @@
 <script setup>
-    import Panel_Content from '../components/Panel_Content.vue';
     import { Onyks_Button } from 'onyks-web-ui-system';
 </script>
 
 <template>
-    <Panel_Content>
+    <PanelContent>
         <h1>Users</h1>
         <div class="buttons-container">
             <onyks-button size="l" background="green">Add</onyks-button>
@@ -22,7 +21,7 @@
                 <onyks-col>Rank</onyks-col>
             </onyks-row>
         </onyks-table>
-    </Panel_Content>
+    </PanelContent>
 </template>
 
 <style scoped>

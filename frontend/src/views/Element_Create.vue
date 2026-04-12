@@ -1,10 +1,9 @@
 <script setup>
-    import Panel_Content from '../components/Panel_Content.vue';
     import { Onyks_Button } from 'onyks-web-ui-system';
 </script>
 
 <template>
-    <Panel_Content>
+    <PanelContent>
         <h1>Add a new element</h1>
         <form action="" method="post">
             <div class="form-part">
@@ -55,7 +54,7 @@
                 <onyks-button background="red" type="" size="l">Cancel</onyks-button>
             </div>
         </form>
-    </Panel_Content>
+    </PanelContent>
 </template>
 
 <style scoped>

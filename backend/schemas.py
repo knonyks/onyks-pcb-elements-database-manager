@@ -5,16 +5,38 @@ from fastapi import Query
 
 T = TypeVar('T')
 
+### SKONCZONE 1000%
+class SVNItem(BaseModel):
+    name: str
+    type: str
+
+class SVNListResponse(BaseModel):
+    items: List[SVNItem]
+
+class ManufacturerTotalResponse(BaseModel):
+    total: int
+
+class SupplierTotalResponse(BaseModel):
+    total: int
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class Element_Total_Response(BaseModel):
     total: int
 
 class Table_Total_Response(BaseModel):
-    total: int
-
-class Manufacturer_Total_Response(BaseModel):
-    total: int
-
-class Supplier_Total_Response(BaseModel):
     total: int
 
 class Element_Last_Added_Response(BaseModel):
@@ -62,3 +84,25 @@ class Manufacturer_Create(BaseModel):
 
 class Manufacturer_Infinite_Scroll_Response(BaseModel):
     name: str
+
+
+
+
+
+
+
+
+
+
+class SupplierCreate(BaseModel):
+    name: str = constr(strip_whitespace=True, min_length=1, max_length=50)
+
+class SupplierCreateResponse(BaseModel):
+    name: str
+
+class ManufacturerCreate(BaseModel):
+    name: str = constr(strip_whitespace=True, min_length=1, max_length=50)
+
+class ManufacturerCreateResponse(BaseModel):
+    name: str
+

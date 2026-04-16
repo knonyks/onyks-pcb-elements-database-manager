@@ -1,6 +1,9 @@
 <script setup lang="ts">
     import { ref, onMounted } from 'vue'
-    import { api_call } from '../utils/database'
+    import { api_call } from '../utils/api';
+    import PageContent from '@/components/PageContent.vue';
+import Warning from '@/components/Warning.vue';
+
 
     const total_elements = ref(0)
     const total_tables = ref(0)
@@ -38,8 +41,12 @@
 </script>
 
 <template>
-    <PanelContent>
-        <Title>Dashboard</Title>
+    <PageContent>
+        <h1>Dashboard</h1>
+        <Warning></Warning>
+
+
+        
     <onyks-grid cols="9">
 
         <onyks-card title="Total Elements" span="3">
@@ -105,7 +112,7 @@
             <div class="desc table-counter">{{ count }}</div>
         </onyks-card>
     </onyks-grid>
-</PanelContent>
+</PageContent>
 </template>
 
 <style lang="css" scoped>

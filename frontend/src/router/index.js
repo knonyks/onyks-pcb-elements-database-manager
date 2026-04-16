@@ -13,22 +13,22 @@ const routes = [
   //   component: Admin,
   //   meta: { title: 'Admin - ONYKS Blooodstone' }
   // },
-  // {
-  //   path: '/',
-  //   redirect: '/dashboard',
-  // },
-  // {
-  //   path: '/dashboard',
-  //   name: 'Dashboard',
-  //   component: Dashboard,
-  //   meta: { title: 'Dashboard - ONYKS Blooodstone' }
-  // },
-  // {
-  //   path: '/management',
-  //   name: 'Management',
-  //   component: Management,
-  //   meta: { title: 'Management - ONYKS Blooodstone' }
-  // },
+  {
+    path: '/',
+    redirect: '/dashboard',
+  },
+  {
+    path: '/dashboard',
+    name: 'Dashboard',
+    component: Dashboard,
+    meta: { title: 'Dashboard - ONYKS Blooodstone' }
+  },
+  {
+    path: '/management',
+    name: 'Management',
+    component: Management,
+    meta: { title: 'Management - ONYKS Blooodstone' }
+  },
   // {
   //   path: '/settings',
   //   name: 'Settings',

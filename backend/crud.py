@@ -6,17 +6,38 @@ from sqlalchemy import or_, cast, String
 from typing import List, Tuple
 import utils
 
+### SKONCZONE
+def total_manufacturers(db: Session):
+    return db.query(models.Manufacturer).count()
+
+def total_suppliers(db: Session):
+    return db.query(models.Supplier).count()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def total_elements(db: Session):
     return -20
 
 def total_tables(db: Session):
     return -21
 
-def total_manufacturers(db: Session):
-    return db.query(models.Manufacturer).count()
 
-def total_suppliers(db: Session):
-    return db.query(models.Supplier).count()
 
 def last_added_element(db: Session):
     return {
@@ -100,7 +121,7 @@ def get_infinite_sorted_suppliers_items(db: Session, cursor_str: str = None, lim
 def get_manufacturer_by_name(db: Session, name: str):
     return db.query(models.Manufacturer).filter(models.Manufacturer.name == name).first()
 
-def create_manufacturer(db: Session, manufacturer: schemas.Manufacturer_Create):
+def create_manufacturer(db: Session, manufacturer: schemas.ManufacturerCreate):
     db_manufacturer = models.Manufacturer(name=manufacturer.name)
     db.add(db_manufacturer)
     db.commit()

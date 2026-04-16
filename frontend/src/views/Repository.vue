@@ -1,44 +1,13 @@
 <script setup lang="js">
     import PageContent from '@/components/PageContent.vue';
-    import { ref, onMounted } from 'vue';
-    import { api_call } from '@/utils/database';
     import Warning from '@/components/Warning.vue';
+    import { ref, onMounted } from 'vue';
+    import { svn_list } from '@/utils/svn';
+    import { api_call } from '@/utils/api';
 
     const repo_path = ref(null);
-    const repo_explorer = ref(null);
+    const repo_path_content = ref([]);
     const repo_explorer_content = ref([]);
-
-    const update_explorer = async (path) =>
-    {
-        try
-        {
-            const repository_list = await api_call('/api/repository/list', 'GET', null, { path: path });
-            return repository_list.data.map(({ name, type }) =>
-            {
-                if(name.toLowerCase().endsWith('.schlib') || name.toLowerCase().endsWith('.pcblib') )
-                {
-                    console.log("Znaleziono bibliotekę:", name);
-                    return {
-                        name: name,
-                        type: 'folder'
-                    }
-                }
-                else
-                {
-                    return {
-                        name: name,
-                        type: type
-                    }
-                }
-            });
-        }
-        catch (error) 
-        {
-            console.error("Błąd API:", error);
-            return [];
-        }
-    }
-
 
     const repo_explorer_enter_folder = async (e) => 
     {
@@ -47,7 +16,7 @@
         let tab = repo_path.value.current_path().slice()
         tab.shift();
         const url_format = '/' + tab.join('/');
-        repo_explorer_content.value = await update_explorer(url_format);
+        repo_explorer_content.value = await svn_list(url_format);
     };
 
     const repo_path_changed = async (event) => 
@@ -56,24 +25,22 @@
         let tab = current_path.slice()
         tab.shift();
         const url_format = '/' + tab.join('/');
-        repo_explorer_content.value = await update_explorer(url_format);
+        repo_explorer_content.value = await svn_list(url_format);
     };
 
     onMounted(async () => 
     { 
+        let repo_name = await api_call('/api/repository/name')
         if (repo_path.value) 
         {
-            repo_path.value.add_folder("elements");
-        }   
-
+            repo_path.value.add_folder(repo_name.data.name);
+        }
         try 
         {
-            repo_explorer_content.value = await update_explorer('/');
+            repo_explorer_content.value = await svn_list('/');
         }
         catch (error) 
-        {
-            console.error("Błąd API:", error);
-        }
+        {}
     });
 </script>
 
@@ -81,7 +48,7 @@
     <PageContent>
         <h1>Repository</h1>
         <Warning/>
-        <onyks-path ref="repo_path" @path-changed="repo_path_changed"></onyks-path>
-        <onyks-file-explorer ref="repo_explorer" :content.prop="repo_explorer_content" @enter-folder="repo_explorer_enter_folder"></onyks-file-explorer>
+        <onyks-path ref="repo_path" @path-changed="repo_path_changed" :content.prop="repo_path_content"></onyks-path>
+        <onyks-file-explorer :content.prop="repo_explorer_content" @enter-folder="repo_explorer_enter_folder"></onyks-file-explorer>
     </PageContent>
 </template>

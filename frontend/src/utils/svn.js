@@ -9,7 +9,6 @@ const svn_list = async (path) =>
         {
             if(name.toLowerCase().endsWith('.schlib') || name.toLowerCase().endsWith('.pcblib') )
             {
-                console.log("Znaleziono bibliotekę:", name);
                 return {
                     name: name,
                     type: 'folder'

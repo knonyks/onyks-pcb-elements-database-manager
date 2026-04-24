@@ -1,17 +1,17 @@
 <script setup lang="ts">
     import PageContent from './PageContent.vue';
     import {ref} from 'vue';
-    const props = defineProps(['title', 'data', 'columns', 'breakpoint']);
+    const props = defineProps(['title', 'data', 'columns', 'total', 'scroll_end']);
 </script>
 
 <template>
     <PageContent>
         <h2>{{ title }}</h2>
-        <h4>Displaying {{ props.data.length }} of Y</h4>
+        <h4>Displaying {{ props.data.length }} of {{props.total }}</h4>
         <div class="buttons">
             <slot name="buttons"></slot>
         </div>
-        <onyks-table :data="props.data" :columns.prop="props.columns"></onyks-table>
+        <onyks-table :data="props.data" :columns.prop="props.columns" @scroll-end="props.scroll_end" @onyks-checkbox-change="(e) => {console.log(e)}"></onyks-table>
     </PageContent>
 </template>
 
@@ -32,6 +32,6 @@
 
     .buttons > onyks-button 
     {
-        min-width: 120px;
+        min-width: 50px;
     }
 </style>

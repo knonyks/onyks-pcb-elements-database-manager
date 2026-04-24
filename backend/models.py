@@ -7,7 +7,7 @@ class Manufacturer(Base):
     __tablename__ = "manufacturers"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, index=True)
-    created_at = Column(String, index=True)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
 class Supplier(Base):
     __tablename__ = "suppliers"

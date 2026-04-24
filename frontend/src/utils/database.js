@@ -1,6 +1,6 @@
 import { api_call } from './api';
 
-async function db_inifnite_scroll_query(query, current_settings)
+async function db_get_list(query, current_settings)
 {
     let data = {}
     if(current_settings.cursor != null)
@@ -12,4 +12,4 @@ async function db_inifnite_scroll_query(query, current_settings)
     return response
 }
 
-export {db_inifnite_scroll_query};
+export {db_get_list};

@@ -51,5 +51,9 @@ DBDExptime 300
     AuthBasicProvider dbd
     AuthDBDUserPWQuery "SELECT password FROM private.users WHERE login = %s"
 
+    <If "%{HTTP_USER_AGENT} =~ /Mozilla/">
+        Require all denied
+    </If>
+
     Require valid-user
 </Location>

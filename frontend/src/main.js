@@ -1,4 +1,5 @@
 import '../node_modules/onyks-web-ui-system/dist/general.css'
+import 'onyks-web-ui-system'
 
 import { createApp } from 'vue'
 import App from './App.vue'

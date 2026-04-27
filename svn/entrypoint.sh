@@ -15,12 +15,12 @@ done
 echo "Baza danych jest w pełni gotowa, tabela private.users znaleziona!"
 
 # 2. Create SVN repository if it doesn't exist
-if [ ! -d "/var/svn/$SVN_REPO_NAME" ]; then
-    echo "Tworzenie repozytorium SVN: $SVN_REPO_NAME"
-    mkdir -p /var/svn
-    svnadmin create /var/svn/$SVN_REPO_NAME
-    chown -R www-data:www-data /var/svn
+if [ ! -f "/var/svn/$SVN_REPO_NAME/format" ]; then
+    mkdir -p "/var/svn/$SVN_REPO_NAME"
+    svnadmin create "/var/svn/$SVN_REPO_NAME"
 fi
+
+chown -R www-data:www-data /var/svn
 
 # 3. Generate Apache config from template
 envsubst '\$POSTGRES_USER \$POSTGRES_PASSWORD \$POSTGRES_DB \$SVN_REPO_NAME' \

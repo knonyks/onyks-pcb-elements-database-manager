@@ -7,35 +7,8 @@ import xml.etree.ElementTree as ET
 import pyaltiumlib
 import io
 
-
-def is_supplier_name_valid(text: str) -> bool:
-    if not isinstance(text, str):
-        return False
-    pattern = r'^(?!\s)(?:[^\W\d_]|\s|-){2,}(?<!\s)$'
-    return bool(re.match(pattern, text))
-
-def is_manufacturer_name_valid(text: str) -> bool:
-    return is_supplier_name_valid(text)
-
-def encode_cursor(cursor_dict) -> str:
-    encoded_bytes = base64.urlsafe_b64encode(json.dumps(cursor_dict).encode())
-    return encoded_bytes.decode('utf-8')
-
-def decode_cursor(cursor_str: Optional[str]) -> Optional[Dict[str, Any]]:
-    if not cursor_str:
-        return None
-    try:
-        decoded_bytes = base64.urlsafe_b64decode(cursor_str.encode('utf-8'))
-        return json.loads(decoded_bytes.decode('utf-8'))
-    except Exception:
-        return None
-    
-
-
-
-
-### SKONCZONE 100%
-def svn_get_folder_list(url, path, user, password):
+### REPOSITORY ###
+def repository_get_folder_list(url, path, user, password):
     if path:
         full_url = f"{url.rstrip('/')}/{path.strip('/')}"
     else:
@@ -64,7 +37,7 @@ def svn_get_folder_list(url, path, user, password):
     except Exception as e:
         return e
 
-def svn_get_altium_content(url, path, user, password):
+def repository_get_pcb_file_content(url, path, user, password):
     if path:
         full_url = f"{url.rstrip('/')}/{path.strip('/')}"
     else:
@@ -97,3 +70,14 @@ def svn_get_altium_content(url, path, user, password):
         footprints = pcblib_file.list_parts()
         elements = [{"name": i, "type": 'footprint'} for i in footprints]
     return elements
+
+### MANUFACTURER ###
+def manufacturer_name_validation(text: str) -> bool:
+    return supplier_name_validation(text)
+
+### SUPPLIER ###
+def supplier_name_validation(text: str) -> bool:
+    if not isinstance(text, str):
+        return False
+    pattern = r'^(?!\s)(?:[^\W\d_]|\s|-){2,}(?<!\s)$'
+    return bool(re.match(pattern, text))

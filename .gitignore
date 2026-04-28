@@ -327,3 +327,5 @@ yarn-error.log
 # End of https://www.toptal.com/developers/gitignore/api/vue,vuejs,node,flask,svn
 
 temp
+
+!frontend/src/views/parts

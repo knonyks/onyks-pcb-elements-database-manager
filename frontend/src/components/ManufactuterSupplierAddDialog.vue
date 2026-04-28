@@ -3,7 +3,7 @@
     import { ui_toast } from '@/utils/ui';
     import { ref } from 'vue';
 
-    const props = defineProps(['title', 'opened'])
+    const props = defineProps(['title'])
     const emit = defineEmits(['close'])
     
     const value = ref('')

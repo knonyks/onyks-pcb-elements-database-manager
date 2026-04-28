@@ -11,7 +11,7 @@
     <PageContentElement>
         <h1>Management</h1>
         <WarningElement></WarningElement>
-        <SupplierTable></SupplierTable>
+        <!-- <SupplierTable></SupplierTable> -->
         <ManufacturerTable></ManufacturerTable>
     </PageContentElement>
 </template>

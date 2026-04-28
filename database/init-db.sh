@@ -7,7 +7,6 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
 
     CREATE EXTENSION IF NOT EXISTS pgcrypto;
     
-    -- TUTAJ MUSZĄ BYĆ BACKSLASHE PRZED DOLARAMI POSTGRESA
     DO \$body\$
     BEGIN
         IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'user_rank') THEN
@@ -37,7 +36,45 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
 
-    -- TWOJE ZMIENNE Z DOCKERA (bez backslashy, bo to zmienne z .env)
+    CREATE TABLE IF NOT EXISTS private.tables(
+        id SERIAL PRIMARY KEY,
+        name TEXT NOT NULL UNIQUE,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+
+
+    CREATE TABLE IF NOT EXISTS private.elements(
+        uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        part_name VARCHAR(256) NOT NULL,
+        
+        table_name VARCHAR(256) NOT NULL,
+        CONSTRAINT fk_table
+            FOREIGN KEY (table_name) 
+            REFERENCES private.tables (name)
+            ON DELETE RESTRICT,
+
+        description VARCHAR(256) NOT NULL,
+        
+        manufacturer VARCHAR(256),
+        CONSTRAINT fk_manufacturer
+            FOREIGN KEY (manufacturer) 
+            REFERENCES private.manufacturers (name)
+            ON DELETE SET NULL,
+
+        value VARCHAR(256)
+        availability VARCHAR(256)
+        suppliers_names JSONB
+        library_ref VARCHAR(256)
+        library_path VARCHAR(256)
+        footprint_ref_1 VARCHAR(256)
+        footprint_path_1 VARCHAR(256)
+        footprint_ref_2 VARCHAR(256)
+        footprint_path_2 VARCHAR(256)
+        footprint_ref_3 VARCHAR(256)
+        footprint_path_3 VARCHAR(256)
+        created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+    );
+
     INSERT INTO private.users (login, password, email, rank)
     VALUES ('${SVN_SERVER_USER}', crypt('${SVN_SERVER_PASSWORD}', gen_salt('bf')), '${SVN_SERVER_EMAIL}', 'server');
 EOSQL

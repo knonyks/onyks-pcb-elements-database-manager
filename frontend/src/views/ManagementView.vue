@@ -1,21 +1,22 @@
-<script setup>
-    import ManufacturerTable from './parts/ManufacturerTable.vue';
-    import SupplierTable from './parts/SupplierTable.vue';
-    import WarningElement from '@/components/WarningElement.vue';
-    import PageContentElement from '@/components/PageContentElement.vue';
-
-
+<script setup lang="js">
+    import ElementsManagement from '@/components/management/ElementsManagement.vue';
+    import ManufacturersManagement from '@/components/management/ManufacturersManagement.vue';
+    import SuppliersManagement from '@/components/management/SuppliersManagement.vue';
+    import TablesManagement from '@/components/management/TablesManagement.vue';
+    import WarningAlert from '@/components/WarningAlert.vue';
 </script>
 
 <template>
-    <PageContentElement>
-        <h1>Management</h1>
-        <WarningElement></WarningElement>
-        <!-- <SupplierTable></SupplierTable> -->
-        <ManufacturerTable></ManufacturerTable>
-    </PageContentElement>
+    <onyks-container gap="l" padding="l">
+        <onyks-header>Management</onyks-header>
+        <WarningAlert></WarningAlert>
+        <ElementsManagement></ElementsManagement>
+        <TablesManagement></TablesManagement>
+        <ManufacturersManagement></ManufacturersManagement>
+        <SuppliersManagement></SuppliersManagement>
+    </onyks-container>
 </template>
 
 <style scoped>
-  
+
 </style>

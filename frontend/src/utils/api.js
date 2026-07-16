@@ -1,71 +1,282 @@
 import axios from 'axios';
 
-const api = axios.create({
+const api = axios.create(
+{
   baseURL: '/api',
-  timeout: 10000,
-  headers: {
-    'Content-Type': 'application/json'
+  timeout: 5000,
+  headers: 
+  {
+    'Content-Type': 'application/json',
+    // 'Authorization': `Bearer ${localStorage.getItem('token')}`
   }
 });
 
-api.interceptors.response.use((response) => response, (error) => 
+export const repository = 
 {
-  if (error.response && error.response.status === 401) 
-  {
-    console.log('!E!');
-  }
-  return Promise.reject(error);
-});
-
-export default api;
-
-// REPOSITORY
-export const api_repository_name = () => api.get('/repository/name');
-export const api_repository_list = (path = "") => 
-{
-  return api.get('/repository/list', 
-  {
-    params: 
+    name: async () =>
     {
-      path: path
+        try 
+        {
+            const response = await api.get(`/repository/name`);
+            return response
+        } 
+        catch (error) 
+        {
+            return error
+        }
+    },
+    list: async (path) =>
+    {
+        try 
+        {
+            const response = await api.get(`/repository/list`,
+            {
+                params: 
+                {
+                    path: path
+                }
+            });
+            return response
+        } 
+        catch (error) 
+        {
+            return error
+        }
+    },
+    statistics: async () => 
+    {
+        try 
+        {
+            const response = await api.get(`/repository/statistics`);
+            return response
+        } 
+        catch (error) 
+        {
+            return error
+        }
     }
-  });
-};
+}
 
-// MANUFACTURER
-export const api_manufacturer_total = () => api.get('/manufacturer/total');
-export const api_manufacturer_create = (name) => 
+export const element = 
 {
-  return api.post('/manufacturer/create', 
-  {
-    name: name 
-  });
-};
-export const api_manufacturer_list = (page = 1, limit = 20) => 
-  {
-  return api.get('/manufacturer/list', {
-    params: {
-      page: page,
-      limit: limit,
+    lastAdded: async () =>
+    {
+        try 
+        {
+            const response = await api.get(`/element/last-added`);
+            return response
+        } 
+        catch (error)
+        {
+            console.dir(error)
+            return error
+        }
+    },
+    number: async () =>
+    {
+        try 
+        {
+            const response = await api.get(`/element/number`);
+            return response
+        } 
+        catch (error) 
+        {
+            return error
+        }
+    },
+    create: async (details) =>
+    {
+        try 
+        {
+            const response = await api.post(`/element/create`, details);
+            return response
+        } 
+        catch (error) 
+        {
+            return error
+        }
+    },
+    get: async (id) =>
+    {
+        try 
+        {
+            const response = await api.get(`/element/${id}`);
+            return response
+        } 
+        catch (error) 
+        {
+            return error
+        }
+    },
+    list: async (limit, skip) =>
+    {
+        try 
+        {
+            const response = await api.get(`/element/list`, {
+                params: {
+                    limit: limit,
+                    skip: skip
+                }
+            });
+            return response
+        } 
+        catch (error) 
+        {
+            return error
+        }
+    },
+    edit: async (id, element) =>
+    {
+        try 
+        {
+            const response = await api.put(`/element/edit/${id}`, element);
+            return response
+        } 
+        catch (error) 
+        {
+            return error
+        }
+    },
+    delete: async (id) =>
+    {
+        try 
+        {
+            const response = await api.delete(`/element/delete/${id}`);
+            return response
+        } 
+        catch (error) 
+        {
+            return error
+        }
     }
-  });
-};
+}
 
-
-// SUPPLIER
-export const api_supplier_total = () => api.get('/supplier/total');
-export const api_supplier_list = (page = 1, limit = 20) => {
-  return api.get('/supplier/list', {
-    params: {
-      page: page,
-      limit: limit
-    }
-  });
-};
-export const api_supplier_create = (name) => 
+export const table = 
 {
-  return api.post('/supplier/create', 
-  {
-    name: name 
-  });
-};
+    number: async () =>
+    {
+        try 
+        {
+            const response = await api.get(`/table/number`);
+            return response
+        } 
+        catch (error) 
+        {
+            return error
+        }
+    },
+    numbers: async () =>
+    {
+        try 
+        {
+            const response = await api.get(`/table/numbers`);
+            return response
+        } 
+        catch (error) 
+        {
+            return error
+        }
+    },
+}
+
+export const manufacturer = 
+{
+    number: async () =>
+    {
+        try 
+        {
+            const response = await api.get(`/manufacturer/number`);
+            return response
+        } 
+        catch (error) 
+        {
+            return error
+        }
+    },
+    numbers: async () =>
+    {
+        try 
+        {
+            const response = await api.get(`/manufacturer/numbers`);
+            return response
+        } 
+        catch (error) 
+        {
+            return error
+        }
+    },
+    create: async (name) =>
+    {
+        try 
+        {
+            const response = await api.post(`/manufacturer/create`, name);
+            return response
+        } 
+        catch (error) 
+        {
+            return error
+        }
+    },
+    list: async (limit, skip) =>
+    {
+        try 
+        {
+            const response = await api.get(`/manufacturer/list`, {
+                params: {
+                    limit: limit,
+                    skip: skip
+                }
+            });
+            return response
+        } 
+        catch (error) 
+        {
+            return error
+        }
+    },
+}
+
+export const supplier = 
+{
+    number: async () =>
+    {
+        try 
+        {
+            const response = await api.get(`/supplier/number`);
+            return response
+        } 
+        catch (error) 
+        {
+            return error
+        }
+    },
+    create: async (name) =>
+    {
+        try 
+        {
+            const response = await api.post(`/supplier/create`, name);
+            return response
+        } 
+        catch (error) 
+        {
+            return error
+        }
+    },
+    list: async (limit, skip) =>
+    {
+        try 
+        {
+            const response = await api.get(`/supplier/list`, {
+                params: {
+                    limit: limit,
+                    skip: skip
+                }
+            });
+            return response
+        } 
+        catch (error) 
+        {
+            return error
+        }
+    },
+}

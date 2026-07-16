@@ -6,9 +6,9 @@ import subprocess
 import xml.etree.ElementTree as ET
 import pyaltiumlib
 import io
+import os
 
-### REPOSITORY ###
-def repository_get_folder_list(url, path, user, password):
+def repositoryGetFolderList(url, path, user, password):
     if path:
         full_url = f"{url.rstrip('/')}/{path.strip('/')}"
     else:
@@ -27,17 +27,22 @@ def repository_get_folder_list(url, path, user, password):
         items = []
         for entry in root.findall(".//entry"):
             kind = entry.get("kind")
-            name_elem = entry.find("name")
-            name = name_elem.text if name_elem is not None else "unknown"
+            nameEntry = entry.find("name")
+            name = nameEntry.text if nameEntry is not None else "unknown"
+            _, ext = os.path.splitext(name)
+            if ext.lower() == '.schlib':
+                kind = 'schlib'
+            elif ext.lower() == '.pcblib':
+                kind = 'pcblib'
             items.append({
                 "name":name,
-                "type": "folder" if kind == "dir" else "file"
+                "type": kind
             })
         return items
     except Exception as e:
         return e
 
-def repository_get_pcb_file_content(url, path, user, password):
+def repositoryGetPCBFileContent(url, path, user, password):
     if path:
         full_url = f"{url.rstrip('/')}/{path.strip('/')}"
     else:
@@ -64,20 +69,19 @@ def repository_get_pcb_file_content(url, path, user, password):
         schlib_file = pyaltiumlib.read(schlib_pcblib_name, libfile_obj)
         symbols = schlib_file.list_parts()
         elements = [{"name": i, "type": 'symbol'} for i in symbols]
-        
     elif schlib_pcblib_name.endswith('.pcblib'):
         pcblib_file = pyaltiumlib.read(schlib_pcblib_name, libfile_obj)
         footprints = pcblib_file.list_parts()
         elements = [{"name": i, "type": 'footprint'} for i in footprints]
     return elements
 
-### MANUFACTURER ###
-def manufacturer_name_validation(text: str) -> bool:
-    return supplier_name_validation(text)
+# ### MANUFACTURER ###
+# def manufacturer_name_validation(text: str) -> bool:
+#     return supplier_name_validation(text)
 
-### SUPPLIER ###
-def supplier_name_validation(text: str) -> bool:
-    if not isinstance(text, str):
-        return False
-    pattern = r'^(?!\s)(?:[^\W\d_]|\s|-){2,}(?<!\s)$'
-    return bool(re.match(pattern, text))
+# ### SUPPLIER ###
+# def supplier_name_validation(text: str) -> bool:
+#     if not isinstance(text, str):
+#         return False
+#     pattern = r'^(?!\s)(?:[^\W\d_]|\s|-){2,}(?<!\s)$'
+#     return bool(re.match(pattern, text))

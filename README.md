@@ -121,3 +121,12 @@ svn commit -m "Initial commit" --username admin --password admin --trust-server-
 # Update repository
 svn update --username admin --password admin --trust-server-cert --non-interactive
 ```
+
+
+
+
+<!-- docker compose --env-file .env up database proxy backend
+
+docker compose up -d --build backend
+
+docker-compose down -v; docker-compose build; CONFIG_FILE=.env docker compose --env-file .env up database proxy svn -->

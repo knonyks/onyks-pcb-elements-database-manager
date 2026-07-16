@@ -1,18 +1,15 @@
 <script setup>
+    import { useRoute } from 'vue-router'
+    const route = useRoute()
 </script>
 
 <template>
-    <onyks-nav size="m">
-        <onyks-logo></onyks-logo>
-        <onyks-nav-content maxviewitems="5">
-            <router-link to="/dashboard"><onyks-nav-option :selected="$route.path === '/dashboard'">Dashboard</onyks-nav-option></router-link>
-            <router-link to="/management"><onyks-nav-option :selected="$route.path === '/management'">Management</onyks-nav-option></router-link>
-            <router-link to="/repository"><onyks-nav-option :selected="$route.path === '/repository'">Repository</onyks-nav-option></router-link>
-            <!-- <router-link to="/settings"><onyks-nav-option :selected="$route.path === '/settings'">Settings</onyks-nav-option></router-link> -->
-            <!-- <router-link to="/admin"><onyks-nav-option :selected="$route.path === '/admin'">Admin</onyks-nav-option></router-link> -->
-        </onyks-nav-content>
+    <onyks-nav size="m" mobile-breakpoint="900" max-view-items="5">
+        <img src="../node_modules/onyks-web-ui-system/dist/logo.png" class="logo">
+        <router-link slot="nav" to="/dashboard" .selected="route.path.endsWith('/dashboard')">Dashboard</router-link>
+        <router-link slot="nav" to="/management" .selected="route.path.endsWith('/management')">Management</router-link>
+        <router-link slot="nav" to="/repository" .selected="route.path.endsWith('/repository')">Repository</router-link>
     </onyks-nav>
-
     <main>
         <router-view v-slot="{ Component, route }">
             <transition name="fade" mode="out-in">
@@ -22,44 +19,51 @@
             </transition>
         </router-view>
     </main>
+    <footer></footer>
 </template>
 
-<style scoped>
-onyks-nav
-  {
-    position: sticky;
-    top: 0;
-    margin: 0;
-    width: auto;
-    z-index: 100000;
-  }
+<style lang="css" scoped>
+    .logo
+    {
+        height: 100%;
+        padding: var(--onyks-spacing-md);
+        box-sizing: border-box;
+        position: absolute;
+    }
+</style>
 
-  onyks-nav > onyks-logo
-  {
-    position: absolute;
-    left: 0;
-    height: 100%;
-    box-sizing: border-box;
-    padding: var(--spacing-md);
-    top: 0;
-    width: fit-content;
-  }
+<style lang="css">
+    onyks-button
+    {
+        width: 140px;
+    }
 
-  main
-  {
-    max-width: 1024px;
-    margin-left: auto;
-    margin-right: auto;
-    min-height: 90vh;
-    box-sizing: border-box;
-    padding: var(--spacing-lg);
-  }
+    onyks-nav
+    {
+        position: sticky;
+        top: 0;
+        margin: 0;
+        width: auto;
+        z-index: 12;
+    }
 
-  a
-  {
-    text-decoration: none;
-    color: inherit;
-  }
+    main
+    {
+        max-width: 1024px;
+        margin-left: auto;
+        margin-right: auto;
+        min-height: 100vh;
+        box-sizing: border-box;
+    }
+
+    footer
+    {
+        height: 300px;
+        width: 100%;
+        padding: var(--onyks-spacing-lg);
+        background-color: var(--onyks-surface-1);
+        box-sizing: border-box;
+    }
 
     .fade-enter-active, .fade-leave-active 
     {
@@ -69,5 +73,11 @@ onyks-nav
     .fade-enter-from, .fade-leave-to 
     {
         opacity: 0;
+    }
+
+    onyks-dialog
+    {
+        z-index: 20;
+        position: relative;
     }
 </style>

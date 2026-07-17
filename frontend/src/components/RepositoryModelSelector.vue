@@ -40,9 +40,4 @@
         max-height: 80vh;
         height: fit-content;
     }
-
-    onyks-button, .r
-    {
-        min-width: 100px;
-    }
 </style>

@@ -28,11 +28,12 @@
     onMounted(async () =>
     {
         let data = await element.lastAdded()
-        data.data.createdAt = dateUTCtoDestination(data.data.createdAt)
         if(data.status == 200)
         {
+            data.data.createdAt = dateUTCtoDestination(data.data.createdAt)
             lastAddedElement.value = data.data
         }
+
         repositoryStatistics.value = (await repository.statistics()).data
         elements.value = (await element.number()).data
         tables.value = (await table.number()).data
@@ -40,6 +41,8 @@
         suppliers.value = (await supplier.number()).data
         numberOfTables.value = (await table.numbers()).data
         numberOfManufacturers.value = (await manufacturer.numbers()).data
+
+        console.log(await supplier.list())
     })
 </script>
 

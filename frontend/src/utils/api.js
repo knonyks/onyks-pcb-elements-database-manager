@@ -84,11 +84,11 @@ export const element =
             return error
         }
     },
-    create: async (details) =>
+    create: async (element) =>
     {
         try 
         {
-            const response = await api.post(`/element/create`, details);
+            const response = await api.post(`/element/create`, element);
             return response
         } 
         catch (error) 
@@ -205,11 +205,23 @@ export const manufacturer =
             return error
         }
     },
-    create: async (name) =>
+    create: async (element) =>
     {
         try 
         {
-            const response = await api.post(`/manufacturer/create`, name);
+            const response = await api.post(`/manufacturer/create`, element);
+            return response
+        } 
+        catch (error) 
+        {
+            return error
+        }
+    },
+    get: async (id) =>
+    {
+        try 
+        {
+            const response = await api.get(`/manufacturer/${id}`);
             return response
         } 
         catch (error) 
@@ -234,6 +246,30 @@ export const manufacturer =
             return error
         }
     },
+    edit: async (id, manufacturer) =>
+    {
+        try 
+        {
+            const response = await api.put(`/manufacturer/edit/${id}`, manufacturer);
+            return response
+        } 
+        catch (error) 
+        {
+            return error
+        }
+    },
+    delete: async (id) =>
+    {
+        try 
+        {
+            const response = await api.delete(`/manufacturer/delete/${id}`);
+            return response
+        } 
+        catch (error) 
+        {
+            return error
+        }
+    }
 }
 
 export const supplier = 
@@ -250,11 +286,11 @@ export const supplier =
             return error
         }
     },
-    create: async (name) =>
+    create: async (element) =>
     {
         try 
         {
-            const response = await api.post(`/supplier/create`, name);
+            const response = await api.post(`/supplier/create`, element);
             return response
         } 
         catch (error) 
@@ -279,4 +315,40 @@ export const supplier =
             return error
         }
     },
+    delete: async (id) =>
+    {
+        try 
+        {
+            const response = await api.delete(`/supplier/delete/${id}`);
+            return response
+        } 
+        catch (error) 
+        {
+            return error
+        }
+    },
+    edit: async (id, supplier) =>
+    {
+        try 
+        {
+            const response = await api.put(`/supplier/edit/${id}`, supplier);
+            return response
+        } 
+        catch (error) 
+        {
+            return error
+        }
+    },
+    get: async (id) =>
+    {
+        try 
+        {
+            const response = await api.get(`/supplier/${id}`);
+            return response
+        } 
+        catch (error) 
+        {
+            return error
+        }
+    }
 }

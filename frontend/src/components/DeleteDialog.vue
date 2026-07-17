@@ -5,8 +5,10 @@
     import { defineEmits } from 'vue';
 
     const dialog = ref(null)
-    const props = defineProps(['items', 'interface'])
+    const props = defineProps(['interface', 'action'])
     const emit = defineEmits(['delete-end'])
+    const items = ref([])
+
 
     const open = (parametr) => 
     {
@@ -15,14 +17,19 @@
 
     defineExpose(
     {
-        open
+        open,
+        items
     });
 
     const deleteAction = async () =>
     {
-        for(let i=0; i<props.items.length; i++)
+        console.log(props.interface.id)
+        console.log((items.value[0]))
+
+        
+        for(let i=0; i<items.value.length; i++)
         {
-            await element.delete(props.items[i].uuid)
+            await props.action((items.value[i])[props.interface.id])
         }
         dialog.value.open = false
         emit('delete-end')
@@ -31,10 +38,10 @@
 
 <template>
     <onyks-dialog title="Deleting" scroll-target="body" modal corner-close ref="dialog" bottom-buttons>
-        <onyks-text size="m">You are deleting {{ props.items.length }} element(s):</onyks-text>
+        <onyks-text size="m">You are deleting {{ items.length }} element(s):</onyks-text>
 
         <onyks-container type="stack" gap="l">
-            <onyks-text v-for="item in props.items" size="s">{{ item[props.interface.name] }}</onyks-text>
+            <onyks-text v-for="item in items" size="s">{{ item[interface.name] }}</onyks-text>
         </onyks-container>
         
         <onyks-button slot="footer" @click="dialog.open = false">Close</onyks-button>

@@ -16,6 +16,10 @@ export class Element
         this.footprintReferenceNo3 = args?.footprintRef3 || '';
         this.footprintPathNo3 = args?.footprintPath3 || '';
         this.createdAt = args?.created_at || '';
+
+        this.manufacturer = args?.manufacturer || '';
+        this.suppliersNames = args?.suppliersNames || '';
+        this.datasheet = args?.datasheet || false;
     }
 }
 

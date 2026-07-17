@@ -19,6 +19,9 @@ class ElementBase(BaseModel):
     description: NotEmptyString = Field(max_length=256)
     availability: NotEmptyString = Field(max_length=256)
     value: NotEmptyString = Field(max_length=256)
+    manufacturer: NotEmptyString = Field(max_length=256)
+    suppliersNames: NotEmptyString = Field(max_length=1024)
+    datasheet: bool = False
     libraryReference: NotEmptyString = Field(max_length=1024)
     libraryPath: NotEmptyString = Field(max_length=1024)
     footprintReferenceNo1: NotEmptyString = Field(max_length=1024)
@@ -32,30 +35,40 @@ class ElementFull(ElementBase):
     uuid: UUID
     createdAt: datetime
 
-
-
-
-
-
-
-
 class ElementList(BaseModel):
     total: int
     items: List[ElementFull]
 
-
-
-class ManufacturerCreate(BaseModel):
+class ManufacturerBase(BaseModel):
     name: str = Field(min_length=1, max_length=256)
 
-class ManufacturerEdit(BaseModel):
+class ManufacturerFull(ManufacturerBase):
+    id: int
+    createdAt: datetime
+
+class ManufacturerList(BaseModel):
+    total: int
+    items: List[ManufacturerFull]
+
+class SupplierBase(BaseModel):
     name: str = Field(min_length=1, max_length=256)
 
-class SupplierCreate(BaseModel):
-    name: str = Field(min_length=1, max_length=256)
+class SupplierFull(SupplierBase):
+    id: int
+    createdAt: datetime
 
-class SupplierEdit(BaseModel):
-    name: str = Field(min_length=1, max_length=256)
+class SupplierList(BaseModel):
+    total: int
+    items: List[SupplierFull]
+
+# class ManufacturerEdit(BaseModel):
+#     name: str = Field(min_length=1, max_length=256)
+
+# class SupplierCreate(BaseModel):
+#     name: str = Field(min_length=1, max_length=256)
+
+# class SupplierEdit(BaseModel):
+#     name: str = Field(min_length=1, max_length=256)
 
 
 

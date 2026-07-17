@@ -31,6 +31,7 @@ async def startup_db():
     except Exception as e:
         print(f"❌❌❌: {e}")
 
+# REPOSITORY
 @app.get('/repository/name')
 async def repositoryName():
     return os.getenv("SVN_REPO_NAME", "Error! Can't get the name of the repository!")
@@ -49,15 +50,7 @@ async def repositoryList(path: str):
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
-@app.get('/repository/statistics')
-async def repositoryStatistics():
-    data = {}
-    data['symbols'] = 1
-    data['footprints'] = 2
-    data['schLibFiles'] = 3
-    data['pcbLibFiles'] = 4
-    return data
-
+# ELEMENT
 @app.post("/element/create")
 async def elementCreate(element: schemas.ElementBase, db = Depends(get_db)):
     item = models.Element(**element.model_dump())
@@ -112,17 +105,6 @@ async def elementList(limit: int = Query(default=10, ge=1, le=100),
     
     return {"total": totalCount, "items": entries}
 
-
-
-
-
-
-
-
-
-
-
-
 @app.delete('/element/delete/{id}')
 async def elementDelete(id: uuid.UUID, db = Depends(get_db)):
     query = select(models.Element).where(models.Element.uuid == id)
@@ -153,6 +135,8 @@ async def elementEdit(id: uuid.UUID, element: schemas.ElementBase, db = Depends(
         )
     
     update_data = element.model_dump(exclude_unset=True)
+    update_data.uuid = id
+    update_data.createdAt = item.createdAt
     for field, value in update_data.items():
         setattr(item, field, value)
     
@@ -164,13 +148,6 @@ async def elementEdit(id: uuid.UUID, element: schemas.ElementBase, db = Depends(
     except IntegrityError:
         await db.rollback()
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
-
-
-
-
-
-
-
 
 @app.get('/element/{id}')
 async def elementID(id: uuid.UUID = Path(...), db = Depends(get_db)):
@@ -188,42 +165,25 @@ async def elementID(id: uuid.UUID = Path(...), db = Depends(get_db)):
         
     return item
 
-@app.get('/table/number')
-async def tableNumber():
-    return 6
-
-@app.get('/table/numbers')
-async def tableNumbers():
-    data = {}
-    data['Inductors'] = 2137
-    data['ICs'] = 5012
-    data['Transistors'] = 111
-    data['Capacitors SMD'] = 1337
-    return data
-
+# MANUFACTURER
 @app.get('/manufacturer/number')
-async def manufacturerNumber():
-    return 7
-
-@app.get('/manufacturer/numbers')
-async def manufacturerNumbers():
-    data = {}
-    data['ST'] = 2137
-    data['Texas Instruments'] = 5012
-    data['Analog Devices'] = 111
-    data['AMD'] = 1337
-    return data
-
-@app.get('/supplier/number')
-async def supplierNumber():
-    return 8
-
-
-
-
+async def manufacturerNumber(db = Depends(get_db)):
+    query = select(func.count()).select_from(models.Manufacturer)
+    result = await db.execute(query)
+    totalCount = result.scalar()
+    return totalCount
 
 @app.post('/manufacturer/create')
-async def manufacturerCreate(manufacturer: schemas.ManufacturerCreate, db = Depends(get_db)):
+async def manufacturerCreate(manufacturer: schemas.ManufacturerBase, db = Depends(get_db)):
+    query = select(models.Manufacturer).where(models.Manufacturer.name == manufacturer.name)
+    existing = await db.execute(query)
+    
+    if existing.scalar_one_or_none() is not None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Manufacturer with this name already exists!"
+        )
+    
     item = models.Manufacturer(**manufacturer.model_dump())
     db.add(item)
     try:
@@ -234,19 +194,49 @@ async def manufacturerCreate(manufacturer: schemas.ManufacturerCreate, db = Depe
         await db.rollback()
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
 
-@app.put('/manufacturer/edit/{id}')
-async def manufacturerEdit(id: uuid.UUID, manufacturer: schemas.ManufacturerEdit, db = Depends(get_db)):
-    query = select(models.Manufacturer).where(models.Manufacturer.uuid == id)
+@app.delete('/manufacturer/delete/{id}')
+async def manufacturerDelete(id: int, db = Depends(get_db)):
+    query = select(models.Manufacturer).where(models.Manufacturer.id == id)
     result = await db.execute(query)
     item = result.scalar_one_or_none()
     
     if item is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="UUID doesn't exist!"
+            detail="ID doesn't exist!"
+        )
+    
+    await db.delete(item)
+    await db.commit()
+    
+    return id
+
+@app.get("/manufacturer/list", response_model = schemas.ManufacturerList)
+async def manufacturerList(limit: int = Query(default=10, ge=1, le=100), skip: int = Query(default=0, ge=0), db = Depends(get_db)):
+    query = select(func.count()).select_from(models.Manufacturer)
+    result = await db.execute(query)
+    totalCount = result.scalar()
+    
+    queryEntries = select(models.Manufacturer).offset(skip).limit(limit)
+    entriesResult = await db.execute(queryEntries)
+    entries = entriesResult.scalars().all()
+    
+    return {"total": totalCount, "items": entries}
+
+@app.put('/manufacturer/edit/{id}')
+async def manufacturerEdit(id: int, manufacturer: schemas.ManufacturerBase, db = Depends(get_db)):
+    query = select(models.Manufacturer).where(models.Manufacturer.id == id)
+    result = await db.execute(query)
+    item = result.scalar_one_or_none()
+    
+    if item is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="ID doesn't exist!"
         )
     
     update_data = manufacturer.model_dump(exclude_unset=True)
+
     for field, value in update_data.items():
         setattr(item, field, value)
     
@@ -259,16 +249,48 @@ async def manufacturerEdit(id: uuid.UUID, manufacturer: schemas.ManufacturerEdit
         await db.rollback()
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
 
-@app.delete('/manufacturer/delete/{id}')
-async def manufacturerDelete(id: uuid.UUID, db = Depends(get_db)):
-    query = select(models.Manufacturer).where(models.Manufacturer.uuid == id)
+@app.get('/manufacturer/numbers')
+async def manufacturerNumbers(db = Depends(get_db)):
+    query = select(models.Manufacturer.name, func.count(models.Element.uuid)).select_from(models.Manufacturer).outerjoin(models.Element, models.Manufacturer.name == models.Element.manufacturer).group_by(models.Manufacturer.name)
+    result = await db.execute(query)
+    rows = result.all()
+    
+    data = {}
+    for name, count in rows:
+        data[name] = count
+    
+    return data
+
+# SUPPLIER
+@app.get('/supplier/number')
+async def supplierNumber(db = Depends(get_db)):
+    query = select(func.count()).select_from(models.Supplier)
+    result = await db.execute(query)
+    totalCount = result.scalar()
+    return totalCount
+
+@app.get("/supplier/list", response_model = schemas.SupplierList)
+async def supplierList(limit: int = Query(default=10, ge=1, le=100), skip: int = Query(default=0, ge=0), db = Depends(get_db)):
+    query = select(func.count()).select_from(models.Supplier)
+    result = await db.execute(query)
+    totalCount = result.scalar()
+    
+    queryEntries = select(models.Supplier).offset(skip).limit(limit)
+    entriesResult = await db.execute(queryEntries)
+    entries = entriesResult.scalars().all()
+    
+    return {"total": totalCount, "items": entries}
+
+@app.delete('/supplier/delete/{id}')
+async def supplierDelete(id: int, db = Depends(get_db)):
+    query = select(models.Supplier).where(models.Supplier.id == id)
     result = await db.execute(query)
     item = result.scalar_one_or_none()
     
     if item is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="UUID doesn't exist!"
+            detail="ID doesn't exist!"
         )
     
     await db.delete(item)
@@ -277,7 +299,7 @@ async def manufacturerDelete(id: uuid.UUID, db = Depends(get_db)):
     return id
 
 @app.post('/supplier/create')
-async def supplierCreate(supplier: schemas.SupplierCreate, db = Depends(get_db)):
+async def supplierCreate(supplier: schemas.SupplierBase, db = Depends(get_db)):
     item = models.Supplier(**supplier.model_dump())
     db.add(item)
     try:
@@ -288,19 +310,34 @@ async def supplierCreate(supplier: schemas.SupplierCreate, db = Depends(get_db))
         await db.rollback()
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
 
-@app.put('/supplier/edit/{id}')
-async def supplierEdit(id: uuid.UUID, supplier: schemas.SupplierEdit, db = Depends(get_db)):
-    query = select(models.Supplier).where(models.Supplier.uuid == id)
+@app.get('/supplier/{id}')
+async def supplierID(id: int, db = Depends(get_db)):
+    query = select(models.Supplier).where(models.Supplier.id == id)
     result = await db.execute(query)
     item = result.scalar_one_or_none()
     
     if item is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="UUID doesn't exist!"
+            detail="ID doesn't exist!"
+        )
+    
+    return item
+
+@app.put('/supplier/edit/{id}')
+async def supplierEdit(id: int, supplier: schemas.SupplierBase, db = Depends(get_db)):
+    query = select(models.Supplier).where(models.Supplier.id == id)
+    result = await db.execute(query)
+    item = result.scalar_one_or_none()
+    
+    if item is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="ID doesn't exist!"
         )
     
     update_data = supplier.model_dump(exclude_unset=True)
+
     for field, value in update_data.items():
         setattr(item, field, value)
     
@@ -313,19 +350,129 @@ async def supplierEdit(id: uuid.UUID, supplier: schemas.SupplierEdit, db = Depen
         await db.rollback()
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
 
-@app.delete('/supplier/delete/{id}')
-async def supplierDelete(id: uuid.UUID, db = Depends(get_db)):
-    query = select(models.Supplier).where(models.Supplier.uuid == id)
+
+
+
+
+
+
+
+######################################################
+
+
+
+
+
+
+
+
+
+
+
+
+@app.get('/repository/statistics')
+async def repositoryStatistics():
+    data = {}
+    data['symbols'] = 1
+    data['footprints'] = 2
+    data['schLibFiles'] = 3
+    data['pcbLibFiles'] = 4
+    return data
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# MANUFACTURER
+
+
+
+
+
+
+
+# TABLE
+@app.get('/table/number')
+async def tableNumber(db = Depends(get_db)):
+    query = select(func.count()).select_from(models.Table)
     result = await db.execute(query)
-    item = result.scalar_one_or_none()
+    totalCount = result.scalar()
+    return totalCount
+
+@app.get('/table/numbers')
+async def tableNumbers():
+    data = {}
+    data['Inductors'] = 2137
+    data['ICs'] = 5012
+    data['Transistors'] = 111
+    data['Capacitors SMD'] = 1337
+    return data
+
+
+
+
+
+# @app.post('/supplier/create')
+# async def supplierCreate(supplier: schemas.SupplierCreate, db = Depends(get_db)):
+#     item = models.Supplier(**supplier.model_dump())
+#     db.add(item)
+#     try:
+#         await db.commit()
+#         await db.refresh(item)
+#         return item
+#     except IntegrityError:
+#         await db.rollback()
+#         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+
+# @app.put('/supplier/edit/{id}')
+# async def supplierEdit(id: uuid.UUID, supplier: schemas.SupplierEdit, db = Depends(get_db)):
+#     query = select(models.Supplier).where(models.Supplier.uuid == id)
+#     result = await db.execute(query)
+#     item = result.scalar_one_or_none()
     
-    if item is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="UUID doesn't exist!"
-        )
+#     if item is None:
+#         raise HTTPException(
+#             status_code=status.HTTP_404_NOT_FOUND,
+#             detail="UUID doesn't exist!"
+#         )
     
-    await db.delete(item)
-    await db.commit()
+#     update_data = supplier.model_dump(exclude_unset=True)
+#     for field, value in update_data.items():
+#         setattr(item, field, value)
     
-    return id
+#     try:
+#         db.add(item)
+#         await db.commit()
+#         await db.refresh(item)
+#         return item
+#     except IntegrityError:
+#         await db.rollback()
+#         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+
+# @app.delete('/supplier/delete/{id}')
+# async def supplierDelete(id: uuid.UUID, db = Depends(get_db)):
+#     query = select(models.Supplier).where(models.Supplier.uuid == id)
+#     result = await db.execute(query)
+#     item = result.scalar_one_or_none()
+    
+#     if item is None:
+#         raise HTTPException(
+#             status_code=status.HTTP_404_NOT_FOUND,
+#             detail="UUID doesn't exist!"
+#         )
+    
+#     await db.delete(item)
+#     await db.commit()
+    
+#     return id

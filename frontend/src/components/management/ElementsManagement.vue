@@ -153,7 +153,7 @@
         <BasicButtonsPanel>
             <onyks-button background="green" @click="router.push('/element/add')">Add</onyks-button>
             <onyks-button ref="editBtn" background="blue" @click="router.push(`/element/edit/${table.getSelectedRows()[0].uuid}`)" disabled>Edit</onyks-button>
-            <onyks-button ref="deleteBtn" background="red" @click="deleteClick" disabled>Delete</onyks-button>
+            <onyks-button ref="deleteBtn" background="red" @click="deleteDialog.items = table.getSelectedRows(); deleteDialog.open()" disabled>Delete</onyks-button>
             <onyks-button ref="duplicateBtn" background="yellow" @click="router.push(`/element/duplicate/${table.getSelectedRows()[0].uuid}`)" disabled>Duplicate</onyks-button>
             <onyks-button ref="datasheetBtn" background="green" @click="availableSoonDialog.open()" disabled>Datasheet</onyks-button>
             <onyks-button ref="labelsBtn" background="red" @click="labelsClick" disabled>Labels</onyks-button>
@@ -162,10 +162,6 @@
         <BasicTable ref="table" :columns="columns" :data="data" :update="element.list" @checkbox-click="checkboxClick"></BasicTable>
     </onyks-container>
 
-    <DeleteDialog @delete-end="table.init()" ref="deleteDialog" :interface="{name: 'partName', id: 'uuid'}" :items="deleteItems"></DeleteDialog>
+    <DeleteDialog :action="element.delete" @delete-end="table.init()" ref="deleteDialog" :interface="{name: 'partName', id: 'uuid'}" :items="deleteItems"></DeleteDialog>
     <AvailableSoonDialog ref="availableSoonDialog"></AvailableSoonDialog>
 </template>
-
-<style lang="css" scoped>
-
-</style>

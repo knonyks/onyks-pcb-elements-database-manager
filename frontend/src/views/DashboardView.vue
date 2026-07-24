@@ -5,27 +5,27 @@
     import { dateUTCtoDestination } from '@/utils/tools';
 
     const lastAddedElement = ref({
-        partName: 'None',
-        manufacturer: 'None',
-        table: 'None',
-        createdAt: 'None'
+        partName: 'Undefined',
+        manufacturer: 'Undefined',
+        table: 'Undefined',
+        createdAt: 'Undefined'
     })
     
     const repositoryStatistics = ref({
-        symbols: -1,
-        footprints: -1,
-        schLibFiles: -1,
-        pcbLibFiles: -1
+        symbols: 'Undefined',
+        footprints: 'Undefined',
+        schLibFiles: 'Undefined',
+        pcbLibFiles: 'Undefined'
     })
 
-    const elements = ref(-1)
-    const tables = ref(-1)
-    const manufacturers = ref(-1)
-    const suppliers = ref(-1)
+    const elements = ref('Undefined')
+    const tables = ref('Undefined')
+    const manufacturers = ref('Undefined')
+    const suppliers = ref('Undefined')
     const numberOfManufacturers = ref({})
     const numberOfTables = ref({})
 
-    onMounted(async () =>
+    const updater = async () =>
     {
         let data = await element.lastAdded()
         if(data.status == 200)
@@ -41,8 +41,13 @@
         suppliers.value = (await supplier.number()).data
         numberOfTables.value = (await table.numbers()).data
         numberOfManufacturers.value = (await manufacturer.numbers()).data
+    }
+    let updaterInverval = null
 
-        console.log(await supplier.list())
+    onMounted(async () =>
+    {
+        updater()
+        updaterInverval = setInterval(updater, 5000)
     })
 </script>
 
@@ -60,19 +65,19 @@
                 <onyks-container gap="m" padding="">
                     <onyks-container type="group" align="center" padding="" cols="2">
                         <onyks-header level="6">Part name:</onyks-header>
-                        <onyks-text>{{ lastAddedElement.partName }}</onyks-text>
+                        <onyks-text>{{ lastAddedElement.partName}}</onyks-text>
                     </onyks-container>
                     <onyks-container type="group" align="center" padding="" cols="2">
                         <onyks-header level="6">Manufacturer:</onyks-header>
-                        <onyks-text>{{ lastAddedElement.manufacturer }}</onyks-text>
+                        <onyks-text>{{ lastAddedElement.manufacturer || 'Undefined' }}</onyks-text>
                     </onyks-container>
                     <onyks-container type="group" align="center" padding="" cols="2">
                         <onyks-header level="6">Table:</onyks-header>
-                        <onyks-text>{{ lastAddedElement.table }}</onyks-text>
+                        <onyks-text>{{ lastAddedElement.table || 'Undefined'}}</onyks-text>
                     </onyks-container>
                     <onyks-container type="group" align="center" padding="" cols="2">
                         <onyks-header level="6">Created at:</onyks-header>
-                        <onyks-text>{{ lastAddedElement.createdAt }}</onyks-text>
+                        <onyks-text>{{ lastAddedElement.createdAt || 'Undefined'}}</onyks-text>
                     </onyks-container>
                 </onyks-container>
             </onyks-card>

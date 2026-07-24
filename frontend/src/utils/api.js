@@ -177,6 +177,71 @@ export const table =
             return error
         }
     },
+    create: async (table) =>
+    {
+        try 
+        {
+            const response = await api.post(`/table/create`, table);
+            return response
+        } 
+        catch (error) 
+        {
+            return error
+        }
+    },
+    get: async (id) =>
+    {
+        try 
+        {
+            const response = await api.get(`/table/${id}`);
+            return response
+        } 
+        catch (error) 
+        {
+            return error
+        }
+    },
+    list: async (limit, skip) =>
+    {
+        try 
+        {
+            const response = await api.get(`/table/list`, {
+                params: {
+                    limit: limit,
+                    skip: skip
+                }
+            });
+            return response
+        } 
+        catch (error) 
+        {
+            return error
+        }
+    },
+    edit: async (id, table) =>
+    {
+        try 
+        {
+            const response = await api.put(`/table/edit/${id}`, table);
+            return response
+        } 
+        catch (error) 
+        {
+            return error
+        }
+    },
+    delete: async (id) =>
+    {
+        try 
+        {
+            const response = await api.delete(`/table/delete/${id}`);
+            return response
+        } 
+        catch (error) 
+        {
+            return error
+        }
+    }
 }
 
 export const manufacturer = 
@@ -344,6 +409,22 @@ export const supplier =
         try 
         {
             const response = await api.get(`/supplier/${id}`);
+            return response
+        } 
+        catch (error) 
+        {
+            return error
+        }
+    }
+}
+
+export const other =
+{
+    updateViews: async () =>
+    {
+        try 
+        {
+            const response = await api.post(`/update-views`);
             return response
         } 
         catch (error) 

@@ -6,7 +6,7 @@
     import { useRouter } from 'vue-router';
     import { element } from '@/utils/api.js';
     import { LabelsDoc } from '@/utils/tools.js';
-    import DeleteDialog from '../DeleteDialog.vue';
+    import DeleteDialog from '../DeleteItemDialog.vue/index.js';
     import AvailableSoonDialog from '../AvailableSoonDialog.vue';
 
     const router = useRouter()
@@ -24,6 +24,14 @@
         {
             "key": "partName",
             "label": "Part Name"
+        },
+        {
+            "key": "manufacturer",
+            "label": "Manufacturer"
+        },
+        {
+            "key": "table",
+            "label": "Table"
         },
         {
             "key": "description",
@@ -162,6 +170,6 @@
         <BasicTable ref="table" :columns="columns" :data="data" :update="element.list" @checkbox-click="checkboxClick"></BasicTable>
     </onyks-container>
 
-    <DeleteDialog :action="element.delete" @delete-end="table.init()" ref="deleteDialog" :interface="{name: 'partName', id: 'uuid'}" :items="deleteItems"></DeleteDialog>
+    <!-- <DeleteDialog :action="element.delete" @delete-end="table.init()" ref="deleteDialog" :interface="{name: 'partName', id: 'uuid'}" :items="deleteItems"></DeleteDialog> -->
     <AvailableSoonDialog ref="availableSoonDialog"></AvailableSoonDialog>
 </template>

@@ -20,7 +20,7 @@ class ElementBase(BaseModel):
     availability: NotEmptyString = Field(max_length=256)
     value: NotEmptyString = Field(max_length=256)
     manufacturer: NotEmptyString = Field(max_length=256)
-    suppliersNames: NotEmptyString = Field(max_length=1024)
+    suppliers: dict = Field(default_factory=dict)
     datasheet: bool = False
     libraryReference: NotEmptyString = Field(max_length=1024)
     libraryPath: NotEmptyString = Field(max_length=1024)
@@ -30,6 +30,9 @@ class ElementBase(BaseModel):
     footprintPathNo2: NotEmptyString = Field(max_length=1024)
     footprintReferenceNo3: NotEmptyString = Field(max_length=1024)
     footprintPathNo3: NotEmptyString = Field(max_length=1024)
+    manufacturer: NotEmptyString = Field(max_length=256)
+    table: NotEmptyString = Field(max_length=256)
+
 
 class ElementFull(ElementBase):
     uuid: UUID
@@ -61,37 +64,13 @@ class SupplierList(BaseModel):
     total: int
     items: List[SupplierFull]
 
-# class ManufacturerEdit(BaseModel):
-#     name: str = Field(min_length=1, max_length=256)
+class TableBase(BaseModel):
+    name: str = Field(min_length=1, max_length=256)
 
-# class SupplierCreate(BaseModel):
-#     name: str = Field(min_length=1, max_length=256)
+class TableFull(TableBase):
+    id: int
+    createdAt: datetime
 
-# class SupplierEdit(BaseModel):
-#     name: str = Field(min_length=1, max_length=256)
-
-
-
-# T = TypeVar('T')
-
-# ### REPOSITORY ###
-# class SVNItem(BaseModel):
-#     name: str
-#     type: str
-
-# class SVNListResponse(BaseModel):
-#     items: List[SVNItem]
-
-# ### MANUFACTURER ###
-# class ManufacturerBase(BaseModel):
-#     name: str = constr(strip_whitespace=True, min_length=1, max_length=50)
-
-# class ManufacturerCreate(ManufacturerBase):
-#     pass
-
-# ### SUPPLIER ###
-# class SupplierBase(BaseModel):
-#     name: str = constr(strip_whitespace=True, min_length=1, max_length=50)
-
-# class SupplierCreate(SupplierBase):
-#     pass
+class TableList(BaseModel):
+    total: int
+    items: List[TableFull]

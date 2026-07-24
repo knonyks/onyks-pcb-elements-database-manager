@@ -57,7 +57,7 @@
         <onyks-table ref="table" .columns="columns" .data="data" @checkbox-click="(e) => {emit('checkbox-click', e); selected = table.getSelectedRows().length}"></onyks-table>
         <onyks-container type="group" align="center" justify="center" padding="" gap="l">
             <onyks-pagination-nav :max-index="Math.ceil(total / limit)" index="1" max-view="3" size="m" @page-change="pageChange"></onyks-pagination-nav>
-            <onyks-text>Selected: {{selected}}&emsp;|&emsp;Total: {{ total }}</onyks-text>
+            <onyks-text>Selected:&emsp;{{selected}}&emsp;|&emsp;Total:&emsp;{{ total }}</onyks-text>
         </onyks-container>
     </onyks-container>
 </template>

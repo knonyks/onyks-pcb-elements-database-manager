@@ -29,8 +29,8 @@ class Table(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name = Column('name', String, unique=True, nullable=False)
-    created_at = Column('created_at', DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
-    # elements = relationship("Element", back_populates="table_category")
+    createdAt = Column('created_at', DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    elements = relationship("Element", back_populates="tableCategory")
 
 
 # class Element(Base):
@@ -81,15 +81,15 @@ class Element(Base):
 
     manufacturer = Column(
         String(256), 
-        ForeignKey("private.manufacturers.name", ondelete="SET NULL"), 
+        ForeignKey("private.manufacturers.name", ondelete="SET NULL", onupdate="CASCADE"), 
         nullable=True
     )
 
-    # tableName = Column('table_name',
-    #     String(256), 
-    #     ForeignKey("private.tables.name", ondelete="RESTRICT"), 
-    #     nullable=False
-    # )
+    table = Column('table',
+        String(256), 
+        ForeignKey("private.tables.name", ondelete="CASCADE", onupdate="CASCADE"), 
+        nullable=False
+    )
 
     description = Column('description', String(256), nullable=True, default='')
     value = Column('value', String(256), nullable=True, default='')
@@ -108,9 +108,9 @@ class Element(Base):
     footprintReferenceNo3 = Column('footprint_reference_3', String(1024), nullable=True, default='')
     footprintPathNo3 = Column('footprint_path_3', String(1024), nullable=True, default='')
     
-    suppliersNames = Column('suppliers_names', JSONB, default={})
+    suppliers = Column('suppliers', JSONB, default={})
 
     createdAt = Column('created_at', DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
 
-    # table_category = relationship("Table", back_populates="elements")
-    manufacturer_rel = relationship("Manufacturer")
+    tableCategory = relationship("Table", back_populates="elements")
+    manufacturerRel = relationship("Manufacturer")

@@ -21,12 +21,8 @@
         items
     });
 
-    const deleteAction = async () =>
+    const action = async () =>
     {
-        console.log(props.interface.id)
-        console.log((items.value[0]))
-
-        
         for(let i=0; i<items.value.length; i++)
         {
             await props.action((items.value[i])[props.interface.id])
@@ -38,14 +34,15 @@
 
 <template>
     <onyks-dialog title="Deleting" scroll-target="body" modal corner-close ref="dialog" bottom-buttons>
-        <onyks-text size="m">You are deleting {{ items.length }} element(s):</onyks-text>
-
-        <onyks-container type="stack" gap="l">
-            <onyks-text v-for="item in items" size="s">{{ item[interface.name] }}</onyks-text>
+        <onyks-container type="stack" gap="l" padding="">
+            <slot name="footer"></slot>
+            <onyks-text size="m">You are deleting {{ items.length }} items:</onyks-text>
+            <onyks-container type="stack" gap="l">
+                <onyks-text v-for="item in items" size="s">{{ item[interface.name] }}</onyks-text>
+            </onyks-container>
         </onyks-container>
-        
         <onyks-button slot="footer" @click="dialog.open = false">Close</onyks-button>
-        <onyks-button slot="footer" @click="deleteAction" background="green">Accept</onyks-button>
+        <onyks-button slot="footer" @click="action" background="green">Accept</onyks-button>
     </onyks-dialog>             
 </template>
 

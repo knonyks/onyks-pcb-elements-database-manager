@@ -40,4 +40,9 @@
         max-height: 80vh;
         height: fit-content;
     }
+
+    onyks-dialog
+    {
+        position: fixed;
+    }
 </style>

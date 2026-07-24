@@ -28,6 +28,7 @@ async def startup_db():
         async with engine.begin() as conn:
             await conn.execute(text("CREATE SCHEMA IF NOT EXISTS private;"))
             await conn.run_sync(models.Base.metadata.create_all)
+            await utils.dbCreateOrUpdateElementViews(conn)
     except Exception as e:
         print(f"❌❌❌: {e}")
 
@@ -217,7 +218,7 @@ async def manufacturerList(limit: int = Query(default=10, ge=1, le=100), skip: i
     result = await db.execute(query)
     totalCount = result.scalar()
     
-    queryEntries = select(models.Manufacturer).offset(skip).limit(limit)
+    queryEntries = select(models.Manufacturer).order_by(models.Manufacturer.id).offset(skip).limit(limit)
     entriesResult = await db.execute(queryEntries)
     entries = entriesResult.scalars().all()
     
@@ -295,6 +296,7 @@ async def supplierDelete(id: int, db = Depends(get_db)):
     
     await db.delete(item)
     await db.commit()
+    await utils.dbCreateOrUpdateElementViews(db)
     
     return id
 
@@ -305,6 +307,7 @@ async def supplierCreate(supplier: schemas.SupplierBase, db = Depends(get_db)):
     try:
         await db.commit()
         await db.refresh(item)
+        await utils.dbCreateOrUpdateElementViews(db)
         return item
     except IntegrityError:
         await db.rollback()
@@ -345,22 +348,131 @@ async def supplierEdit(id: int, supplier: schemas.SupplierBase, db = Depends(get
         db.add(item)
         await db.commit()
         await db.refresh(item)
+        await utils.dbCreateOrUpdateElementViews(db)
         return item
     except IntegrityError:
         await db.rollback()
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
 
+# TABLE
+@app.get('/table/number')
+async def tableNumber(db = Depends(get_db)):
+    query = select(func.count()).select_from(models.Table)
+    result = await db.execute(query)
+    totalCount = result.scalar()
+    return totalCount
 
+@app.get('/table/numbers')
+async def tableNumbers(db = Depends(get_db)):
+    query = select(models.Table.name, func.count(models.Element.uuid)).select_from(models.Table).outerjoin(models.Element, models.Table.name == models.Element.table).group_by(models.Table.name)
+    result = await db.execute(query)
+    rows = result.all()
+    
+    data = {}
+    for name, count in rows:
+        data[name] = count
+    
+    return data
 
+@app.put('/table/edit/{id}')
+async def tableEdit(id: int, table: schemas.TableBase, db = Depends(get_db)):
+    query = select(models.Table).where(models.Table.id == id)
+    result = await db.execute(query)
+    item = result.scalar_one_or_none()
+    
+    if item is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="ID doesn't exist!"
+        )
+    
+    update_data = table.model_dump(exclude_unset=True)
+    
+    for field, value in update_data.items():
+        setattr(item, field, value)
+    
+    try:
+        db.add(item)
+        await db.commit()
+        await db.refresh(item)
+        await utils.dbCreateOrUpdateElementViews(db)
+        return item
+    except IntegrityError:
+        await db.rollback()
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
 
+@app.post('/table/create')
+async def tableCreate(table: schemas.TableBase, db = Depends(get_db)):
+    item = models.Table(**table.model_dump())
+    db.add(item)
+    try:
+        await db.commit()
+        await db.refresh(item)
+        await utils.dbCreateOrUpdateElementViews(db)
+        return item
+    except IntegrityError:
+        await db.rollback()
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
 
+@app.delete('/table/delete/{id}')
+async def tableDelete(id: int, db = Depends(get_db)):
+    query = select(models.Table).where(models.Table.id == id)
+    result = await db.execute(query)
+    item = result.scalar_one_or_none()
+    
+    if item is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="ID doesn't exist!"
+        )
+    
+    await db.delete(item)
+    await db.commit()
+    await utils.dbCreateOrUpdateElementViews(db)
+    return id
 
+@app.get("/table/list", response_model = schemas.TableList)
+async def tableList(limit: int = Query(default=10, ge=1, le=100), skip: int = Query(default=0, ge=0), db = Depends(get_db)):
+    query = select(func.count()).select_from(models.Table)
+    result = await db.execute(query)
+    totalCount = result.scalar()
+    
+    queryEntries = select(models.Table).order_by(models.Table.id).offset(skip).limit(limit)
+    entriesResult = await db.execute(queryEntries)
+    entries = entriesResult.scalars().all()
+    
+    return {"total": totalCount, "items": entries}
 
+@app.get('/table/{id}')
+async def tableID(id: int, db = Depends(get_db)):
+    query = select(models.Table).where(models.Table.id == id)
+    result = await db.execute(query)
+    item = result.scalar_one_or_none()
+    
+    if item is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="ID doesn't exist!"
+        )
+    
+    count_query = select(func.count()).select_from(models.Element).where(models.Element.table == item.name)
+    count_result = await db.execute(count_query)
+    elements_count = count_result.scalar()
+    
+    return {
+        "table": item,
+        "numberOfItems": elements_count
+    }
 
 ######################################################
 
 
-
+@app.post("/update-views")
+async def updateViews(db = Depends(get_db)):
+    
+    result = await utils.dbCreateOrUpdateElementViews(db)
+    
+    return result
 
 
 
@@ -387,92 +499,3 @@ async def repositoryStatistics():
 
 
 
-
-
-
-
-
-
-
-# MANUFACTURER
-
-
-
-
-
-
-
-# TABLE
-@app.get('/table/number')
-async def tableNumber(db = Depends(get_db)):
-    query = select(func.count()).select_from(models.Table)
-    result = await db.execute(query)
-    totalCount = result.scalar()
-    return totalCount
-
-@app.get('/table/numbers')
-async def tableNumbers():
-    data = {}
-    data['Inductors'] = 2137
-    data['ICs'] = 5012
-    data['Transistors'] = 111
-    data['Capacitors SMD'] = 1337
-    return data
-
-
-
-
-
-# @app.post('/supplier/create')
-# async def supplierCreate(supplier: schemas.SupplierCreate, db = Depends(get_db)):
-#     item = models.Supplier(**supplier.model_dump())
-#     db.add(item)
-#     try:
-#         await db.commit()
-#         await db.refresh(item)
-#         return item
-#     except IntegrityError:
-#         await db.rollback()
-#         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
-
-# @app.put('/supplier/edit/{id}')
-# async def supplierEdit(id: uuid.UUID, supplier: schemas.SupplierEdit, db = Depends(get_db)):
-#     query = select(models.Supplier).where(models.Supplier.uuid == id)
-#     result = await db.execute(query)
-#     item = result.scalar_one_or_none()
-    
-#     if item is None:
-#         raise HTTPException(
-#             status_code=status.HTTP_404_NOT_FOUND,
-#             detail="UUID doesn't exist!"
-#         )
-    
-#     update_data = supplier.model_dump(exclude_unset=True)
-#     for field, value in update_data.items():
-#         setattr(item, field, value)
-    
-#     try:
-#         db.add(item)
-#         await db.commit()
-#         await db.refresh(item)
-#         return item
-#     except IntegrityError:
-#         await db.rollback()
-#         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
-
-# @app.delete('/supplier/delete/{id}')
-# async def supplierDelete(id: uuid.UUID, db = Depends(get_db)):
-#     query = select(models.Supplier).where(models.Supplier.uuid == id)
-#     result = await db.execute(query)
-#     item = result.scalar_one_or_none()
-    
-#     if item is None:
-#         raise HTTPException(
-#             status_code=status.HTTP_404_NOT_FOUND,
-#             detail="UUID doesn't exist!"
-#         )
-    
-#     await db.delete(item)
-#     await db.commit()
-    
-#     return id

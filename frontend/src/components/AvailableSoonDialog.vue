@@ -16,7 +16,7 @@
 <template>
     <onyks-dialog title="Information" scroll-target="body" modal corner-close ref="dialog" bottom-buttons>
         <onyks-text size="m">This feature will be available soon.</onyks-text>
-        <onyks-button  slot="footer" @click="dialog.open = false">Close</onyks-button>
+        <onyks-button slot="footer" @click="dialog.open = false">Close</onyks-button>
     </onyks-dialog>             
 </template>
 

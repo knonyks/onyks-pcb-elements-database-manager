@@ -34,6 +34,13 @@
         explorer.value.content = temp
     }
 
+    const refresh = async () =>
+    {
+        let temp = Array.from((await repository.list(path.value.content.slice(1).join('/'))).data)
+        temp = temp.filter(e => props.filter(e))
+        explorer.value.content = temp
+    }
+
     const getSelected = (parametr) => 
     {
         return {path: path.value.content, name: explorer.value.getSelectedItems()[0].name} 
@@ -63,6 +70,9 @@
 <template>
     <onyks-path ref="path" @path-change="pathChange"></onyks-path>
     <onyks-file-explorer ref="explorer" @enter-folder="enterFolder"></onyks-file-explorer>
+    <onyks-container type="group" padding="" justify="end">
+        <onyks-button @click="refresh" background="green">Refresh</onyks-button>
+    </onyks-container>
 </template>
 
 <style lang="css" scoped>
@@ -70,5 +80,10 @@
     {
         width: 100%;
         height: 200px;
+    }
+
+    onyks-button
+    {
+        width: 120px;
     }
 </style>

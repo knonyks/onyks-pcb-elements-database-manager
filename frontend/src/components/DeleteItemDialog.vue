@@ -1,55 +1,76 @@
 <script setup>
-    import { element } from '@/utils/api';
-    import { ref } from 'vue';
-    import { defineProps } from 'vue';
-    import { defineEmits } from 'vue';
+    import { ref } from 'vue'
 
+    const props = defineProps(['action', 'formater', 'subject', 'processor'])
+    const emit = defineEmits(['success'])
+    
     const dialog = ref(null)
-    const props = defineProps(['interface', 'action'])
-    const emit = defineEmits(['delete-end'])
+    const error = ref('')
     const items = ref([])
 
-
-    const open = (parametr) => 
+    const open = (a) => 
     {
+        items.value = a
+        console.log(items.value)
+        error.value = ''
         dialog.value.open = true
-    };
+    }
 
-    defineExpose(
+    const close = () =>
     {
-        open,
-        items
-    });
+        dialog.value.open = false
+    }
 
     const action = async () =>
     {
         for(let i=0; i<items.value.length; i++)
         {
-            await props.action((items.value[i])[props.interface.id])
+            await props.action(props.processor(items.value[i]))
         }
         dialog.value.open = false
-        emit('delete-end')
+        emit('success')
     }
+
+    defineExpose({
+        open,
+        close
+    });
 </script>
 
 <template>
-    <onyks-dialog title="Deleting" scroll-target="body" modal corner-close ref="dialog" bottom-buttons>
-        <onyks-container type="stack" gap="l" padding="">
-            <slot name="footer"></slot>
-            <onyks-text size="m">You are deleting {{ items.length }} items:</onyks-text>
-            <onyks-container type="stack" gap="l">
-                <onyks-text v-for="item in items" size="s">{{ item[interface.name] }}</onyks-text>
-            </onyks-container>
+    <onyks-dialog :title="`Deleting`" corner-close bottom-buttons modal ref="dialog">
+        
+        <onyks-container type="stack" padding="" gap="l">
+            <slot name="top"></slot>
+            <onyks-text>You are deleting {{ items.length }} {{ props.subject }}:</onyks-text>
+                <onyks-container type="stack" gap="l">
+                    <onyks-text v-for="item in items" size="s">{{ props.formater(item) }}</onyks-text>
+                </onyks-container>
+            <onyks-text :class="error === '' ? 'error-invisible' : ''">{{ error }}</onyks-text>
         </onyks-container>
-        <onyks-button slot="footer" @click="dialog.open = false">Close</onyks-button>
-        <onyks-button slot="footer" @click="action" background="green">Accept</onyks-button>
-    </onyks-dialog>             
+        <onyks-button background="green" slot="footer" @click="action" size="m">OK</onyks-button>
+        <onyks-button background="red" slot="footer" @click="dialog.open = false">Close</onyks-button>
+    </onyks-dialog>
 </template>
 
-<style scoped>
+<style lang="css" scoped>
+    onyks-textfield
+    {
+        width: 100%;
+    }
+
+    .error-invisible
+    {
+        visibility: hidden;
+    }
+
     onyks-dialog
     {
-        position: relative;
-        z-index: 20;
+        position: fixed;
+    }
+
+    onyks-dialog
+    {
+        position: fixed;
     }
 </style>

@@ -1,17 +1,20 @@
 <script setup>
     import { useWindowSize } from '@vueuse/core';
-    import { ref } from 'vue';
-    import RepositoryModelSelector from './RepositoryModelSelector.vue';
     import ValueSelector from './ValueSelector.vue';
+    import { ref } from 'vue';
     import { manufacturer, table } from '@/utils/api.js';
-    import AddItemDialog from './management/AddItemDialog.vue'
+    import AddItemDialog from './AddItemDialog.vue';
+    import EditItemDialog from './EditItemDialog.vue';
+    import DeleteItemDialog from './DeleteItemDialog.vue';
+    import RepositoryModelSelector from './RepositoryModelSelector.vue';
 
+
+    const {width} = useWindowSize()
     const props = defineProps(['type'])
     const model = defineModel({ data: Object })
-    const {width} = useWindowSize()
-
-    const selectors = ref({manufacturer: null, table: null})
-    const dialogs = ref({symbol: null, footprint1: null, footprint2: null, footprint3: null, manufacturer: {add: null}, table: {add: null}})
+    const selectors = ref({manufacturer: null})
+    const dialogs = ref({manufacturer: {add: null, edit: null, delete: null}, 
+    table: {add: null, edit: null, delete: null}, library: null, footprint1: null, footprint2: null, footprint3: null})
     const filters = ref(
     {
         footprint: (e) => 
@@ -33,24 +36,77 @@
             <onyks-header level="5" v-if="props.type == 'details'">UUID</onyks-header>
 
             <onyks-textfield :disabled="props.type === 'details'" 
-            v-if="props.type == 'details'" 
-            size="m" placeholder="Part Name" 
-            type="text" v-model="model.uuid"></onyks-textfield>
+                v-if="props.type == 'details'" 
+                size="m" placeholder="Part Name" 
+                type="text" v-model="model.uuid">
+            </onyks-textfield>
 
             <!-- Part Name -->
             <onyks-header level="5">Part Name</onyks-header>
-            <onyks-textfield :disabled="props.type === 'details'" size="m" placeholder="Part Name" 
-            type="text" v-model="model.partName"></onyks-textfield>
+            
+            <onyks-textfield :disabled="props.type === 'details'" 
+                size="m" placeholder="Part Name" 
+                type="text" v-model="model.partName">
+            </onyks-textfield>
+            
             <onyks-text size="m" v-if="props.type != 'details'">Min. 3 characters</onyks-text>
 
             <!-- Manufacturer -->
             <onyks-header level="5">Manufacturer</onyks-header>
-            <onyks-text v-if="props.type != 'details'">Selected: {{ model.manufacturer  || 'Undefined'}}</onyks-text>
-            <ValueSelector :ref="(el) => { if (el) selectors.manufacturer = el }"  @add-click="dialogs?.manufacturer?.add?.open"
-            @edit-click="dialogs?.manufacturer?.edit?.open" :action="manufacturer.list" v-model:name="model.manufacturer" 
-            v-if="props.type != 'details'" subject="manufacturer"></ValueSelector>
             
-            <onyks-textfield v-else :disabled="props.type === 'details'" size="m" placeholder="Part Name" type="text" v-model="model.manufacturer"></onyks-textfield>
+            <onyks-text v-if="props.type != 'details'">Selected: {{ model.manufacturer  || 'Undefined'}}</onyks-text>
+            
+            <ValueSelector :ref="(el) => { if (el && selectors) selectors.manufacturer = el }"  
+                @add-click="dialogs?.manufacturer?.add?.open"
+                @edit-click="() => {dialogs.manufacturer.edit.open(selectors.manufacturer.name, selectors.manufacturer.id)}" 
+                @delete-click="() => {dialogs.manufacturer.delete.open([{name: selectors.manufacturer.name, id: selectors.manufacturer.id}])}"
+                :action="manufacturer.list" v-model:name="model.manufacturer" 
+                v-if="props.type != 'details'" subject="manufacturer">
+            </ValueSelector>
+
+            <onyks-textfield v-else :disabled="props.type === 'details'" 
+                size="m" placeholder="Manufacturer" type="text" 
+                v-model="model.manufacturer">
+            </onyks-textfield>
+            
+            <AddItemDialog subject="manufacturer" 
+                :ref="(el) => { if (el && dialogs) dialogs.manufacturer.add = el }"
+                :action="manufacturer.create"
+                @success="selectors?.manufacturer?.reset">
+            </AddItemDialog>
+
+            <EditItemDialog subject="manufacturer"
+                :ref="(el) => { if (el && dialogs) dialogs.manufacturer.edit = el }"
+                :action="manufacturer.edit"
+                @success="selectors?.manufacturer?.reset">
+            </EditItemDialog>
+
+            <DeleteItemDialog
+                subject="manufacturer(s)"
+                :processor="(item) => item.id"
+                :ref="(el) => { if (el && dialogs) dialogs.manufacturer.delete = el }"
+                :action="manufacturer.delete"
+                :formater="(item) => item.name"
+                @success="selectors?.manufacturer?.reset">
+                <template v-slot:top>
+                    <onyks-alert type="warning">This operation cannot be undone.</onyks-alert>
+                </template>
+            </DeleteItemDialog>
+
+            <onyks-header level="5">Description</onyks-header>
+
+            <onyks-textarea 
+                size="m" 
+                placeholder="Description"
+                v-model="model.description"
+                rows="10" 
+                cols="100" 
+                minlength="0" 
+                maxlength="256"
+                :disabled="props.type === 'details'" 
+                resize="none">
+            </onyks-textarea>
+
         </onyks-container>
 
         <onyks-container gap="l" padding="">
@@ -62,10 +118,48 @@
             <!-- Table -->
             <onyks-header level="5" v-model="model.table">Table</onyks-header>
             <onyks-text v-if="props.type != 'details'">Selected: {{ model.table  || 'Undefined'}}</onyks-text>
-            <ValueSelector :ref="(el) => { if (el) selectors.table = el }" 
-                @add-click="dialogs?.table?.add?.open" :action="table.list" 
-                @edit-click="dialogs?.table?.edit?.open" v-model:name="model.table" v-if="props.type != 'details'" subject="table"></ValueSelector>
-            <onyks-textfield v-else :disabled="props.type === 'details'" size="m" placeholder="Part Name" type="text" v-model="model.table"></onyks-textfield>
+            <ValueSelector :ref="(el) => { if (el && selectors) selectors.table = el }"  
+                @add-click="dialogs?.table?.add?.open"
+                @edit-click="() => {dialogs.table.edit.open(selectors.table.name, selectors.table.id)}" 
+                @delete-click="() => {dialogs.table.delete.open([{name: selectors.table.name, id: selectors.table.id}])}"
+                :action="table.list" v-model:name="model.table" 
+                v-if="props.type != 'details'" subject="table">
+            </ValueSelector>
+
+            <AddItemDialog subject="table" 
+                :ref="(el) => { if (el && dialogs) dialogs.table.add = el }"
+                :action="table.create"
+                @success="selectors?.table?.reset">
+            </AddItemDialog>
+
+            <EditItemDialog subject="table"
+                :ref="(el) => { if (el && dialogs) dialogs.table.edit = el }"
+                :action="table.edit"
+                @success="selectors?.table?.reset">
+            </EditItemDialog>
+
+            <DeleteItemDialog
+                subject="table(s)"
+                :processor="(item) => item.id"
+                :ref="(el) => { if (el && dialogs) dialogs.table.delete = el }"
+                :action="table.delete"
+                :formater="(item) => item.name"
+                @success="selectors?.table?.reset">
+                <template v-slot:top>
+                    <onyks-alert type="warning">This operation cannot be undone.</onyks-alert>
+                </template>
+            </DeleteItemDialog>
+
+            <onyks-textfield v-if="props.type == 'details'" :disabled="props.type === 'details'" 
+                size="m" placeholder="Table" type="text" 
+                v-model="model.table">
+            </onyks-textfield>
+
+            <!-- Availability -->
+            <onyks-header level="5">Availability</onyks-header>
+            <onyks-textfield :disabled="props.type === 'details'" size="m" placeholder="Value" type="text" v-model="model.availability"></onyks-textfield>
+            <onyks-text size="m" v-if="props.type != 'details'">Max. 256 characters</onyks-text>
+
 
             <!-- Created At -->
             <onyks-header v-if="props.type == 'details'" level="5">Created At</onyks-header>
@@ -74,16 +168,29 @@
 
         <onyks-container gap="l" padding="">
             <!-- Library -->
-            <onyks-header level="5">Symbol</onyks-header>
+            <onyks-header level="5">Schematic</onyks-header>
 
             <!-- Library Reference -->
             <onyks-text>Library Reference</onyks-text>
-            <onyks-textfield disabled size="m" placeholder="Library Reference" type="text" v-model="model.libraryReference"></onyks-textfield>
+            <onyks-textfield disabled size="m" 
+                placeholder="Library Reference" 
+                type="text" 
+                v-model="model.libraryReference">
+            </onyks-textfield>
 
             <!-- Library Path -->
             <onyks-text>Library Path</onyks-text>
-            <onyks-textfield disabled size="m" placeholder="Library Path" type="text" v-model="model.libraryPath"></onyks-textfield>
-            <onyks-button v-if="props.type != 'details'" background="blue" @click="dialogs?.symbol?.open">Select</onyks-button>
+            <onyks-textfield disabled size="m" 
+                placeholder="Library Path" 
+                type="text" v-model="model.libraryPath">
+            </onyks-textfield>
+            
+            <onyks-button v-if="props.type != 'details'" background="blue" @click="dialogs?.library?.open">Select</onyks-button>
+
+            <RepositoryModelSelector v-if="props.type != 'details'" :filter="filters.symbol" 
+                title="symbol" :ref="(el) => { if (el && dialogs) dialogs.library = el }" 
+                @model-select="(e) => {model.libraryReference = e.name; model.libraryPath = e.path.join('/')}">
+            </RepositoryModelSelector>
 
             <!-- Footprint No. 1 -->
             <onyks-header level="5">Footprint No. 1</onyks-header>
@@ -96,6 +203,13 @@
             <onyks-text>Footprint Path</onyks-text>
             <onyks-textfield size="m" placeholder="Footprint Path" type="text" disabled v-model="model.footprintPathNo1"></onyks-textfield>
             <onyks-button v-if="props.type != 'details'" background="yellow" @click="dialogs?.footprint1?.open">Select</onyks-button>
+
+
+
+            <RepositoryModelSelector v-if="props.type != 'details'" :filter="filters.footprint" 
+            title="footprint no. 1" :ref="(el) => { if (el) dialogs.footprint1 = el }" 
+            @model-select="(e) => {model.footprintReferenceNo1 = e.name; model.footprintPathNo1 = e.path.join('/')}">
+            </RepositoryModelSelector>
 
         </onyks-container>
 
@@ -112,6 +226,11 @@
             <onyks-textfield size="m" disabled placeholder="Footprint Path" type="text" v-model="model.footprintPathNo2"></onyks-textfield>
             <onyks-button v-if="props.type != 'details'" background="yellow" @click="dialogs?.footprint2.open()">Select</onyks-button>
 
+            <RepositoryModelSelector v-if="props.type != 'details'" :filter="filters.footprint" 
+            title="footprint no. 2" :ref="(el) => { if (el) dialogs.footprint2 = el }" 
+            @model-select="(e) => {model.footprintReferenceNo2 = e.name; model.footprintPathNo2 = e.path.join('/')}">
+            </RepositoryModelSelector>
+
             <onyks-header level="5">Footprint No. 3</onyks-header>
 
             <!-- Footprint Reference -->
@@ -122,36 +241,16 @@
             <onyks-text>Footprint Path</onyks-text>
             <onyks-textfield size="m" placeholder="Footprint Path" disabled type="text" v-model="model.footprintPathNo3"></onyks-textfield>
             <onyks-button v-if="props.type != 'details'" background="yellow" @click="dialogs?.footprint3.open()">Select</onyks-button>
+        
+            <RepositoryModelSelector v-if="props.type != 'details'" :filter="filters.footprint" 
+            title="footprint no. 3" :ref="(el) => { if (el) dialogs.footprint3 = el }" 
+            @model-select="(e) => {model.footprintReferenceNo3 = e.name; model.footprintPathNo3 = e.path.join('/')}">
+            </RepositoryModelSelector>
+
+
         </onyks-container>
 
     </onyks-container>
-
-    <RepositoryModelSelector v-if="props.type != 'details'" :filter="filters.symbol" 
-    title="symbol" :ref="(el) => { if (el) dialogs.symbol = el }" 
-    @model-select="(e) => {model.libraryReference = e.name; model.libraryPath = e.path.join('/')}">
-    </RepositoryModelSelector>
-
-    <RepositoryModelSelector v-if="props.type != 'details'" :filter="filters.footprint" 
-    title="footprint no. 1" :ref="(el) => { if (el) dialogs.footprint1 = el }" 
-    @model-select="(e) => {model.footprintReferenceNo1 = e.name; model.footprintPathNo1 = e.path.join('/')}">
-    </RepositoryModelSelector>
-
-    <RepositoryModelSelector v-if="props.type != 'details'" :filter="filters.footprint" 
-    title="footprint no. 2" :ref="(el) => { if (el) dialogs.footprint2 = el }" 
-    @model-select="(e) => {model.footprintReferenceNo2 = e.name; model.footprintPathNo2 = e.path.join('/')}">
-    </RepositoryModelSelector>
-
-    <RepositoryModelSelector v-if="props.type != 'details'" :filter="filters.footprint" 
-    title="footprint no. 3" :ref="(el) => { if (el) dialogs.footprint3 = el }" 
-    @model-select="(e) => {model.footprintReferenceNo3 = e.name; model.footprintPathNo3 = e.path.join('/')}">
-    </RepositoryModelSelector>
-
-    <AddItemDialog subject="manufacturer" :action="manufacturer.create" @success="selectors?.manufacturer?.reset"
-    :ref="(el) => { if (el) dialogs.manufacturer.add = el }"></AddItemDialog>
-
-    <AddItemDialog subject="table" :action="table.create" @success="selectors?.table?.reset"
-    :ref="(el) => { if (el) dialogs.table.add = el }"></AddItemDialog>
-
 </template>
 
 <style scoped>
@@ -163,5 +262,10 @@
     onyks-button
     {
         width: 140px;
+    }
+
+    onyks-textarea
+    {
+        width: 100%;
     }
 </style>

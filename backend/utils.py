@@ -82,14 +82,15 @@ def repositoryGetPCBFileContent(url, path, user, password):
 async def dbCreateOrUpdateElementViews(db_connection):
 
     try:
-        result_tables = await db_connection.execute(text("SELECT DISTINCT name FROM private.tables"))
+        result_tables = await db_connection.execute(text("SELECT DISTINCT id, name FROM private.tables"))
         tables = result_tables.fetchall()
         
         expected_views = []
         table_to_view_map = {} 
         for table_row in tables:
-            table_name = table_row[0]
-            view_name = f"view_elements_{table_name.lower().replace(' ', '_').replace('-', '_')}"
+            table_id = table_row[0]
+            table_name = table_row[1]
+            view_name = f"view_elements_{table_id}_{table_name.lower().replace(' ', '_').replace('-', '_')}"
             expected_views.append(view_name)
             table_to_view_map[table_name] = view_name
 
@@ -104,15 +105,14 @@ async def dbCreateOrUpdateElementViews(db_connection):
         for old_view in views_to_drop:
             await db_connection.execute(text(f"DROP VIEW IF EXISTS private.{old_view} CASCADE"))
 
-        result_suppliers = await db_connection.execute(text("SELECT name FROM private.suppliers"))
+        result_suppliers = await db_connection.execute(text("SELECT id, name FROM private.suppliers"))
         suppliers = result_suppliers.fetchall()
-        supplier_names = [supplier[0] for supplier in suppliers]
         
         supplier_columns = ""
-        if supplier_names:
-            for supplier_name in supplier_names:
+        if suppliers:
+            for supplier_id, supplier_name in suppliers:
                 safe_supplier_name = supplier_name.lower().replace(' ', '_').replace('-', '_')
-                supplier_columns += f",\n                (suppliers->>'{supplier_name}')::text AS supplier_{safe_supplier_name}"
+                supplier_columns += f",\n                (suppliers->>'{supplier_name}')::text AS supplier_{supplier_id}_{safe_supplier_name}"
         
         for table_name, view_name in table_to_view_map.items():
             

@@ -104,19 +104,19 @@
             </onyks-card>
 
             <onyks-card title="Elements" span="2" size="l">
-                <onyks-header>{{ elements }}</onyks-header>
+                <onyks-header level="3">{{ elements }}</onyks-header>
             </onyks-card>
 
             <onyks-card title="Tables" span="2" size="l">
-                <onyks-header>{{ tables }}</onyks-header>
+                <onyks-header level="3">{{ tables }}</onyks-header>
             </onyks-card>
 
             <onyks-card title="Manufacturers" span="2" size="l">
-                <onyks-header>{{ manufacturers }}</onyks-header>
+                <onyks-header level="3">{{ manufacturers }}</onyks-header>
             </onyks-card>
 
             <onyks-card title="Suppliers" span="2" size="l">
-                <onyks-header>{{ suppliers }}</onyks-header>
+                <onyks-header level="3">{{ suppliers }}</onyks-header>
             </onyks-card>
             
         </onyks-grid>

@@ -4,13 +4,19 @@
 
     const emit = defineEmits(['success'])
     const props = defineProps(['subject', 'action'])
-    const name = ref('')
-    const dialog = ref(null)
-    const error = ref('')
 
-    const open = () => 
+    const name = ref('')
+    const currentName = ref('')
+    const id = ref(0)
+
+    const error = ref('')
+    const dialog = ref(null)
+    
+    const open = (a, b) => 
     {
-        name.value = ''
+        name.value = a
+        id.value = b
+        currentName.value = a
         error.value = ''
         dialog.value.open = true
     }
@@ -22,8 +28,8 @@
 
     const action = async () =>
     {
-        let data = await props.action({name: name.value})
-       
+        let data = await props.action(id.value, {name: name.value})
+        console.log(data)
         if(data.status == 200)
         {
             dialog.value.open = false
@@ -37,17 +43,17 @@
 
     defineExpose({
         open,
-        close,
-        error
+        close
     });
 </script>
 
 <template>
 
-    <onyks-dialog :title="`Add a ${props.subject}`" corner-close bottom-buttons modal ref="dialog">
+    <onyks-dialog :title="`Editing a ${props.subject}`" corner-close bottom-buttons modal ref="dialog">
         <onyks-container type="stack" padding="" gap="l">
-            <onyks-text>Enter the name of a new {{ props.subject }} below:</onyks-text>
-            <onyks-textfield :placeholder="`Name of a new ${props.subject}`" v-model="name" @input="error = ''"></onyks-textfield>
+            <onyks-text size="m">You are editing: {{ currentName }}.</onyks-text>
+            <onyks-text>Enter a new name of the {{ props.subject }} below:</onyks-text>
+            <onyks-textfield :placeholder="`New name of the ${props.subject}`" v-model="name" @input="error = ''"></onyks-textfield>
             <onyks-text :class="error === '' ? 'error-invisible' : ''">{{ error }}</onyks-text>
         </onyks-container>
         <onyks-button background="green" slot="footer" @click="action" size="m">OK</onyks-button>

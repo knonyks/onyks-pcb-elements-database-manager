@@ -33,10 +33,10 @@
         
         <onyks-container gap="l" padding="">
             <!-- UUID -->
-            <onyks-header level="5" v-if="props.type == 'details'">UUID</onyks-header>
+            <onyks-header level="5" v-if="props.type == 'details' || props.type == 'edit'">UUID</onyks-header>
 
-            <onyks-textfield :disabled="props.type === 'details'" 
-                v-if="props.type == 'details'" 
+            <onyks-textfield :disabled="props.type === 'details' || props.type == 'edit'" 
+                v-if="props.type == 'details' || props.type == 'edit'" 
                 size="m" placeholder="Part Name" 
                 type="text" v-model="model.uuid">
             </onyks-textfield>

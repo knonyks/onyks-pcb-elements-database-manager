@@ -7,7 +7,7 @@
     import AddItemDialog from '@/components/AddItemDialog.vue'
     import EditItemDialog from '@/components/EditItemDialog.vue'
     import DeleteItemDialog from '@/components/DeleteItemDialog.vue'
-    
+    import { LabelsDoc } from '@/utils/tools'
     import { useRouter } from 'vue-router'
 
     const router = useRouter()
@@ -120,13 +120,12 @@
                     elements.value.disabled.duplicate = true
                     elements.value.disabled.datasheet = true
                     elements.value.disabled.labels = false
-                    elements.value.disabled.details = false
+                    elements.value.disabled.details = true
                     break;
             }
         },
         action: async (type) =>
         {
-            let data = null
             switch(type)
             {
                 case 'add':
@@ -136,8 +135,7 @@
                     router.push(`/element/edit/${elements.value.table.getSelectedRows()[0].uuid}`)
                     break;
                 case 'delete':
-                    data = elements.value.table.getSelectedRows()
-                    elements.value.dialogs.delete.open(data)
+                    elements.value.dialogs.delete.open(elements.value.table.getSelectedRows())
                     break;
                 case 'duplicate':
                     router.push(`/element/duplicate/${elements.value.table.getSelectedRows()[0].uuid}`)
@@ -145,7 +143,7 @@
                 case 'datasheet':
                     break;
                 case 'labels':
-                    let data = tables.value.element.getSelectedRows()
+                    let data = elements.value.table.getSelectedRows()
                     let total = data.length
                 
                     let doc = new LabelsDoc(total)
@@ -461,25 +459,14 @@
                 :update="element.list"
                 @checkbox-click="elements?.disable"></BasicTable>
         
-        <AddItemDialog subject="table" 
-            :ref="(el) => { if (el && elements) elements.dialogs.add = el }"
-            :action="element.create"
-            @success="elements?.success">
-        </AddItemDialog>
-
-        <EditItemDialog subject="table"
-            :ref="(el) => { if (el && elements) elements.dialogs.edit = el }"
-            :action="element.edit"
-            @success="elements?.success">
-        </EditItemDialog>
 
         <DeleteItemDialog
-            subject="table(s)"
-            :processor="(item) => item.id"
-            :ref="(el) => { if (el && tables) tables.dialogs.delete = el }"
-            :action="table.delete"
-            :formater="(item) => item.name"
-            @success="tables?.success">
+            subject="element(s)"
+            :processor="(item) => item.uuid"
+            :ref="(el) => { if (el && elements) elements.dialogs.delete = el }"
+            :action="element.delete"
+            :formater="(item) => item.partName"
+            @success="elements?.success">
             <template v-slot:top>
                 <onyks-alert type="warning">This operation cannot be undone.</onyks-alert>
             </template>

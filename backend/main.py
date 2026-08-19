@@ -136,8 +136,9 @@ async def elementEdit(id: uuid.UUID, element: schemas.ElementBase, db = Depends(
         )
     
     update_data = element.model_dump(exclude_unset=True)
-    update_data.uuid = id
-    update_data.createdAt = item.createdAt
+    print(update_data)
+    update_data['uuid'] = id
+    update_data['createdAt'] = item.createdAt
     for field, value in update_data.items():
         setattr(item, field, value)
     

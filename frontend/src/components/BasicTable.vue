@@ -25,6 +25,7 @@
                 element.createdAt = dateUTCtoDestination(element.createdAt)
             });
             data.value = temp.data.items
+            selected.value = 0
         }
     }
 
@@ -41,6 +42,7 @@
             data.value = temp.data.items
             total.value = temp.data.total
             skip.value = 0
+            selected.value = 0
         }
     }
 

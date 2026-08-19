@@ -2,15 +2,18 @@
     import WarningAlert from '@/components/WarningAlert.vue';
     import ElementForm from '@/components/ElementForm.vue';
     import { ElementModel } from '@/utils/db';
-    import { ref } from 'vue';
+    import { ref, toRaw } from 'vue';
     import { element } from '@/utils/api';
     import { useRouter } from 'vue-router';
     import { useRoute } from 'vue-router';
     import { dateUTCtoDestination } from '@/utils/tools';
+    import BasicButtonsPanel from '@/components/BasicButtonsPanel.vue';
+    import DeleteItemDialog from '@/components/DeleteItemDialog.vue';
+    import { LabelsDoc } from '@/utils/tools';
 
     const props = defineProps(['type'])
     const model = ref(new ElementModel())
-    const dialogs = ref({create: null, error: null})
+    const dialogs = ref({create: null, addError: null, delete: null, editError: null, edit: null, duplicate: null, duplicateError: null})
     const router = useRouter()
     const route = useRoute()
 
@@ -43,11 +46,12 @@
 
     const action = async (mode) =>
     {
+        let data = null
         switch(mode)
         {
             case 'create':
                 dialogs.value.create.open = true
-                let data = await element.create(model.value)
+                data = await element.create(model.value)
                 if(data.status == 200)
                 {
                     setTimeout(() => 
@@ -61,11 +65,66 @@
                     setTimeout(() => 
                     {
                         dialogs.value.create.open = false
-                        dialogs.value.error.open = true
+                        dialogs.value.addError.open = true
+                    }, 1000)
+                }
+                break;
+            case 'edit':
+                dialogs.value.edit.open = true
+                const updateData = structuredClone(toRaw(model.value))
+                data = await element.edit(model.value.uuid, updateData)
+                if(data.status == 200)
+                {
+                    setTimeout(() => 
+                    {
+                        dialogs.value.edit.open = false
+                        router.push(`/element/details/${data.data.uuid}`)
+                    }, 1000)
+                }
+                else
+                {
+                    setTimeout(() => 
+                    {
+                        dialogs.value.edit.open = false
+                        dialogs.value.editError.open = true
+                    }, 1000)
+                }
+                break;
+            case 'duplicate':
+                dialogs.value.duplicate.open = true
+                const duplicateData = structuredClone(toRaw(model.value))
+                duplicateData.uuid = null
+                data = await element.create(duplicateData)
+                if(data.status == 200)
+                {
+                    setTimeout(() => 
+                    {
+                        dialogs.value.duplicate.open = false
+                        router.push(`/element/details/${data.data.uuid}`)
+                    }, 1000)
+                }
+                else
+                {
+                    setTimeout(() => 
+                    {
+                        dialogs.value.duplicate.open = false
+                        dialogs.value.duplicateError.open = true
                     }, 1000)
                 }
                 break;
         }
+    }
+
+    const label = async () =>
+    {
+        const doc = new LabelsDoc(1)
+        await doc.init()
+
+        await doc.drawData(0, model.value)
+        await doc.drawQR(0, model.value.uuid)
+
+        await doc.drawBorders()
+        await doc.finish()
     }
 </script>
 
@@ -85,22 +144,73 @@
 
         <ElementForm v-model="model" :type="props.type"></ElementForm>
        
-        <onyks-container align="end" padding="" gap="l">
-            <onyks-button background="green" @click="() => {action('create')}">Create</onyks-button>
-        </onyks-container>
-
         <onyks-dialog modal no-title :ref="(el) => { dialogs.create = el }">
             <onyks-text>Creating the element...</onyks-text>
         </onyks-dialog>
 
-        <onyks-dialog :title="`Error`" modal corner-close :ref="(el) => { if (el && dialogs) dialogs.error = el }">
+        <onyks-dialog modal no-title :ref="(el) => { dialogs.edit = el }">
+            <onyks-text>Editing the element...</onyks-text>
+        </onyks-dialog>
+
+        <onyks-dialog modal no-title :ref="(el) => { dialogs.duplicate = el }">
+            <onyks-text>Duplicating the element...</onyks-text>
+        </onyks-dialog>
+
+        <onyks-dialog :title="`Error`" modal corner-close :ref="(el) => { if (el && dialogs) dialogs.addError = el }">
             <onyks-text>Cannot create an element.</onyks-text>
         </onyks-dialog>
+
+        <onyks-dialog :title="`Error`" modal corner-close :ref="(el) => { if (el && dialogs) dialogs.editError = el }">
+            <onyks-text>Cannot edit an element.</onyks-text>
+        </onyks-dialog>
+
+        <onyks-dialog :title="`Error`" modal corner-close :ref="(el) => { if (el && dialogs) dialogs.duplicateError = el }">
+            <onyks-text>Cannot duplicate an element.</onyks-text>
+        </onyks-dialog>
+
+
+
+        
+
+        <BasicButtonsPanel v-if="props.type == 'details'">
+            <onyks-button background="blue" @click="() => {router.push(`/element/edit/${route.params.uuid}`)}">Edit</onyks-button>
+            <onyks-button background="yellow" @click="() => {router.push(`/element/duplicate/${route.params.uuid}`)}">Duplicate</onyks-button>
+            <onyks-button background="red" @click="() => {dialogs.delete.open([model])}">Delete</onyks-button>
+            <onyks-button background="green" @click="">Datasheet</onyks-button>
+            <onyks-button background="blue" @click="label">Label</onyks-button>
+        </BasicButtonsPanel>
+
+        <onyks-container align="end" padding="" gap="l" v-else-if="props.type == 'edit'">
+            <onyks-button background="blue" @click="() => {action('edit')}">Edit</onyks-button>
+        </onyks-container>
+
+        <onyks-container align="end" padding="" gap="l" v-else-if="props.type == 'duplicate'">
+            <onyks-button background="yellow" @click="() => {action('duplicate')}">Duplicate</onyks-button>
+        </onyks-container>
+
+        <onyks-container align="end" padding="" gap="l" v-else>
+            <onyks-button background="green" @click="() => {action('create')}">Create</onyks-button>
+        </onyks-container>
+
+        <DeleteItemDialog
+            subject="element"
+            :processor="(item) => item.uuid"
+            :ref="(el) => { if (el && dialogs) dialogs.delete = el }"
+            :action="element.delete"
+            :formater="(item) => item.partName"
+            @success="router.push('/management')">
+            <template v-slot:top>
+                <onyks-alert type="warning">This operation cannot be undone.</onyks-alert>
+            </template>
+        </DeleteItemDialog>
 
     </onyks-container>
 
 </template>
 
 <style>
-
+    onyks-dialog
+    {
+        position: fixed;
+    }
 </style>

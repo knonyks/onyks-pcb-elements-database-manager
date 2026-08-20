@@ -4,6 +4,7 @@
 
     const model = defineModel()
     const {width} = useWindowSize()
+    const props = defineProps(['table'])
 </script>
 
 <template>
@@ -14,7 +15,7 @@
             <onyks-checkbox
                 :checked="!column.hidden"
                 size="s"
-                @change="column.hidden = !$event.target.checked">
+                @change="(e) => {column.hidden = !e.target.checked; props.table.refresh()}">
             </onyks-checkbox>
 
             <onyks-text size="s">{{ column.label }}</onyks-text>

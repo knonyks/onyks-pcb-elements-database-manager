@@ -499,6 +499,7 @@
 
         <ColumnsCheckboxes
             :model-value="elements?.columns.slice(1)"
+            :table="elements.table"
             @update:model-value="(columns) => { if (elements) elements.columns = [elements.columns[0], ...columns] }">
         </ColumnsCheckboxes>
 
@@ -507,7 +508,6 @@
                 :update="element.list"
                 @checkbox-click="elements?.disable"></BasicTable>
         
-
         <DeleteItemDialog
             subject="element(s)"
             :processor="(item) => item.uuid"

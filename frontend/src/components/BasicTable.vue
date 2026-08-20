@@ -13,6 +13,7 @@
     const limit = ref(50)
     const selected = ref(0)
 
+
     const pageChange = async (e) =>
     {
         skip.value = (e.detail.index  - 1)*limit.value
@@ -51,7 +52,12 @@
         return table.value.getSelectedRows()
     }
 
-    defineExpose({init, getSelectedRows})
+    const refresh = () =>
+    {
+        table.value.refresh()
+    }
+
+    defineExpose({init, getSelectedRows, refresh})
 </script>
 
 <template>

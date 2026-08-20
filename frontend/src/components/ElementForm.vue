@@ -2,19 +2,21 @@
     import { useWindowSize } from '@vueuse/core';
     import ValueSelector from './ValueSelector.vue';
     import { ref } from 'vue';
-    import { manufacturer, table } from '@/utils/api.js';
+    import { manufacturer, table, supplier } from '@/utils/api.js';
     import AddItemDialog from './AddItemDialog.vue';
     import EditItemDialog from './EditItemDialog.vue';
     import DeleteItemDialog from './DeleteItemDialog.vue';
     import RepositoryModelSelector from './RepositoryModelSelector.vue';
+    import SuppliersSelector from './SuppliersSelector.vue';
+    import DatasheetPicker from './DatasheetPicker.vue';
 
 
     const {width} = useWindowSize()
     const props = defineProps(['type'])
     const model = defineModel({ data: Object })
-    const selectors = ref({manufacturer: null})
+    const selectors = ref({manufacturer: null, supplier: null, table: null})
     const dialogs = ref({manufacturer: {add: null, edit: null, delete: null}, 
-    table: {add: null, edit: null, delete: null}, library: null, footprint1: null, footprint2: null, footprint3: null})
+    table: {add: null, edit: null, delete: null}, supplier: {add: null, edit: null, delete: null}, library: null, footprint1: null, footprint2: null, footprint3: null})
     const filters = ref(
     {
         footprint: (e) => 
@@ -26,6 +28,8 @@
             return e.type == 'dir' || e.type == 'schlib' || e.type == 'symbol'
         }
     })
+
+    
 </script>
 
 <template>
@@ -160,7 +164,6 @@
             <onyks-textfield :disabled="props.type === 'details'" size="m" placeholder="Value" type="text" v-model="model.availability"></onyks-textfield>
             <onyks-text size="m" v-if="props.type != 'details'">Max. 256 characters</onyks-text>
 
-
             <!-- Created At -->
             <onyks-header v-if="props.type == 'details'" level="5">Created At</onyks-header>
             <onyks-textfield v-if="props.type == 'details'" :disabled="props.type === 'details'" size="m" placeholder="Value" type="text" v-model="model.createdAt"></onyks-textfield>
@@ -250,7 +253,48 @@
 
         </onyks-container>
 
+        <onyks-container gap="l" padding="">
+            <onyks-header level="5">Suppliers</onyks-header>
+
+            <SuppliersSelector @add-click="dialogs?.supplier?.add?.open" :ref="(el) => { if (el && selectors) selectors.supplier = el }"
+                @edit-click="() => {dialogs.supplier.edit.open(selectors.supplier.name, selectors.supplier.id)}" 
+                @delete-click="() => {dialogs.supplier.delete.open([{name: selectors.supplier.name, id: selectors.supplier.id}])}"
+                :action="supplier.list" v-model:name="model.supplier" v-model:codes="model.suppliers"
+                 subject="supplier" :disabled="props.type === 'details'">
+            </SuppliersSelector>
+            
+            <AddItemDialog subject="supplier" 
+                :ref="(el) => { if (el && dialogs) dialogs.supplier.add = el }"
+                :action="supplier.create"
+                @success="selectors?.supplier?.reset">
+            </AddItemDialog>
+
+            <EditItemDialog subject="supplier"
+                :ref="(el) => { if (el && dialogs) dialogs.supplier.edit = el }"
+                :action="supplier.edit"
+                @success="selectors?.supplier?.reset">
+            </EditItemDialog>
+
+            <DeleteItemDialog
+                subject="supplier(s)"
+                :processor="(item) => item.id"
+                :ref="(el) => { if (el && dialogs) dialogs.supplier.delete = el }"
+                :action="supplier.delete"
+                :formater="(item) => item.name"
+                @success="selectors?.supplier?.reset">
+                <template v-slot:top>
+                    <onyks-alert type="warning">This operation cannot be undone.</onyks-alert>
+                </template>
+            </DeleteItemDialog>
+        </onyks-container>
+
+        <onyks-container gap="l" padding="">
+            <onyks-header level="5">Datasheet</onyks-header>
+            <DatasheetPicker></DatasheetPicker>
+        </onyks-container>
+ 
     </onyks-container>
+
 </template>
 
 <style scoped>

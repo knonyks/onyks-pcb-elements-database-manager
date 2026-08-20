@@ -76,28 +76,28 @@ def repositoryGetPCBFileContent(url, path, user, password):
         elements = [{"name": i, "type": 'footprint'} for i in footprints]
     return elements
 
-
-
-
 async def dbCreateOrUpdateElementViews(db_connection):
-
     try:
         result_tables = await db_connection.execute(text("SELECT DISTINCT id, name FROM private.tables"))
         tables = result_tables.fetchall()
         
         expected_views = []
         table_to_view_map = {} 
+        
         for table_row in tables:
             table_id = table_row[0]
             table_name = table_row[1]
-            view_name = f"view_elements_{table_id}_{table_name.lower().replace(' ', '_').replace('-', '_')}"
+            
+            safe_table_name = table_name.lower().replace(' ', '_').replace('-', '_')
+            view_name = f"table_{table_id}_{safe_table_name}"
+            
             expected_views.append(view_name)
             table_to_view_map[table_name] = view_name
 
         result_existing_views = await db_connection.execute(text("""
             SELECT table_name 
             FROM information_schema.views 
-            WHERE table_schema = 'private' AND table_name LIKE 'view_elements_%'
+            WHERE table_schema = 'private' AND table_name LIKE 'table_%'
         """))
         existing_views = [row[0] for row in result_existing_views.fetchall()]
 
@@ -110,13 +110,19 @@ async def dbCreateOrUpdateElementViews(db_connection):
         
         supplier_columns = ""
         if suppliers:
-            for supplier_id, supplier_name in suppliers:
+            for supplier_row in suppliers:
+                supplier_id = supplier_row[0]
+                supplier_name = supplier_row[1]
+                
                 safe_supplier_name = supplier_name.lower().replace(' ', '_').replace('-', '_')
-                supplier_columns += f",\n                (suppliers->>'{supplier_name}')::text AS supplier_{supplier_id}_{safe_supplier_name}"
+                
+                supplier_columns += f",\n                (suppliers->>'{supplier_id}')::text AS supplier_{supplier_id}_{safe_supplier_name}"
         
         for table_name, view_name in table_to_view_map.items():
             
             await db_connection.execute(text(f"DROP VIEW IF EXISTS private.{view_name} CASCADE"))
+            
+            safe_table_name_query = table_name.replace("'", "''")
             
             create_view_query = text(f"""
             CREATE VIEW private.{view_name} AS
@@ -133,7 +139,7 @@ async def dbCreateOrUpdateElementViews(db_connection):
                 created_at
                 {supplier_columns}
             FROM private.elements
-            WHERE "table" = '{table_name}'
+            WHERE "table" = '{safe_table_name_query}'
             ORDER BY created_at DESC
             """)
         
@@ -145,16 +151,3 @@ async def dbCreateOrUpdateElementViews(db_connection):
     except Exception as e:
         await db_connection.rollback()
         return {"status": "error", "message": str(e)}
-
-
-
-# ### MANUFACTURER ###
-# def manufacturer_name_validation(text: str) -> bool:
-#     return supplier_name_validation(text)
-
-# ### SUPPLIER ###
-# def supplier_name_validation(text: str) -> bool:
-#     if not isinstance(text, str):
-#         return False
-#     pattern = r'^(?!\s)(?:[^\W\d_]|\s|-){2,}(?<!\s)$'
-#     return bool(re.match(pattern, text))

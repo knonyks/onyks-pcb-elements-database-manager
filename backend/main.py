@@ -91,7 +91,7 @@ async def elementNumber(db = Depends(get_db)):
     totalCount = result.scalar()
     return totalCount
 
-@app.get("/element/list", response_model = schemas.ElementList)
+@app.get("/element/list")
 async def elementList(limit: int = Query(default=10, ge=1, le=100),
     skip: int = Query(default=0, ge=0),
     db = Depends(get_db)):
@@ -102,7 +102,17 @@ async def elementList(limit: int = Query(default=10, ge=1, le=100),
     
     queryEntries = select(models.Element).offset(skip).limit(limit)
     entriesResult = await db.execute(queryEntries)
-    entries = entriesResult.scalars().all()
+    entries = []
+    for item in entriesResult.scalars().all():
+        entry = {
+            key: value
+            for key, value in vars(item).items()
+            if key not in {"_sa_instance_state", "suppliers"}
+        }
+        suppliers = getattr(item, "suppliers", None)
+        if isinstance(suppliers, dict):
+            entry.update({f"supplier_{key}": value for key, value in suppliers.items()})
+        entries.append(entry)
     
     return {"total": totalCount, "items": entries}
 

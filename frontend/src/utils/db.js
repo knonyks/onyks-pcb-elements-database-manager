@@ -18,7 +18,7 @@ export class ElementModel
         this.createdAt = args?.created_at || '';
 
         this.manufacturer = args?.manufacturer || '';
-        // this.suppliers = args?.suppliers || {};
+        this.suppliers = args?.suppliers || {};
         // this.datasheet = args?.datasheet || false;
         this.table = args?.table || ''
     }

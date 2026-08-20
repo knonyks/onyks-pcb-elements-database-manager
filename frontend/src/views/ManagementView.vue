@@ -2,13 +2,14 @@
     import WarningAlert from '@/components/WarningAlert.vue'
     import BasicButtonsPanel from '@/components/BasicButtonsPanel.vue'
     import BasicTable from '@/components/BasicTable.vue'
-    import {onMounted, ref} from 'vue'
+    import {onMounted, ref, toRaw} from 'vue'
     import { manufacturer, supplier, table, element } from '@/utils/api'
     import AddItemDialog from '@/components/AddItemDialog.vue'
     import EditItemDialog from '@/components/EditItemDialog.vue'
     import DeleteItemDialog from '@/components/DeleteItemDialog.vue'
     import { LabelsDoc } from '@/utils/tools'
     import { useRouter } from 'vue-router'
+    import ColumnsCheckboxes from '@/components/ColumnsCheckboxes.vue'
 
     const router = useRouter()
 
@@ -17,72 +18,87 @@
         columns: [
             {
                 "key": "selected",
-                "label": "Select"
+                "label": "Select",
             },
             {
                 "key": "uuid",
-                "label": "UUID"
+                "label": "UUID",
+                "hidden": false
             },
             {
                 "key": "partName",
-                "label": "Part Name"
+                "label": "Part Name",
+                "hidden": false
             },
             {
                 "key": "manufacturer",
-                "label": "Manufacturer"
+                "label": "Manufacturer",
+                "hidden": false
             },
             {
                 "key": "table",
-                "label": "Table"
+                "label": "Table",
+                "hidden": false
             },
             {
                 "key": "description",
-                "label": "Description"
+                "label": "Description",
+                "hidden": false
             },
             {
                 "key": "value",
-                "label": "Value"
+                "label": "Value",
+                "hidden": false
             },
             {
                 "key": "availability",
-                "label": "Availability"
+                "label": "Availability",
+                "hidden": false
             },
             {
                 "key": "libraryReference",
-                "label": "Library Reference"
+                "label": "Library Reference",
+                "hidden": false
             },
             {
                 "key": "libraryPath",
-                "label": "Library Path"
+                "label": "Library Path",
+                "hidden": false
             },
             {
                 "key": "footprintReferenceNo1",
-                "label": "Footprint Reference No. 1"
+                "label": "Footprint Reference No. 1",
+                "hidden": false
             },
             {
                 "key": "footprintPathNo1",
-                "label": "Footprint Path No. 1"
+                "label": "Footprint Path No. 1",
+                "hidden": false
             },
             {
                 "key": "footprintReferenceNo2",
-                "label": "Footprint Reference No. 2"
+                "label": "Footprint Reference No. 2",
+                "hidden": false
             },
             {
                 "key": "footprintPathNo2",
-                "label": "Footprint Path No. 2"
+                "label": "Footprint Path No. 2",
+                "hidden": false
             },
             {
                 "key": "footprintReferenceNo3",
-                "label": "Footprint Reference No. 3"
+                "label": "Footprint Reference No. 3",
+                "hidden": false
             },
             {
                 "key": "footprintPathNo3",
-                "label": "Footprint Path No. 3"
+                "label": "Footprint Path No. 3",
+                "hidden": false
             },
-            ,
             {
                 "key": "createdAt",
-                "label": "Created At"
+                "label": "Created At",
+                "hidden": false
             },
         ],
         disabled:
@@ -176,6 +192,24 @@
             elements?.value.table?.init()
             elements.value.disabled.edit = true
             elements.value.disabled.delete = true
+            elements.value.updateColumns()
+        },
+        updateColumns: async () =>
+        {
+            let data = await supplier.list()
+            let temp = toRaw(elements.value.columns)
+            temp = [...temp.filter(column => !column.key.startsWith('supplier_'))]
+
+            data.data.items.forEach(element => 
+            {
+                temp.push({
+                    "key": `supplier_${element.id}`,
+                    "label": `Supplier - ${element.name}`,
+                    "hidden": false
+                })
+            });
+
+            elements.value.columns = [...temp]
         }
     })
 
@@ -410,12 +444,21 @@
         }
     })
 
+    const success = () =>
+    {
+        elements.value.success()
+        tables.value.success()
+        manufacturers.value.success()
+        suppliers.value.success()
+    }
+
     onMounted(() => 
     {
         manufacturers.value.table.init()
         suppliers.value.table.init()
         tables.value.table.init()
         elements.value.table.init()
+        elements.value.updateColumns()
     })
 </script>
 
@@ -454,6 +497,11 @@
                 :disabled="elements?.disabled.details">Details</onyks-button>
         </BasicButtonsPanel>
 
+        <ColumnsCheckboxes
+            :model-value="elements?.columns.slice(1)"
+            @update:model-value="(columns) => { if (elements) elements.columns = [elements.columns[0], ...columns] }">
+        </ColumnsCheckboxes>
+
         <BasicTable :ref="(el) => { if (el && elements) elements.table = el }" 
                 :columns="elements?.columns"
                 :update="element.list"
@@ -466,7 +514,7 @@
             :ref="(el) => { if (el && elements) elements.dialogs.delete = el }"
             :action="element.delete"
             :formater="(item) => item.partName"
-            @success="elements?.success">
+            @success="success">
             <template v-slot:top>
                 <onyks-alert type="warning">This operation cannot be undone.</onyks-alert>
             </template>
@@ -493,13 +541,13 @@
         <AddItemDialog subject="table" 
             :ref="(el) => { if (el && tables) tables.dialogs.add = el }"
             :action="table.create"
-            @success="tables?.success">
+            @success="success">
         </AddItemDialog>
 
         <EditItemDialog subject="table"
             :ref="(el) => { if (el && tables) tables.dialogs.edit = el }"
             :action="table.edit"
-            @success="tables?.success">
+            @success="success">
         </EditItemDialog>
 
         <DeleteItemDialog
@@ -508,7 +556,7 @@
             :ref="(el) => { if (el && tables) tables.dialogs.delete = el }"
             :action="table.delete"
             :formater="(item) => item.name"
-            @success="tables?.success">
+            @success="success">
             <template v-slot:top>
                 <onyks-alert type="warning">This operation cannot be undone.</onyks-alert>
             </template>
@@ -535,13 +583,13 @@
         <AddItemDialog subject="manufacturer" 
             :ref="(el) => { if (el && manufacturers) manufacturers.dialogs.add = el }"
             :action="manufacturer.create"
-            @success="manufacturers?.success">
+            @success="success">
         </AddItemDialog>
 
         <EditItemDialog subject="manufacturer"
             :ref="(el) => { if (el && manufacturers) manufacturers.dialogs.edit = el }"
             :action="manufacturer.edit"
-            @success="manufacturers?.success">
+            @success="success">
         </EditItemDialog>
 
         <DeleteItemDialog
@@ -550,7 +598,7 @@
             :ref="(el) => { if (el && manufacturers) manufacturers.dialogs.delete = el }"
             :action="manufacturer.delete"
             :formater="(item) => item.name"
-            @success="manufacturers?.success">
+            @success="success">
             <template v-slot:top>
                 <onyks-alert type="warning">This operation cannot be undone.</onyks-alert>
             </template>
@@ -577,13 +625,13 @@
         <AddItemDialog subject="supplier" 
             :ref="(el) => { if (el && suppliers) suppliers.dialogs.add = el }"
             :action="supplier.create"
-            @success="suppliers?.success">
+            @success="success">
         </AddItemDialog>
 
         <EditItemDialog subject="supplier"
             :ref="(el) => { if (el && suppliers) suppliers.dialogs.edit = el }"
             :action="supplier.edit"
-            @success="suppliers?.success">
+            @success="success">
         </EditItemDialog>
 
         <DeleteItemDialog
@@ -592,7 +640,7 @@
             :ref="(el) => { if (el && suppliers) suppliers.dialogs.delete = el }"
             :action="supplier.delete"
             :formater="(item) => item.name"
-            @success="suppliers?.success">
+            @success="success">
             <template v-slot:top>
                 <onyks-alert type="warning">This operation cannot be undone.</onyks-alert>
             </template>
@@ -600,7 +648,3 @@
 
     </onyks-container>
 </template>
-
-<style scoped>
-
-</style>

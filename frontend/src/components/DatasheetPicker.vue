@@ -1,25 +1,26 @@
 <script setup>
     import { ref } from 'vue';
-    const uploader = ref(null)
+    import { defineExpose } from 'vue';
+    import { defineEmits } from 'vue';
 
-    const dane = ref(null)
-    const reset = () => 
-    {
-        console.dir(uploader.value.files)
-    }
+    const props = defineProps(['type', 'datasheet'])
+    const uploader = ref(null)
+    const file = ref(null)
+    const emit = defineEmits(['change'])
+
+    defineExpose({file})
 </script>
 
 <template>
-    <onyks-container align="start" padding="" type="stack" gap="l">
-        <onyks-file-upload multiple accept=".pdf" ref="uploader"></onyks-file-upload>
-        <onyks-button @click="reset">Reset</onyks-button>
+    <onyks-file-upload ref="uploader" accept=".pdf" message="Drag a file or click to add it" @change="emit('change', uploader.files[0])"></onyks-file-upload>
+    <onyks-container type="group">
+        <onyks-button @click="uploader.reset">Reset</onyks-button>
     </onyks-container>
 </template>
 
-<style>
+<style scoped>
     onyks-file-upload
     {
         width: 100%;
     }
-
 </style>

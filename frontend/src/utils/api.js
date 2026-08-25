@@ -84,11 +84,23 @@ export const element =
             return error
         }
     },
-    create: async (element) =>
+    create: async (element, datasheet = null) =>
     {
         try 
         {
-            const response = await api.post(`/element/create`, element);
+            const formData = new FormData();
+
+            formData.append('element', JSON.stringify(element));
+
+            if (datasheet)
+            {
+                formData.append('datasheet', datasheet);
+            }
+
+            const response = await api.post(`/element/create`, formData,
+            {
+                headers: {'Content-Type': 'multipart/form-data'} 
+            });
             return response
         } 
         catch (error) 
@@ -148,6 +160,10 @@ export const element =
         {
             return error
         }
+    },
+    openDatasheet: (uuid) =>
+    {
+        window.open(`/files/${uuid}.pdf`, '_blank');
     }
 }
 

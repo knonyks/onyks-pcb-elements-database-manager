@@ -16,6 +16,7 @@
     const dialogs = ref({create: null, addError: null, delete: null, editError: null, edit: null, duplicate: null, duplicateError: null})
     const router = useRouter()
     const route = useRoute()
+    const form = ref(null)
 
     const fillData = () =>
     {
@@ -51,7 +52,7 @@
         {
             case 'create':
                 dialogs.value.create.open = true
-                data = await element.create(model.value)
+                data = await element.create(model.value, form.value.datasheetFile)
                 if(data.status == 200)
                 {
                     setTimeout(() => 
@@ -142,7 +143,7 @@
             <onyks-button background="red" @click="router.back()">Return</onyks-button>
         </onyks-container>
 
-        <ElementForm v-model="model" :type="props.type"></ElementForm>
+        <ElementForm v-model="model" :type="props.type" ref="form"></ElementForm>
        
         <onyks-dialog modal no-title :ref="(el) => { dialogs.create = el }">
             <onyks-text>Creating the element...</onyks-text>
@@ -168,15 +169,11 @@
             <onyks-text>Cannot duplicate an element.</onyks-text>
         </onyks-dialog>
 
-
-
-        
-
         <BasicButtonsPanel v-if="props.type == 'details'">
             <onyks-button background="blue" @click="() => {router.push(`/element/edit/${route.params.uuid}`)}">Edit</onyks-button>
             <onyks-button background="yellow" @click="() => {router.push(`/element/duplicate/${route.params.uuid}`)}">Duplicate</onyks-button>
             <onyks-button background="red" @click="() => {dialogs.delete.open([model])}">Delete</onyks-button>
-            <onyks-button background="green" @click="">Datasheet</onyks-button>
+            <onyks-button background="green" @click="element.openDatasheet(route.params.uuid)">Datasheet</onyks-button>
             <onyks-button background="blue" @click="label">Label</onyks-button>
         </BasicButtonsPanel>
 

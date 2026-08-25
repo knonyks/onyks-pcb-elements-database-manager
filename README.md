@@ -1,10 +1,19 @@
-# ONYKS Bloodstone
+![](/other/banner.png)
 
 ### 📖 Description
 
 A centralized database system for Altium PCB components, integrated with an SVN repository for `SchLib` and `PcbLib` files. This project provides a web interface for managing component data (footprints, symbols, stock quantities) and ensures seamless access control for organizational users.
 
 The system acts as a bridge between the Altium Designer environment and a Postgres database, managed via a web application.
+
+
+
+
+
+
+
+
+
 
 ---
 
@@ -122,7 +131,7 @@ svn commit -m "Initial commit" --username admin --password admin --trust-server-
 svn update --username admin --password admin --trust-server-cert --non-interactive
 ```
 
-
+Altium is trademark of Altium Limited. All other trademarks are property of their respective owners.
 
 
 <!-- docker compose --env-file .env up database proxy backend

@@ -9,6 +9,7 @@
     import RepositoryModelSelector from './RepositoryModelSelector.vue';
     import SuppliersSelector from './SuppliersSelector.vue';
     import DatasheetPicker from './DatasheetPicker.vue';
+    import { defineExpose } from 'vue';
 
 
     const {width} = useWindowSize()
@@ -29,7 +30,8 @@
         }
     })
 
-    
+    const datasheetFile = ref(null)
+    defineExpose({datasheetFile})
 </script>
 
 <template>
@@ -259,7 +261,7 @@
             <SuppliersSelector @add-click="dialogs?.supplier?.add?.open" :ref="(el) => { if (el && selectors) selectors.supplier = el }"
                 @edit-click="() => {dialogs.supplier.edit.open(selectors.supplier.name, selectors.supplier.id)}" 
                 @delete-click="() => {dialogs.supplier.delete.open([{name: selectors.supplier.name, id: selectors.supplier.id}])}"
-                :action="supplier.list" v-model:name="model.supplier" v-model:codes="model.suppliers"
+                :action="supplier.list" v-model:codes="model.suppliers"
                  subject="supplier" :disabled="props.type === 'details'">
             </SuppliersSelector>
             
@@ -290,9 +292,9 @@
 
         <onyks-container gap="l" padding="">
             <onyks-header level="5">Datasheet</onyks-header>
-            <DatasheetPicker></DatasheetPicker>
+            <DatasheetPicker :datasheet="true" :type="props.type" @change="(e) => {datasheetFile = e}"></DatasheetPicker>
         </onyks-container>
- 
+        
     </onyks-container>
 
 </template>

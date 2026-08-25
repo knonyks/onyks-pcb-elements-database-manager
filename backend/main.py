@@ -15,8 +15,15 @@ from fastapi import HTTPException, status, Path
 from sqlalchemy import select
 import uuid
 from sqlalchemy import select, func
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException, status
+from fastapi.staticfiles import StaticFiles
+from pydantic import Json
 
 app = FastAPI()
+
+UPLOAD_DIR = "/uploads"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+app.mount("/files", StaticFiles(directory=UPLOAD_DIR), name="datasheet")
 
 async def get_db():
     async with AsyncSessionLocal() as session:
@@ -53,16 +60,45 @@ async def repositoryList(path: str):
 
 # ELEMENT
 @app.post("/element/create")
-async def elementCreate(element: schemas.ElementBase, db = Depends(get_db)):
-    item = models.Element(**element.model_dump())
+async def elementCreate(
+    element: str = Form(...),
+    datasheet: UploadFile | None = File(default=None), 
+    db = Depends(get_db)):
+    if datasheet is not None and datasheet.content_type != "application/pdf":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Datasheet must be a PDF file."
+        )
+    print('2')
+    item = models.Element(**schemas.ElementBase.model_validate_json(element).model_dump())
+    item.datasheet = False
     db.add(item)
+    pdf_path = None
     try:
+        await db.flush()
+
+        if datasheet is not None:
+            pdf_path = os.path.join(UPLOAD_DIR, f"{item.uuid}.pdf")
+            with open(pdf_path, "wb") as pdf_file:
+                while chunk := await datasheet.read(1024 * 1024):
+                    pdf_file.write(chunk)
+            item.datasheet = True
+
         await db.commit()
         await db.refresh(item)
         return item
     except IntegrityError:
+        print('5')
         await db.rollback()
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+    except Exception:
+        await db.rollback()
+        if pdf_path is not None:
+            try:
+                os.remove(pdf_path)
+            except FileNotFoundError:
+                pass
+        raise
 
 @app.get('/element/last-added')
 async def elementLastAdded(db = Depends(get_db)):
@@ -127,6 +163,10 @@ async def elementDelete(id: uuid.UUID, db = Depends(get_db)):
             status_code=status.HTTP_404_NOT_FOUND,
             detail="UUID doesn't exist!"
         )
+
+    pdf_path = os.path.join(UPLOAD_DIR, f"{id}.pdf")
+    if os.path.isfile(pdf_path):
+        os.remove(pdf_path)
     
     await db.delete(item)
     await db.commit()
@@ -501,7 +541,6 @@ async def repositoryStatistics():
     data['schLibFiles'] = 3
     data['pcbLibFiles'] = 4
     return data
-
 
 
 

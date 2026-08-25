@@ -24,6 +24,10 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:80',
         changeOrigin: true
+      },
+        '/files': {
+        target: 'http://localhost:80',
+        changeOrigin: true
       }
     }
   }

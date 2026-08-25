@@ -27,6 +27,7 @@ services:
         condition: service_healthy
     volumes:
       - ${SVN_DATA_PATH}/${SVN_REPO_NAME}:/local_svn
+      - ${DATASHEET_UPLOAD_PATH}:/uploads
 
   database:
     image: postgres:16-alpine

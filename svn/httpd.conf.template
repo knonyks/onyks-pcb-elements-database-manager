@@ -33,7 +33,7 @@ KeepAliveTimeout 5
 LimitXMLRequestBody 0
 
 DBDriver pgsql
-DBDParams "host=postgres dbname=$POSTGRES_DB user=$POSTGRES_USER password=$POSTGRES_PASSWORD"
+DBDParams "host=onyks-bloodstone-database dbname=$POSTGRES_DB user=$POSTGRES_USER password=$POSTGRES_PASSWORD"
 DBDMin 4
 DBDKeep 8
 DBDMax 20

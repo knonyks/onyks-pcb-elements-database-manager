@@ -7,7 +7,7 @@ echo "--- START ENTRYPOINT ---"
 echo "Czekam na pełną gotowość bazy danych i tabel..."
 export PGPASSWORD=$POSTGRES_PASSWORD
 
-until psql -h postgres -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT 1 FROM private.users LIMIT 1;" > /dev/null 2>&1; do
+until psql -h database -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT 1 FROM private.users LIMIT 1;" > /dev/null 2>&1; do
   echo "Baza danych lub tabela private.users jeszcze nie istnieje... czekam 2s..."
   sleep 2
 done
@@ -40,7 +40,7 @@ sync_authz_file() {
         
         # Download login and rank from PostgreSQL and append to the temp authz file
         # If the query fails (e.g. database is down), we skip this iteration and try again in 10 seconds
-        if psql "host=postgres dbname=$POSTGRES_DB user=$POSTGRES_USER" -Atc \
+        if psql "host=database dbname=$POSTGRES_DB user=$POSTGRES_USER" -Atc \
            "SELECT login, rank FROM private.users;" >> /tmp/svn-authz.tmp 2>/dev/null; then
            
            # Process the downloaded data to convert ranks to permissions
@@ -48,7 +48,7 @@ sync_authz_file() {
            # We use a case statement to map ranks to permissions (admin and editor get rw, user gets r)
            
            # Clean up the tmp file to only have login and rank
-           psql "host=postgres dbname=$POSTGRES_DB user=$POSTGRES_USER" -Atc \
+           psql "host=database dbname=$POSTGRES_DB user=$POSTGRES_USER" -Atc \
            "SELECT login, rank FROM private.users;" | while IFS='|' read login rank; do
                 case $rank in
                     server) echo "$login = rw" ;;

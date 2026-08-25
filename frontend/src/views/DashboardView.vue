@@ -60,29 +60,50 @@
 
         <onyks-header level="3">Overview</onyks-header>
 
-        <onyks-grid cols="8" gap="l">
-            <onyks-card title="Last added element" span="4" size="l">
-                <onyks-container gap="m" padding="">
-                    <onyks-container type="group" align="center" padding="" cols="2">
-                        <onyks-header level="6">Part name:</onyks-header>
-                        <onyks-text>{{ lastAddedElement.partName}}</onyks-text>
-                    </onyks-container>
-                    <onyks-container type="group" align="center" padding="" cols="2">
-                        <onyks-header level="6">Manufacturer:</onyks-header>
-                        <onyks-text>{{ lastAddedElement.manufacturer || 'Undefined' }}</onyks-text>
-                    </onyks-container>
-                    <onyks-container type="group" align="center" padding="" cols="2">
-                        <onyks-header level="6">Table:</onyks-header>
-                        <onyks-text>{{ lastAddedElement.table || 'Undefined'}}</onyks-text>
-                    </onyks-container>
-                    <onyks-container type="group" align="center" padding="" cols="2">
-                        <onyks-header level="6">Created at:</onyks-header>
-                        <onyks-text>{{ lastAddedElement.createdAt || 'Undefined'}}</onyks-text>
-                    </onyks-container>
-                </onyks-container>
-            </onyks-card>
+        <onyks-container gap="l" type="grid" cols="2">
 
-            <onyks-card title="Repository statistics" span="4" size="l">
+                <onyks-card title="Last added element" size="l">
+                    <onyks-container gap="m" padding="">
+                        <onyks-container type="group" align="center" padding="" cols="2">
+                            <onyks-header level="6">Part name:</onyks-header>
+                            <onyks-text>{{ lastAddedElement.partName}}</onyks-text>
+                        </onyks-container>
+                        <onyks-container type="group" align="center" padding="" cols="2">
+                            <onyks-header level="6">Manufacturer:</onyks-header>
+                            <onyks-text>{{ lastAddedElement.manufacturer || 'Undefined' }}</onyks-text>
+                        </onyks-container>
+                        <onyks-container type="group" align="center" padding="" cols="2">
+                            <onyks-header level="6">Table:</onyks-header>
+                            <onyks-text>{{ lastAddedElement.table || 'Undefined'}}</onyks-text>
+                        </onyks-container>
+                        <onyks-container type="group" align="center" padding="" cols="2">
+                            <onyks-header level="6">Created at:</onyks-header>
+                            <onyks-text>{{ lastAddedElement.createdAt || 'Undefined'}}</onyks-text>
+                        </onyks-container>
+                    </onyks-container>
+                </onyks-card>
+
+
+            <onyks-grid cols="4">
+                <onyks-card title="Elements" span="2" size="l">
+                    <onyks-header level="3">{{ elements }}</onyks-header>
+                </onyks-card>
+
+                <onyks-card title="Tables" span="2" size="l">
+                    <onyks-header level="3">{{ tables }}</onyks-header>
+                </onyks-card>
+
+                <onyks-card title="Manufacturers" span="2" size="l">
+                    <onyks-header level="3">{{ manufacturers }}</onyks-header>
+                </onyks-card>
+
+                <onyks-card title="Suppliers" span="2" size="l">
+                    <onyks-header level="3">{{ suppliers }}</onyks-header>
+                </onyks-card>
+            </onyks-grid>
+        </onyks-container>
+
+            <!-- <onyks-card title="Repository statistics" span="4" size="l">
                 <onyks-container gap="m" padding="">
                     <onyks-container type="group" align="center" padding="" cols="2">
                         <onyks-header level="6">Symbols:</onyks-header>
@@ -101,25 +122,7 @@
                         <onyks-text>{{repositoryStatistics.pcbLibFiles}}</onyks-text>
                     </onyks-container>
                 </onyks-container>
-            </onyks-card>
-
-            <onyks-card title="Elements" span="2" size="l">
-                <onyks-header level="3">{{ elements }}</onyks-header>
-            </onyks-card>
-
-            <onyks-card title="Tables" span="2" size="l">
-                <onyks-header level="3">{{ tables }}</onyks-header>
-            </onyks-card>
-
-            <onyks-card title="Manufacturers" span="2" size="l">
-                <onyks-header level="3">{{ manufacturers }}</onyks-header>
-            </onyks-card>
-
-            <onyks-card title="Suppliers" span="2" size="l">
-                <onyks-header level="3">{{ suppliers }}</onyks-header>
-            </onyks-card>
-            
-        </onyks-grid>
+            </onyks-card> -->
 
         <onyks-header level="3">Tables</onyks-header>
 

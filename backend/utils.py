@@ -97,13 +97,13 @@ async def dbCreateOrUpdateElementViews(db_connection):
         result_existing_views = await db_connection.execute(text("""
             SELECT table_name 
             FROM information_schema.views 
-            WHERE table_schema = 'private' AND table_name LIKE 'table_%'
+            WHERE table_schema = 'public' AND table_name LIKE 'table_%'
         """))
         existing_views = [row[0] for row in result_existing_views.fetchall()]
 
         views_to_drop = set(existing_views) - set(expected_views)
         for old_view in views_to_drop:
-            await db_connection.execute(text(f"DROP VIEW IF EXISTS private.{old_view} CASCADE"))
+            await db_connection.execute(text(f"DROP VIEW IF EXISTS public.{old_view} CASCADE"))
 
         result_suppliers = await db_connection.execute(text("SELECT id, name FROM private.suppliers"))
         suppliers = result_suppliers.fetchall()
@@ -120,12 +120,12 @@ async def dbCreateOrUpdateElementViews(db_connection):
         
         for table_name, view_name in table_to_view_map.items():
             
-            await db_connection.execute(text(f"DROP VIEW IF EXISTS private.{view_name} CASCADE"))
+            await db_connection.execute(text(f"DROP VIEW IF EXISTS public.{view_name} CASCADE"))
             
             safe_table_name_query = table_name.replace("'", "''")
             
             create_view_query = text(f"""
-            CREATE VIEW private.{view_name} AS
+            CREATE VIEW public.{view_name} AS
             SELECT 
                 uuid,
                 part_name,

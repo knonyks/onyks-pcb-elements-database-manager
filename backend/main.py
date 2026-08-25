@@ -29,6 +29,8 @@ async def get_db():
     async with AsyncSessionLocal() as session:
         yield session
 
+from sqlalchemy import text
+
 @app.on_event("startup")
 async def startup_db():
     try:
@@ -37,7 +39,8 @@ async def startup_db():
             await conn.run_sync(models.Base.metadata.create_all)
             await utils.dbCreateOrUpdateElementViews(conn)
     except Exception as e:
-        print(f"❌❌❌: {e}")
+        print(f"❌❌❌ DB Startup Failed: {e}")
+        raise e
 
 # REPOSITORY
 @app.get('/repository/name')

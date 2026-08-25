@@ -1,11 +1,46 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, Enum, func
 from database import Base
 from datetime import datetime, timezone
 import uuid
+from enum import Enum as PyEnum
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy.dialects.postgresql import UUID, JSONB
+from sqlalchemy import DDL, event
+
+event.listen(
+    Base.metadata,
+    "before_create",
+    DDL("CREATE EXTENSION IF NOT EXISTS pgcrypto"),
+)
+
+class UserRank(PyEnum):
+    viewer = "viewer"
+    admin = "admin"
+    editor = "editor"
+
+
+class User(Base):
+    __tablename__ = "users"
+    __table_args__ = {'schema': 'private'}
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    login = Column(String, unique=True, nullable=False)
+    password = Column(String, nullable=False)
+    email = Column(String, unique=True, nullable=False)
+    expirationTime = Column(
+        'expiration_time',
+        DateTime(timezone=True),
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc),
+        server_default=func.now(),
+    )
+    rank = Column(
+        Enum(UserRank, name='user_rank', native_enum=True),
+        nullable=False,
+        default=UserRank.viewer,
+    )
 
 class Manufacturer(Base):
     __tablename__ = "manufacturers"

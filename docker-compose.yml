@@ -29,6 +29,7 @@ services:
       - ${SVN_DATA_PATH}/${SVN_REPO_NAME}:/local_svn
       - ${DATASHEET_UPLOAD_PATH}:/uploads
 
+
   database:
     image: postgres:16-alpine
     container_name: postgres
@@ -38,8 +39,6 @@ services:
       - "${POSTGRES_PORT}:5432"
     volumes:
       - ${POSTGRES_DATA_PATH}:/var/lib/postgresql/data
-      # - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
-      - ./database/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s

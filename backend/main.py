@@ -46,7 +46,7 @@ async def repositoryName():
 
 @app.get("/repository/list")
 async def repositoryList(path: str):
-    enterData = ["file:///local_svn", path, os.getenv('SVN_SERVER_USER', "!E!"), os.getenv('SVN_SERVER_PASSWORD', "!E!")]
+    enterData = ["file:///local_svn", path]
     if path.lower().endswith(('.schlib', '.pcblib')):
         try:
             return utils.repositoryGetPCBFileContent(*enterData)

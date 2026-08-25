@@ -9,19 +9,13 @@ import io
 import os
 from sqlalchemy import text
 
-def repositoryGetFolderList(url, path, user, password):
+def repositoryGetFolderList(url, path):
     if path:
         full_url = f"{url.rstrip('/')}/{path.strip('/')}"
     else:
         full_url = url
     command = ["svn", "list", "--xml", "--non-interactive", full_url]
-    if user and password:
-        command.extend([
-            "--username", user, 
-            "--password", password, 
-            "--trust-server-cert",
-            "--no-auth-cache"
-        ])
+
     try:
         result = subprocess.run(command, capture_output=True, text=True, check=True)
         root = ET.fromstring(result.stdout)
@@ -43,19 +37,13 @@ def repositoryGetFolderList(url, path, user, password):
     except Exception as e:
         return e
 
-def repositoryGetPCBFileContent(url, path, user, password):
+def repositoryGetPCBFileContent(url, path):
     if path:
         full_url = f"{url.rstrip('/')}/{path.strip('/')}"
     else:
         full_url = url
     command = ["svn", "cat", full_url]
-    if user and password:
-        command.extend([
-            "--username", user, 
-            "--password", password, 
-            "--trust-server-cert",
-            "--no-auth-cache"
-        ])
+
     try:
         result = subprocess.run(command, capture_output=True, check=True)
     except Exception as e:

@@ -6,16 +6,80 @@ A centralized database system for Altium PCB components, integrated with an SVN 
 
 The system acts as a bridge between the Altium Designer environment and a Postgres database, managed via a web application.
 
+## Installation Guide
+
+Follow the steps below to set up the environment, configure the database, and start the services.
+
+#### 1. Download the repository
+
+```bash
+# download the last version of the repository; recommended way
+git clone --branch v0.2.0-beta --depth 1 https://github.com/knonyks/onyks-bloodstone.git
+
+# download a recent version of the repository
+git clone https://github.com/knonyks/onyks-bloodstone.git
+
+# download the repository from dev branch
+git clone --branch dev --single-branch https://github.com/knonyks/onyks-bloodstone.git
+```
+
+#### 2. Create the configuration file
+```bash
+# go to the repository folder
+cd onyks-bloodstone
+
+# make .env file
+# linux
+touch .env
+
+# windows
+notepad .env
+```
+
+Fill it with your configuration and data. For example:
+```dotenv
+POSTGRES_USER=appuser
+POSTGRES_PASSWORD=strongpassword
+POSTGRES_DB=appdb
+# all paths in this file can be absolute
+POSTGRES_DATA_PATH=./path/to/postgres
+POSTGRES_PORT=8112
+
+SVN_REPO_NAME=elements
+SVN_DATA_PATH=./path/to/svn
+SVN_PORT=8111
+
+DATASHEET_UPLOAD_PATH=./path/to/datasheets
+```
+
+#### 3. Run the containers
+```bash
+docker compose --env-file .env up
+```
+
+#### 4. Add a user to the database
+
+Finally, create a database user who can access the repository. First, identify the database container:
+
+```bash
+docker ps
+```
+
+Find the database container in the `NAMES` column. It is typically named `onyks-bloodstone-database`. Then open a PostgreSQL shell in the container:
+
+```bash
+docker exec -it onyks-bloodstone-database psql -U appuser -d appdb
+
+INSERT INTO private.users (login, password, email, rank)
+VALUES ('admin', crypt('admin', gen_salt('bf')), 'admin@test.pl', 'editor');
+
+\q
+```
 
 
 
 
-
-
-
-
-
----
+<!-- ---
 
 ### 🚀 Current Status
 
@@ -48,9 +112,15 @@ The system acts as a bridge between the Altium Designer environment and a Postgr
 *   **Backend:** Python (Flask → moving to FastAPI)
 *   **Frontend:** Vue.js (planned)
 
-### Installation Guide
 
-Follow the steps below to set up the environment, configure the database, and start the services.
+
+```bash
+# list of containers
+docker ps
+
+# 
+docker exec -it postgres psql -U appuser -d appdb
+```
 
 #### 1. Generate SSL Certificates
 First, create a directory for the certificates and generate a self-signed SSL certificate (or place your own valid certificates in the directory).
@@ -131,7 +201,7 @@ svn commit -m "Initial commit" --username admin --password admin --trust-server-
 svn update --username admin --password admin --trust-server-cert --non-interactive
 ```
 
-Altium is trademark of Altium Limited. All other trademarks are property of their respective owners.
+Altium is trademark of Altium Limited. All other trademarks are property of their respective owners. -->
 
 
 <!-- docker compose --env-file .env up database proxy backend

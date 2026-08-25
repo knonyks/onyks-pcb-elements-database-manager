@@ -2,6 +2,7 @@ services:
 
   proxy:
     image: nginx:alpine
+    container_name: onyks-bloodstone-proxy
     ports:
       - "80:80"
     volumes:
@@ -32,7 +33,7 @@ services:
 
   database:
     image: postgres:16-alpine
-    container_name: postgres
+    container_name: onyks-bloodstone-database
     restart: unless-stopped
     env_file: ${CONFIG_FILE:-.env}
     ports:

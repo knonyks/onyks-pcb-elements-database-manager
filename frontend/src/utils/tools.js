@@ -4,7 +4,7 @@ import { DateTime } from "luxon";
 
 export const dateUTCtoDestination = (dateStr, zone = 'Europe/Warsaw', locale = 'en') =>
 {
-    return DateTime.fromISO(dateStr).setZone(zone).setLocale(locale).toFormat("hh:mm:ss, MMMM dd, yyyy").toString()
+    return DateTime.fromISO(dateStr).setZone(zone).setLocale(locale).toLocaleString({...DateTime.DATETIME_MED_WITH_SECONDS, hour12: false})
 }
 
 export class LabelsDoc

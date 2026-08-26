@@ -9,6 +9,8 @@
 
     const mode = defineModel('mode', {default: 2})
     const file = defineModel('file', {default: null})
+
+    console.log(props.data)
 </script>
 
 <template>

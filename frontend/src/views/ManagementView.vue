@@ -142,6 +142,7 @@
         },
         action: async (type) =>
         {
+            let data = null
             switch(type)
             {
                 case 'add':
@@ -157,9 +158,18 @@
                     router.push(`/element/duplicate/${elements.value.table.getSelectedRows()[0].uuid}`)
                     break;
                 case 'datasheet':
+                    data = elements.value.table.getSelectedRows()[0]
+                    if(data.datasheet)
+                    {
+                        element.openDatasheet(data.uuid)
+                    }
+                    else
+                    {
+                        
+                    }
                     break;
                 case 'labels':
-                    let data = elements.value.table.getSelectedRows()
+                    data = elements.value.table.getSelectedRows()
                     let total = data.length
                 
                     let doc = new LabelsDoc(total)
@@ -646,6 +656,7 @@
                 <onyks-alert type="warning">This operation cannot be undone.</onyks-alert>
             </template>
         </DeleteItemDialog>
+        
     </onyks-container>
 </template>
 

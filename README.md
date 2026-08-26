@@ -57,6 +57,9 @@ POSTGRES_DATA_PATH=./path/to/postgres
 # Host port for PostgreSQL
 POSTGRES_PORT=8112
 
+# Host port for the whole server - website, repository, etc.
+PROXY_PORT=8113
+
 # Repository name
 SVN_REPO_NAME=elements
 

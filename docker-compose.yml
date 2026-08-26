@@ -4,7 +4,7 @@ services:
     image: nginx:alpine
     container_name: onyks-bloodstone-proxy
     ports:
-      - "80:80"
+      - "${PROXY_PORT}:80"
     volumes:
         - ./proxy/default.conf.template:/etc/nginx/templates/default.conf.template:ro
     depends_on:

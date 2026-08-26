@@ -10,12 +10,14 @@
     import BasicButtonsPanel from '@/components/BasicButtonsPanel.vue';
     import DeleteItemDialog from '@/components/DeleteItemDialog.vue';
     import { LabelsDoc } from '@/utils/tools';
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
     const props = defineProps(['type'])
     const model = ref(new ElementModel())
     const dialogs = ref({create: null, addError: null, delete: null, editError: null, edit: null, duplicate: null, duplicateError: null})
     const router = useRouter()
     const route = useRoute()
+    const error = ref('')
     
     const file = ref(null)
 
@@ -64,11 +66,10 @@
                 }
                 else
                 {
-                    setTimeout(() => 
-                    {
-                        dialogs.value.create.open = false
-                        dialogs.value.addError.open = true
-                    }, 1000)
+                    error.value = data.response.data.detail
+                    await sleep(1000)
+                    dialogs.value.create.open = false
+                    dialogs.value.addError.open = true
                 }
                 break;
             case 'edit':
@@ -87,17 +88,20 @@
                 }
                 else
                 {
-                    setTimeout(() => 
-                    {
-                        dialogs.value.edit.open = false
-                        dialogs.value.editError.open = true
-                    }, 1000)
+                    error.value = data.response.data.detail
+                    await sleep(1000)
+                    dialogs.value.edit.open = false
+                    dialogs.value.editError.open = true
                 }
                 break;
             case 'duplicate':
                 dialogs.value.duplicate.open = true
                 const duplicateData = structuredClone(toRaw(model.value))
                 duplicateData.uuid = null
+                if(!model.value.datasheet && file.value == null)
+                {
+                    duplicateData.isDatasheetSupposedToChange = 1
+                }
                 data = await element.duplicate(model.value.uuid, duplicateData, file.value)
                 if(data.status == 200)
                 {
@@ -109,11 +113,12 @@
                 }
                 else
                 {
-                    setTimeout(() => 
-                    {
-                        dialogs.value.duplicate.open = false
-                        dialogs.value.duplicateError.open = true
-                    }, 1000)
+                    duplicateData.isDatasheetSupposedToChange = 2
+                    error.value = data.response.data.detail
+                    await sleep(1000)
+                    dialogs.value.duplicate.open = false
+                    dialogs.value.duplicateError.open = true
+
                 }
                 break;
         }
@@ -161,15 +166,15 @@
         </onyks-dialog>
 
         <onyks-dialog :title="`Error`" modal corner-close :ref="(el) => { if (el && dialogs) dialogs.addError = el }">
-            <onyks-text>Cannot create an element.</onyks-text>
+            <onyks-text>{{ error }}</onyks-text>
         </onyks-dialog>
 
         <onyks-dialog :title="`Error`" modal corner-close :ref="(el) => { if (el && dialogs) dialogs.editError = el }">
-            <onyks-text>Cannot edit an element.</onyks-text>
+            <onyks-text>{{ error }}</onyks-text>
         </onyks-dialog>
 
         <onyks-dialog :title="`Error`" modal corner-close :ref="(el) => { if (el && dialogs) dialogs.duplicateError = el }">
-            <onyks-text>Cannot duplicate an element.</onyks-text>
+            <onyks-text>{{ error }}</onyks-text>
         </onyks-dialog>
 
         <BasicButtonsPanel v-if="props.type == 'details'">

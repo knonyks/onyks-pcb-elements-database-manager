@@ -95,9 +95,16 @@ async def elementCreate(
         await db.refresh(item)
         return item
     except IntegrityError:
-        print('5')
         await db.rollback()
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+        if pdf_path is not None:
+            try:
+                os.remove(pdf_path)
+            except FileNotFoundError:
+                pass
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid input data."
+        )
     except Exception:
         await db.rollback()
         if pdf_path is not None:
@@ -252,12 +259,7 @@ async def elementDelete(id: uuid.UUID, db = Depends(get_db)):
     return id
 
 @app.put('/element/edit/{id}')
-async def elementEdit(
-    id: uuid.UUID,
-    element: str = Form(...),
-    datasheet: UploadFile | None = File(default=None),
-    db = Depends(get_db)
-):
+async def elementEdit(id: uuid.UUID, element: str = Form(...), datasheet: UploadFile | None = File(default=None), db = Depends(get_db)):
     query = select(models.Element).where(models.Element.uuid == id)
     result = await db.execute(query)
     item = result.scalar_one_or_none()
@@ -315,7 +317,7 @@ async def elementEdit(
         return item
     except IntegrityError:
         await db.rollback()
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid input data")
 
 @app.get('/element/{id}')
 async def elementID(id: uuid.UUID = Path(...), db = Depends(get_db)):
@@ -349,7 +351,7 @@ async def manufacturerCreate(manufacturer: schemas.ManufacturerBase, db = Depend
     if existing.scalar_one_or_none() is not None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Manufacturer with this name already exists!"
+            detail="Manufacturer with this name already exists."
         )
     
     item = models.Manufacturer(**manufacturer.model_dump())
@@ -360,7 +362,7 @@ async def manufacturerCreate(manufacturer: schemas.ManufacturerBase, db = Depend
         return item
     except IntegrityError:
         await db.rollback()
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid manufacturer data.")
 
 @app.delete('/manufacturer/delete/{id}')
 async def manufacturerDelete(id: int, db = Depends(get_db)):
@@ -415,7 +417,7 @@ async def manufacturerEdit(id: int, manufacturer: schemas.ManufacturerBase, db =
         return item
     except IntegrityError:
         await db.rollback()
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid data or a manufacturer with this name already exists.")
 
 @app.get('/manufacturer/numbers')
 async def manufacturerNumbers(db = Depends(get_db)):
@@ -478,7 +480,10 @@ async def supplierCreate(supplier: schemas.SupplierBase, db = Depends(get_db)):
         return item
     except IntegrityError:
         await db.rollback()
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid data or a supplier with this name already exists."
+        )
 
 @app.get('/supplier/{id}')
 async def supplierID(id: int, db = Depends(get_db)):
@@ -519,7 +524,7 @@ async def supplierEdit(id: int, supplier: schemas.SupplierBase, db = Depends(get
         return item
     except IntegrityError:
         await db.rollback()
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid data or a supplier with this name already exists.")
 
 # TABLE
 @app.get('/table/number')
@@ -566,7 +571,7 @@ async def tableEdit(id: int, table: schemas.TableBase, db = Depends(get_db)):
         return item
     except IntegrityError:
         await db.rollback()
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid data or a table with this name already exists.")
 
 @app.post('/table/create')
 async def tableCreate(table: schemas.TableBase, db = Depends(get_db)):
@@ -579,7 +584,7 @@ async def tableCreate(table: schemas.TableBase, db = Depends(get_db)):
         return item
     except IntegrityError:
         await db.rollback()
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid data or a table with this name already exists.")
 
 @app.delete('/table/delete/{id}')
 async def tableDelete(id: int, db = Depends(get_db)):
@@ -591,6 +596,16 @@ async def tableDelete(id: int, db = Depends(get_db)):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="ID doesn't exist!"
+        )
+
+    elements_query = select(func.count()).select_from(models.Element).where(
+        models.Element.table == item.name
+    )
+    elements_result = await db.execute(elements_query)
+    if elements_result.scalar() > 0:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="The table cannot be deleted while it contains elements."
         )
     
     await db.delete(item)
@@ -631,17 +646,6 @@ async def tableID(id: int, db = Depends(get_db)):
         "numberOfItems": elements_count
     }
 
-######################################################
-
-
-
-
-
-
-
-
-
-
 @app.get('/repository/statistics')
 async def repositoryStatistics():
     data = {}
@@ -651,10 +655,6 @@ async def repositoryStatistics():
     data['pcbLibFiles'] = 4
     return data
 
-
-
-
-
-
-
-
+@app.get('/server/identity')
+async def repositoryStatistics():
+    return 'ONYKS Bloodstone'

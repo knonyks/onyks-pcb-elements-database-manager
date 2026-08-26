@@ -22,6 +22,7 @@ class ElementBase(BaseModel):
     manufacturer: NotEmptyString = Field(max_length=256)
     suppliers: dict = Field(default_factory=dict)
     datasheet: bool = False
+    isDatasheetSupposedToChange: int = Field(0)
     libraryReference: NotEmptyString = Field(max_length=1024)
     libraryPath: NotEmptyString = Field(max_length=1024)
     footprintReferenceNo1: NotEmptyString = Field(max_length=1024)

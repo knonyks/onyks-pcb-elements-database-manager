@@ -108,6 +108,30 @@ export const element =
             return error
         }
     },
+    duplicate: async (id, element, datasheet = null) =>
+    {
+        try 
+        {
+            const formData = new FormData();
+
+            formData.append('element', JSON.stringify(element));
+
+            if (datasheet)
+            {
+                formData.append('datasheet', datasheet);
+            }
+
+            const response = await api.post(`/element/duplicate/${id}`, formData,
+            {
+                headers: {'Content-Type': 'multipart/form-data'} 
+            });
+            return response
+        } 
+        catch (error) 
+        {
+            return error
+        }
+    },
     get: async (id) =>
     {
         try 
@@ -137,11 +161,22 @@ export const element =
             return error
         }
     },
-    edit: async (id, element) =>
+    edit: async (id, element, datasheet = null) =>
     {
         try 
         {
-            const response = await api.put(`/element/edit/${id}`, element);
+            const formData = new FormData();
+            formData.append('element', JSON.stringify(element));
+
+            if (datasheet)
+            {
+                formData.append('datasheet', datasheet);
+            }
+
+            const response = await api.put(`/element/edit/${id}`, formData,
+            {
+                headers: {'Content-Type': 'multipart/form-data'}
+            });
             return response
         } 
         catch (error) 

@@ -16,7 +16,7 @@ export class ElementModel
         this.footprintReferenceNo3 = args?.footprintRef3 || '';
         this.footprintPathNo3 = args?.footprintPath3 || '';
         this.createdAt = args?.created_at || '';
-
+        this.isDatasheetSupposedToChange = args?.isDatasheetSupposedToChange || 2
         this.manufacturer = args?.manufacturer || '';
         this.suppliers = args?.suppliers || {};
         this.datasheet = args?.datasheet || false;

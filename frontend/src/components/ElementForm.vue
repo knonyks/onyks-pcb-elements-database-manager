@@ -9,12 +9,14 @@
     import RepositoryModelSelector from './RepositoryModelSelector.vue';
     import SuppliersSelector from './SuppliersSelector.vue';
     import DatasheetPicker from './DatasheetPicker.vue';
-    import { defineExpose } from 'vue';
-
+    import { element } from '@/utils/api.js';
+    import { useRoute } from 'vue-router';
+    const route = useRoute()
 
     const {width} = useWindowSize()
     const props = defineProps(['type'])
     const model = defineModel({ data: Object })
+    const file = defineModel('file')
     const selectors = ref({manufacturer: null, supplier: null, table: null})
     const dialogs = ref({manufacturer: {add: null, edit: null, delete: null}, 
     table: {add: null, edit: null, delete: null}, supplier: {add: null, edit: null, delete: null}, library: null, footprint1: null, footprint2: null, footprint3: null})
@@ -30,8 +32,6 @@
         }
     })
 
-    const datasheetFile = ref(null)
-    defineExpose({datasheetFile})
 </script>
 
 <template>
@@ -290,9 +290,11 @@
             </DeleteItemDialog>
         </onyks-container>
 
-        <onyks-container gap="l" padding="">
-            <onyks-header level="5">Datasheet</onyks-header>
-            <DatasheetPicker :datasheet="true" :type="props.type" @change="(e) => {datasheetFile = e}"></DatasheetPicker>
+        <onyks-container gap="l" padding="" >
+            <onyks-header level="5" >Datasheet</onyks-header>
+            <onyks-text v-if="props.type == 'details' && !model.datasheet">Datasheet is not available.</onyks-text>
+            <onyks-button v-else-if="props.type == 'details' && model.datasheet" @click="model.datasheet? element.openDatasheet(route.params.uuid): null">Open</onyks-button>
+            <DatasheetPicker v-if="props.type == 'add' || props.type == 'duplicate' || props.type == 'edit'" :datasheet="model.datasheet" :type="props.type" v-model:file="file" v-model:mode="model.isDatasheetSupposedToChange"></DatasheetPicker>
         </onyks-container>
         
     </onyks-container>

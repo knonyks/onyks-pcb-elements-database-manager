@@ -16,7 +16,8 @@
     const dialogs = ref({create: null, addError: null, delete: null, editError: null, edit: null, duplicate: null, duplicateError: null})
     const router = useRouter()
     const route = useRoute()
-    const form = ref(null)
+    
+    const file = ref(null)
 
     const fillData = () =>
     {
@@ -52,7 +53,7 @@
         {
             case 'create':
                 dialogs.value.create.open = true
-                data = await element.create(model.value, form.value.datasheetFile)
+                data = await element.create(model.value, file.value)
                 if(data.status == 200)
                 {
                     setTimeout(() => 
@@ -71,9 +72,11 @@
                 }
                 break;
             case 'edit':
+                // console.log(file.value)
+                // console.log(model.value)
                 dialogs.value.edit.open = true
                 const updateData = structuredClone(toRaw(model.value))
-                data = await element.edit(model.value.uuid, updateData)
+                data = await element.edit(model.value.uuid, updateData, file.value)
                 if(data.status == 200)
                 {
                     setTimeout(() => 
@@ -95,7 +98,7 @@
                 dialogs.value.duplicate.open = true
                 const duplicateData = structuredClone(toRaw(model.value))
                 duplicateData.uuid = null
-                data = await element.create(duplicateData)
+                data = await element.duplicate(model.value.uuid, duplicateData, file.value)
                 if(data.status == 200)
                 {
                     setTimeout(() => 
@@ -143,7 +146,7 @@
             <onyks-button background="red" @click="router.back()">Return</onyks-button>
         </onyks-container>
 
-        <ElementForm v-model="model" :type="props.type" ref="form"></ElementForm>
+        <ElementForm v-model="model" :type="props.type" v-model:file="file"></ElementForm>
        
         <onyks-dialog modal no-title :ref="(el) => { dialogs.create = el }">
             <onyks-text>Creating the element...</onyks-text>
@@ -173,8 +176,8 @@
             <onyks-button background="blue" @click="() => {router.push(`/element/edit/${route.params.uuid}`)}">Edit</onyks-button>
             <onyks-button background="yellow" @click="() => {router.push(`/element/duplicate/${route.params.uuid}`)}">Duplicate</onyks-button>
             <onyks-button background="red" @click="() => {dialogs.delete.open([model])}">Delete</onyks-button>
-            <onyks-button background="green" @click="element.openDatasheet(route.params.uuid)">Datasheet</onyks-button>
-            <onyks-button background="blue" @click="label">Label</onyks-button>
+            <onyks-button background="green" @click="model.datasheet? element.openDatasheet(route.params.uuid): null" :disabled="!model.datasheet">Datasheet</onyks-button>
+            <onyks-button background="blue" @click="label">Label</onyks-button> 
         </BasicButtonsPanel>
 
         <onyks-container align="end" padding="" gap="l" v-else-if="props.type == 'edit'">

@@ -7,6 +7,7 @@ import crud
 from database import engine, AsyncSessionLocal
 from typing import List
 import os
+import shutil
 import database
 import math
 from sqlalchemy import text
@@ -72,8 +73,11 @@ async def elementCreate(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Datasheet must be a PDF file."
         )
-    print('2')
-    item = models.Element(**schemas.ElementBase.model_validate_json(element).model_dump())
+
+    item_data = schemas.ElementBase.model_validate_json(element).model_dump(
+        exclude={"isDatasheetSupposedToChange"}
+    )
+    item = models.Element(**item_data)
     item.datasheet = False
     db.add(item)
     pdf_path = None
@@ -101,6 +105,77 @@ async def elementCreate(
                 os.remove(pdf_path)
             except FileNotFoundError:
                 pass
+        raise
+
+@app.post("/element/duplicate/{id}")
+async def elementDuplicate(
+    id: uuid.UUID,
+    element: str = Form(...),
+    datasheet: UploadFile | None = File(default=None),
+    db = Depends(get_db)
+):
+    element_data = schemas.ElementBase.model_validate_json(element)
+    change_mode = element_data.isDatasheetSupposedToChange
+
+    if change_mode not in (0, 1, 2):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="isDatasheetSupposedToChange must be 0, 1 or 2."
+        )
+    if change_mode == 2 and datasheet is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="A new datasheet is required."
+        )
+    if datasheet is not None and datasheet.content_type != "application/pdf":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Datasheet must be a PDF file."
+        )
+
+    result = await db.execute(
+        select(models.Element).where(models.Element.uuid == id)
+    )
+    source = result.scalar_one_or_none()
+    if source is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="UUID doesn't exist!")
+
+    data = element_data.model_dump()
+    data.pop("isDatasheetSupposedToChange", None)
+    data["uuid"] = uuid.uuid4()
+    data["datasheet"] = False
+    item = models.Element(**data)
+    db.add(item)
+
+    new_pdf_path = os.path.join(UPLOAD_DIR, f"{item.uuid}.pdf")
+    old_pdf_path = os.path.join(UPLOAD_DIR, f"{source.uuid}.pdf")
+    try:
+        await db.flush()
+        if change_mode == 0:
+            if not source.datasheet or not os.path.isfile(old_pdf_path):
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                    detail="The source element has no datasheet.")
+            shutil.copyfile(old_pdf_path, new_pdf_path)
+            item.datasheet = True
+        elif change_mode == 2:
+            with open(new_pdf_path, "wb") as pdf_file:
+                while chunk := await datasheet.read(1024 * 1024):
+                    pdf_file.write(chunk)
+            item.datasheet = True
+
+        await db.commit()
+        await db.refresh(item)
+        return item
+    except IntegrityError:
+        await db.rollback()
+        if os.path.isfile(new_pdf_path):
+            os.remove(new_pdf_path)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+    except Exception:
+        await db.rollback()
+        if os.path.isfile(new_pdf_path):
+            os.remove(new_pdf_path)
         raise
 
 @app.get('/element/last-added')
@@ -177,7 +252,12 @@ async def elementDelete(id: uuid.UUID, db = Depends(get_db)):
     return id
 
 @app.put('/element/edit/{id}')
-async def elementEdit(id: uuid.UUID, element: schemas.ElementBase, db = Depends(get_db)):
+async def elementEdit(
+    id: uuid.UUID,
+    element: str = Form(...),
+    datasheet: UploadFile | None = File(default=None),
+    db = Depends(get_db)
+):
     query = select(models.Element).where(models.Element.uuid == id)
     result = await db.execute(query)
     item = result.scalar_one_or_none()
@@ -188,12 +268,45 @@ async def elementEdit(id: uuid.UUID, element: schemas.ElementBase, db = Depends(
             detail="UUID doesn't exist!"
         )
     
-    update_data = element.model_dump(exclude_unset=True)
-    print(update_data)
+    update_data = schemas.ElementBase.model_validate_json(element).model_dump(exclude_unset=True)
+    datasheet_change = update_data.pop('isDatasheetSupposedToChange', 0)
+    if datasheet_change not in (0, 1, 2):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="isDatasheetSupposedToChange must be 0, 1, or 2."
+        )
+    if datasheet_change == 2:
+        if datasheet is None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Datasheet is required when replacing the datasheet."
+            )
+        if datasheet.content_type != "application/pdf":
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Datasheet must be a PDF file."
+            )
+
     update_data['uuid'] = id
     update_data['createdAt'] = item.createdAt
+
+    pdf_path = os.path.join(UPLOAD_DIR, f"{id}.pdf")
     for field, value in update_data.items():
         setattr(item, field, value)
+
+    if datasheet_change == 2:
+        try:
+            with open(pdf_path, "wb") as pdf_file:
+                while chunk := await datasheet.read(1024 * 1024):
+                    pdf_file.write(chunk)
+            item.datasheet = True
+        except Exception:
+            await db.rollback()
+            raise
+    elif datasheet_change == 1:
+        if os.path.isfile(pdf_path):
+            os.remove(pdf_path)
+        item.datasheet = False
     
     try:
         db.add(item)
@@ -520,13 +633,6 @@ async def tableID(id: int, db = Depends(get_db)):
 
 ######################################################
 
-
-@app.post("/update-views")
-async def updateViews(db = Depends(get_db)):
-    
-    result = await utils.dbCreateOrUpdateElementViews(db)
-    
-    return result
 
 
 

@@ -57,12 +57,39 @@
         table.value.refresh()
     }
 
+    const handleCheckbox = (e) =>
+    {
+        if(e.detail.type == 'row')
+        {
+            if(e.detail.checked)
+            {
+                selected.value += 1
+            }
+            else
+            {
+                selected.value -= 1
+            }
+        }
+        else if(e.detail.type == 'all')
+        {
+            if(e.detail.checked)
+            {
+                selected.value = data.value.length
+            }
+            else
+            {
+                selected.value = 0
+            }
+        }
+        emit('checkbox-click', selected.value);
+    }
+
     defineExpose({init, getSelectedRows, refresh})
 </script>
 
 <template>
     <onyks-container gap="l" align="center" padding="">
-        <onyks-table ref="table" .columns="columns" .data="data" @checkbox-click="(e) => {emit('checkbox-click', e); selected = table.getSelectedRows().length}"></onyks-table>
+        <onyks-table ref="table" .columns="columns" .data="data" @checkbox-click="handleCheckbox"></onyks-table>
         <onyks-container type="group" align="center" justify="center" padding="" gap="l">
             <onyks-pagination-nav :max-index="Math.ceil(total / limit)" index="1" max-view="3" size="m" @page-change="pageChange"></onyks-pagination-nav>
             <onyks-text>Selected:&emsp;{{selected}}&emsp;|&emsp;Total:&emsp;{{ total }}</onyks-text>

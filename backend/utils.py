@@ -124,6 +124,12 @@ async def dbCreateOrUpdateElementViews(db_connection):
             datasheet,
             library_ref,
             library_path,
+            footprint_reference_1,
+            footprint_path_1,
+            footprint_reference_2,
+            footprint_path_2,
+            footprint_reference_3,
+            footprint_path_3,
             created_at
             {supplier_columns}
         FROM private.elements
@@ -132,5 +138,7 @@ async def dbCreateOrUpdateElementViews(db_connection):
         """)
     
         await db_connection.execute(create_view_query)
+
+    await db_connection.commit()
     
     return {"status": "success", "message": "Views updated and old ones cleaned up successfully"}

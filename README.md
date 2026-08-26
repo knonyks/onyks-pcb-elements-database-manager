@@ -12,47 +12,66 @@ Follow the steps below to set up the environment, configure the database, and st
 
 #### 1. Download the repository
 
+Download the project using one of the following methods:
+
 ```bash
-# download the last version of the repository; recommended way
+# 1. Download the latest released version (recommended)
 git clone --branch v0.2.0-beta --depth 1 https://github.com/knonyks/onyks-bloodstone.git
 
-# download a recent version of the repository
+# 2. Download the latest version
 git clone https://github.com/knonyks/onyks-bloodstone.git
 
-# download the repository from dev branch
+# 3. Download the development branch
 git clone --branch dev --single-branch https://github.com/knonyks/onyks-bloodstone.git
 ```
 
 #### 2. Create the configuration file
+Go to the project directory and create a `.env` file:
+
 ```bash
 # go to the repository folder
 cd onyks-bloodstone
 
-# make .env file
-# linux
+# Linux
 touch .env
 
-# windows
+# Windows
 notepad .env
 ```
 
-Fill it with your configuration and data. For example:
+Add your configuration values. For example:
 ```dotenv
+# login to the database
 POSTGRES_USER=appuser
+
+# password to the database
 POSTGRES_PASSWORD=strongpassword
+
+# database's name
 POSTGRES_DB=appdb
-# all paths in this file can be absolute
+
+# All paths can be absolute
+# Destination folder for PostgreSQL data
 POSTGRES_DATA_PATH=./path/to/postgres
+
+# Host port for PostgreSQL
 POSTGRES_PORT=8112
 
+# Repository name
 SVN_REPO_NAME=elements
+
+# Destination path for repository files
 SVN_DATA_PATH=./path/to/svn
+
+# Host port for SVN
 SVN_PORT=8111
 
+# Destination path for datasheet PDFs
 DATASHEET_UPLOAD_PATH=./path/to/datasheets
 ```
 
 #### 3. Run the containers
+Start the containers with your configuration:
 ```bash
 docker compose --env-file .env up
 ```
@@ -69,15 +88,31 @@ Find the database container in the `NAMES` column. It is typically named `onyks-
 
 ```bash
 docker exec -it onyks-bloodstone-database psql -U appuser -d appdb
-
-INSERT INTO private.users (login, password, email, rank)
-VALUES ('admin', crypt('admin', gen_salt('bf')), 'admin@test.pl', 'editor');
-
-\q
 ```
 
 
+In the PostgreSQL shell, add a user with your preferred credentials:
+```bash
+INSERT INTO private.users (login, password, email, rank)
+VALUES ('admin', crypt('admin', gen_salt('bf')), 'admin@test.pl', 'editor');
+```
 
+When finished, exit PostgreSQL by typing:
+```bash
+\q
+```
+
+The application should now be ready to use.
+
+### Third-Party Software
+
+This project uses third-party software, including Docker, PostgreSQL, Apache Subversion (SVN), and other tools that may be added in the future.
+
+<!-- ### License -->
+
+
+
+Altium is trademark of Altium Limited. All other trademarks are property of their respective owners.
 
 <!-- ---
 

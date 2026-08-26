@@ -73,23 +73,23 @@ class Element(Base):
     __table_args__ = {'schema': 'private'}
 
     uuid = Column('uuid', UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    partName = Column("part_name", String(256), nullable=False)
+    partName = Column("part_name", String(1024), nullable=False)
 
     manufacturer = Column(
-        String(256), 
+        String(1024), 
         ForeignKey("private.manufacturers.name", ondelete="SET NULL", onupdate="CASCADE"), 
         nullable=True
     )
 
     table = Column('table',
-        String(256), 
+        String(1024), 
         ForeignKey("private.tables.name", ondelete="CASCADE", onupdate="CASCADE"), 
         nullable=False
     )
 
-    description = Column('description', String(256), nullable=True, default='')
-    value = Column('value', String(256), nullable=True, default='')
-    availability = Column('availability', String(256), nullable=True, default='')
+    description = Column('description', String(1024), nullable=True, default='')
+    value = Column('value', String(1024), nullable=True, default='')
+    availability = Column('availability', String(1024), nullable=True, default='')
     datasheet = Column(Boolean, nullable=False, default=False)
     
     libraryReference = Column('library_ref', String(1024), nullable=True, default='')

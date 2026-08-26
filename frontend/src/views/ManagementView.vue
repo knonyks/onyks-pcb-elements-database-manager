@@ -110,9 +110,9 @@
             labels: true,
             details: true
         },
-        disable: () =>
+        disable: (e) =>
         {
-            switch(elements.value.table.getSelectedRows().length)
+            switch(e)
             {
                 case 0:
                     elements.value.disabled.edit = true
@@ -467,6 +467,7 @@
 
         <onyks-header>Management</onyks-header>
         <WarningAlert></WarningAlert>
+        <onyks-button icon="F6AE" background="yellow" class="qrScan" size="xl"></onyks-button>
 
         <!-- ELEMENTS -->
         <onyks-header level="3">Elements</onyks-header>
@@ -645,6 +646,18 @@
                 <onyks-alert type="warning">This operation cannot be undone.</onyks-alert>
             </template>
         </DeleteItemDialog>
-
     </onyks-container>
 </template>
+
+<style>
+    .qrScan
+    {
+        width: fit-content;
+        position: fixed;
+        right: 0;
+        bottom: 0;
+        margin: var(--onyks-spacing-md);
+        z-index: 100;
+        display: none;
+    }
+</style>

@@ -109,7 +109,7 @@ The application should now be ready to use.
 
 ### Third-Party Software
 
-This project uses third-party software, including Docker, PostgreSQL, Apache Subversion (SVN), and other tools that may be added in the future.
+This project uses third-party software, including Docker, PostgreSQL, Apache Subversion (SVN), and other tools that will be added in the future.
 
 <!-- ### License -->
 

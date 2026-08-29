@@ -16,7 +16,7 @@ Download the project using one of the following methods:
 
 ```bash
 # 1. Download the latest released version (recommended)
-git clone --branch v0.2.0-beta --depth 1 https://github.com/knonyks/onyks-bloodstone.git
+git clone --branch v0.2.0-alpha --depth 1 https://github.com/knonyks/onyks-bloodstone.git
 
 # 2. Download the latest version
 git clone https://github.com/knonyks/onyks-bloodstone.git

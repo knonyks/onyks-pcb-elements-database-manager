@@ -4,51 +4,65 @@ import RepositoryView from '@/views/RepositoryView.vue';
 import { createRouter, createWebHistory } from 'vue-router'
 import ErrorView from '@/views/ErrorView.vue';
 import ElementView from '@/views/ElementView.vue';
+import LoginView from '@/views/LoginView.vue';
+import ManagerView from '@/views/ManagerView.vue';
 
 const routes = [
   {
     path: '/',
-    redirect: '/dashboard',
+    redirect: 'manager/dashboard'
   },
   {
-    path: '/dashboard',
-    component: DashboardView,
-    name: 'Dashboard',
-    meta: { title: 'Dashboard - ONYKS Bloodstone' }
+    path: '/login',
+    component: LoginView,
+    name: 'Login',
+    meta: { title: 'Login - ONYKS Bloodstone' }
   },
   {
-    path: '/management',
-    component: ManagementView,
-    meta: { title: 'Management - ONYKS Bloodstone' }
-  },
-  {
-    path: '/repository',
-    component: RepositoryView,
-    meta: { title: 'Repository - ONYKS Bloodstone' }
-  },
-  {
-    path: '/element/add',
-    component: ElementView,
-    meta: { title: 'Add an element - ONYKS Bloodstone' },
-    props: { type: 'add' }
-  },
-  {
-    path: '/element/details/:uuid',
-    component: ElementView,
-    meta: { title: 'Element details - ONYKS Bloodstone' },
-    props: { type: 'details' }
-  },
-  {
-    path: '/element/edit/:uuid',
-    component: ElementView,
-    meta: { title: 'Edit an element - ONYKS Bloodstone' },
-    props: { type: 'edit' }
-  },
-  {
-    path: '/element/duplicate/:uuid',
-    component: ElementView,
-    meta: { title: 'Duplicate an element - ONYKS Bloodstone' },
-    props: { type: 'duplicate' }
+    path: '/manager',
+    component: ManagerView,
+    children: 
+    [
+      {
+        path: 'dashboard',
+        component: DashboardView,
+        meta: { title: 'Dashboard - ONYKS Bloodstone' }
+      },
+      {
+        path: 'management',
+        component: ManagementView,
+        meta: { title: 'Management - ONYKS Bloodstone' }
+      },
+      {
+        path: 'repository',
+        component: RepositoryView,
+        meta: { title: 'Repository - ONYKS Bloodstone' }
+      },
+      {
+        path: 'element/add',
+        component: ElementView,
+        meta: { title: 'Add an element - ONYKS Bloodstone' },
+        props: { type: 'add' }
+      },
+      {
+        path: 'element/details/:uuid',
+        component: ElementView,
+        meta: { title: 'Element details - ONYKS Bloodstone' },
+        props: { type: 'details' }
+      },
+      {
+        path: 'element/edit/:uuid',
+        component: ElementView,
+        meta: { title: 'Edit an element - ONYKS Bloodstone' },
+        props: { type: 'edit' }
+      },
+      {
+        path: 'element/duplicate/:uuid',
+        component: ElementView,
+        meta: { title: 'Duplicate an element - ONYKS Bloodstone' },
+        props: { type: 'duplicate' }
+      },
+    ]
   },
   {
     path: '/error',
@@ -62,7 +76,6 @@ const router = createRouter(
   history: createWebHistory(),
   routes
 })
-
 
 router.beforeEach((to, from, next) => 
 {

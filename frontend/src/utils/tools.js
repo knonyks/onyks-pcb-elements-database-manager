@@ -1,11 +1,106 @@
 import { degrees, PDFDocument, rgb, StandardFonts, PageSizes } from 'pdf-lib';
 import QRCode from 'qrcode'
 import { DateTime } from "luxon";
+import { repository } from './api';
+
+export class Time
+{
+    static getLocalTime = (dateStr, country = 'pl', format = '24h', zone = null) =>
+    {
+        const countryCode = (country || 'pl').toLowerCase()
+        const timeFormat = (format || '24h').toLowerCase()
+
+        const localeMap = {
+            pl: 'pl',
+            en: 'en',
+            us: 'en-US',
+            gb: 'en-GB',
+            de: 'de',
+            fr: 'fr',
+            es: 'es',
+            it: 'it',
+        }
+
+        const zoneMap = {
+            pl: 'Europe/Warsaw',
+            en: 'Europe/Warsaw',
+            us: 'America/New_York',
+            gb: 'Europe/London',
+            de: 'Europe/Berlin',
+            fr: 'Europe/Paris',
+            es: 'Europe/Madrid',
+            it: 'Europe/Rome',
+        }
+
+        const resolvedZone = zone || zoneMap[countryCode] || 'Europe/Warsaw'
+        const locale = localeMap[countryCode] || 'en'
+        const hour12 = timeFormat === '12h'
+
+        return DateTime.fromISO(dateStr)
+            .setZone(resolvedZone)
+            .setLocale(locale)
+            .toLocaleString({ ...DateTime.DATETIME_MED_WITH_SECONDS, hour12 })
+    }
+}
+
+export class Repository
+{
+    constructor(filter = () => true)
+    {
+        this.path = []
+        this.filter = filter
+        this.content = []
+    }
+
+    async init()
+    {
+        this.path = [(await repository.info()).data.name]
+        let temp = Array.from((await repository.content('/')).data)
+        temp = temp.filter(e => this.filter(e))
+        this.content = temp
+    }
+    
+    async pathChange(e)
+    {
+        this.path = e.detail.path
+        let temp = Array.from((await repository.content(e.detail.path.slice(1).join('/'))).data)
+        temp = temp.filter(e => this.filter(e))
+        this.content = temp
+    }
+
+    async enterFolder(e)
+    {
+        this.path = [...this.path, e.detail.folder.name]
+        let temp = Array.from((await repository.content(this.path.slice(1).join('/'))).data)
+        temp = temp.filter(e => this.filter(e))
+        this.content = temp
+    }
+
+    async refresh()
+    {
+        let temp = Array.from((await repository.content(this.path.slice(1).join('/'))).data)
+        temp = temp.filter(e => this.filter(e))
+        this.content = temp
+    }
+}
+
+
+
 
 export const dateUTCtoDestination = (dateStr, zone = 'Europe/Warsaw', locale = 'en') =>
 {
     return DateTime.fromISO(dateStr).setZone(zone).setLocale(locale).toLocaleString({...DateTime.DATETIME_MED_WITH_SECONDS, hour12: false})
 }
+
+
+
+
+
+
+
+
+
+
 
 export class LabelsDoc
 {

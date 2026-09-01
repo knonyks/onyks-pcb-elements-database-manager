@@ -56,8 +56,10 @@
             <onyks-loading-bar max="100" :current-state="state" :color="color" size="xl" striped animated></onyks-loading-bar>
         </onyks-container>
 
-        <onyks-alert v-else-if="error" type="error">{{ error }}</onyks-alert>
-            
+        <onyks-container v-else-if="error" align="center" justify="center" padding="l" class="error">
+            <onyks-alert  type="error">{{ error }}</onyks-alert>
+        </onyks-container>
+        
         <onyks-container v-else padding="m" gap="l">
             <slot></slot>
         </onyks-container>
@@ -78,6 +80,20 @@
     onyks-loading-bar
     {
         max-width: 500px;
+    }
+
+    .error
+    {
+        width: 100%;
+        height: fit-content;
+        box-sizing: border-box;
+        z-index: 100;
+        position: static;
+    }
+
+    .error > onyks-alert
+    {
+        width: 100%;
     }
 
     .fade-enter-active, .fade-leave-active 

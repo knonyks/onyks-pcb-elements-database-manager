@@ -3,7 +3,7 @@ import QRCode from 'qrcode'
 import { DateTime } from "luxon";
 import { repository } from './api';
 
-export class Time
+export class MyTime
 {
     static getLocalTime = (dateStr, country = 'pl', format = '24h', zone = null) =>
     {
@@ -43,7 +43,7 @@ export class Time
     }
 }
 
-export class Repository
+export class MyRepository
 {
     constructor(filter = () => true)
     {
@@ -84,6 +84,20 @@ export class Repository
     }
 }
 
+export class MyError
+{
+    static process(error)
+    {
+        if (error.response && error.response.data && error.response.data.message) 
+        {
+            return `Error: ${error.response.data.message}`
+        } 
+        else 
+        {
+            return `Error: ${error.message || 'Unknown error'}`
+        }
+    }
+}
 
 
 

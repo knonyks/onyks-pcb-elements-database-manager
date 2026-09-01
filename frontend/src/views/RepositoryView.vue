@@ -3,23 +3,26 @@
     import { onMounted, ref } from 'vue';
     import DataLoader from '@/components/DataLoader.vue';
     import ManagerPage from '@/components/ManagerPage.vue';
-    import { Repository } from '@/utils/tools';
+    import { MyRepository } from '@/utils/tools';
+    import { MyError } from '@/utils/tools';
     
     const isLoading = ref(true)
-    const error = ref(null)
-    const repo = ref(new Repository((e) => e.type === 'dir' || e.type === 'schlib' || e.type === 'pcblib' || e.type === 'footprint' || e.type === 'symbol'))
+    const error = ref('')
+    const repo = ref(new MyRepository((e) => e.type === 'dir' || e.type === 'schlib' || e.type === 'pcblib' || e.type === 'footprint' || e.type === 'symbol'))
 
     onMounted(async () =>
     {
         try 
         {
             await repo.value.init()
+            isLoading.value = false
         } 
         catch (err) 
         {
-            error.value = err.message
+            console.log('xxx')
+            error.value = MyError.process(err)
+            isLoading.value = false
         }
-        isLoading.value = false
     })
 </script>
 

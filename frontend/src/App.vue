@@ -20,7 +20,7 @@
     {
         position: sticky;
         top: 0;
-        z-index: 10;
+        z-index: 101;
         width: 100%;
         flex-shrink: 0;
     }

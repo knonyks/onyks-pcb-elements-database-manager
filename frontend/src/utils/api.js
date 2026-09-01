@@ -22,7 +22,7 @@ export const repository =
         } 
         catch (error) 
         {
-            return error
+            throw error
         }
     },
     content: async (path = '') =>
@@ -40,7 +40,7 @@ export const repository =
         } 
         catch (error) 
         {
-            return error
+            throw error
         }
     }
 }
@@ -56,8 +56,7 @@ export const elements =
         } 
         catch (error)
         {
-            console.dir(error)
-            return error
+            throw error
         }
     },
     count: async () =>
@@ -69,7 +68,7 @@ export const elements =
         } 
         catch (error) 
         {
-            return error
+            throw error
         }
     },
     // create: async (element, datasheet = null) =>
@@ -201,7 +200,7 @@ export const tables =
         } 
         catch (error) 
         {
-            return error
+            throw error
         }
     },
     counts: async () =>
@@ -213,7 +212,7 @@ export const tables =
         } 
         catch (error) 
         {
-            return error
+            throw error
         }
     },
     // create: async (table) =>
@@ -294,7 +293,7 @@ export const manufacturers =
         } 
         catch (error) 
         {
-            return error
+            throw error
         }
     },
     counts: async () =>
@@ -306,7 +305,7 @@ export const manufacturers =
         } 
         catch (error) 
         {
-            return error
+            throw error
         }
     },
     // create: async (element) =>
@@ -387,7 +386,7 @@ export const suppliers =
         } 
         catch (error) 
         {
-            return error
+            throw error
         }
     },
     // create: async (element) =>
@@ -470,8 +469,7 @@ export const element =
         } 
         catch (error)
         {
-            console.dir(error)
-            return error
+            throw error
         }
     },
     count: async () =>
@@ -483,7 +481,7 @@ export const element =
         } 
         catch (error) 
         {
-            return error
+            throw error
         }
     },
     create: async (element, datasheet = null) =>

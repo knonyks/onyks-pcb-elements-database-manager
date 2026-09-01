@@ -5,10 +5,12 @@
     import { elements, manufacturers, suppliers, tables } from '@/utils/api';
     import DataLoader from '@/components/DataLoader.vue';
     import { useWindowSize } from '@vueuse/core';
-    import { Time } from '@/utils/tools';
+    import { MyError, MyTime } from '@/utils/tools';
 
     const {width} = useWindowSize()
     const isLoading = ref(true)
+    const error = ref('')
+    
     const data = ref(
     {
         elements: {},
@@ -16,23 +18,32 @@
         suppliers: {},
         manufacturers: {},
     })
-    
+
     onMounted(async () =>
     {
-        data.value.elements = (await elements.count()).data
-        data.value.elements.lastAdded = (await elements.lastAdded()).data
-        data.value.elements.lastAdded.createdAt = Time.getLocalTime(data.value.elements.lastAdded.createdAt, 'en')
-        data.value.tables = (await tables.count()).data
-        data.value.tables.counts = (await tables.counts()).data
-        data.value.suppliers = (await suppliers.count()).data
-        data.value.manufacturers = (await manufacturers.count()).data
-        data.value.manufacturers.counts = (await manufacturers.counts()).data
-        isLoading.value = false
+        try
+        {
+            data.value.elements = (await elements.count()).data
+            data.value.elements.lastAdded = (await elements.lastAdded()).data
+            data.value.elements.lastAdded.createdAt = MyTime.getLocalTime(data.value.elements.lastAdded.createdAt, 'en')
+            data.value.tables = (await tables.count()).data
+            data.value.tables.counts = (await tables.counts()).data
+            data.value.suppliers = (await suppliers.count()).data
+            data.value.manufacturers = (await manufacturers.count()).data
+            data.value.manufacturers.counts = (await manufacturers.counts()).data
+            isLoading.value = false
+        }
+        catch (err)
+        {
+            error.value = MyError.process(err)
+            isLoading.value = false
+        }
     })
 </script>
 
 <template>
-    <DataLoader :is-loading="isLoading">
+    <DataLoader :is-loading="isLoading" :error="error">
+
         <ManagerPage title="Dashboard">
             
             <onyks-header level="3">Overview</onyks-header>

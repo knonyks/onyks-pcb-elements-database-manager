@@ -3,7 +3,6 @@ from sqlalchemy.orm import Session
 import models
 import schemas
 import utils
-from utils import Repository
 import crud
 from database import engine, AsyncSessionLocal
 from typing import List
@@ -21,6 +20,7 @@ from fastapi import FastAPI, UploadFile, File, Form, HTTPException, status
 from fastapi.staticfiles import StaticFiles
 from pydantic import Json
 from sqlalchemy import text
+from utils import MyRepository, MyDatabase
 
 app = FastAPI()
 
@@ -38,7 +38,7 @@ async def startup_db():
         async with engine.begin() as conn:
             await conn.execute(text("CREATE SCHEMA IF NOT EXISTS private;"))
             await conn.run_sync(models.Base.metadata.create_all)
-            await utils.dbCreateOrUpdateElementViews(conn)
+            await MyDatabase.updateElementsViews(conn)
     except Exception as e:
         print(f"❌❌❌ DB Startup Failed: {e}")
         raise e
@@ -56,12 +56,12 @@ async def get_repository_content(path: str):
     enterData = ["file:///local_svn", path]
     if path.lower().endswith(('.schlib', '.pcblib')):
         try:
-            return Repository.getPcbContent(*enterData)
+            return MyRepository.getPcbContent(*enterData)
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
     else:
         try:
-            return Repository.getFolderList(*enterData)
+            return MyRepository.getFolderList(*enterData)
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
@@ -75,12 +75,7 @@ async def get_elements_count(db = Depends(get_db)):
 
 @app.get('/elements/last-added')
 async def get_elements_last_added(db = Depends(get_db)):
-    query = (
-            select(models.Element)
-            .order_by(models.Element.createdAt.desc())
-            .limit(1)
-        )
-    
+    query = (select(models.Element).order_by(models.Element.createdAt.desc()).limit(1))
     result = await db.execute(query)
     
     item = result.scalar_one_or_none()
@@ -113,6 +108,124 @@ async def get_tables_counts(db = Depends(get_db)):
     
     return data
 
+@app.get("/tables", response_model = schemas.PageResponse[schemas.TableFull])
+async def get_tables_list(
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1, le=100),
+    search: str | None = Query(None),
+    sortBy: str = Query("id"),
+    sortDesc: bool = Query(False),
+    db = Depends(get_db)
+):
+    limit = max(1, min(limit, 100))
+    skip = (page - 1) * limit
+
+    count_query = select(func.count()).select_from(models.Table)
+    if search:
+        search_term = f"%{search.strip()}%"
+        count_query = count_query.where(models.Table.name.ilike(search_term))
+
+    count_result = await db.execute(count_query)
+    totalCount = count_result.scalar() or 0
+
+    sort_column = getattr(models.Table, sortBy, None)
+    if sort_column is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Unsupported sortBy value: {sortBy}"
+        )
+
+    queryEntries = select(models.Table)
+    if search:
+        search_term = f"%{search.strip()}%"
+        queryEntries = queryEntries.where(models.Table.name.ilike(search_term))
+
+    queryEntries = (
+        queryEntries
+        .order_by(sort_column.desc() if sortDesc else sort_column.asc())
+        .offset(skip)
+        .limit(limit)
+    )
+    entriesResult = await db.execute(queryEntries)
+    entries = entriesResult.scalars().all()
+
+    return schemas.PageResponse(items=entries, total=totalCount, page=page, limit=limit)
+
+@app.delete('/tables/{id}')
+async def delete_tables(id: int, db = Depends(get_db)):
+    query = select(models.Table).where(models.Table.id == id)
+    result = await db.execute(query)
+    item = result.scalar_one_or_none()
+    
+    if item is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="ID doesn't exist!"
+        )
+    
+    await db.delete(item)
+    await db.commit()
+    await MyDatabase.updateElementsViews(db)
+    
+    return id
+
+@app.post('/tables')
+async def post_tables(table: schemas.TableBase, db = Depends(get_db)):
+    item = models.Table(**table.model_dump())
+    db.add(item)
+    try:
+        await db.commit()
+        await db.refresh(item)
+        await MyDatabase.updateElementsViews(db)
+        return item
+    except IntegrityError:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid data or a supplier with this name already exists."
+        )
+
+@app.get('/tables/{id}')
+async def get_tables(id: int, db = Depends(get_db)):
+    query = select(models.Table).where(models.Table.id == id)
+    result = await db.execute(query)
+    item = result.scalar_one_or_none()
+    
+    if item is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="ID doesn't exist!"
+        )
+    
+    return item
+
+@app.patch('/tables/{id}')
+async def patch_tables(id: int, table: schemas.TableBase, db = Depends(get_db)):
+    query = select(models.Table).where(models.Table.id == id)
+    result = await db.execute(query)
+    item = result.scalar_one_or_none()
+    
+    if item is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="ID doesn't exist!"
+        )
+    
+    update_data = table.model_dump(exclude_unset=True)
+
+    for field, value in update_data.items():
+        setattr(item, field, value)
+    
+    try:
+        db.add(item)
+        await db.commit()
+        await db.refresh(item)
+        await MyDatabase.updateElementsViews(db)
+        return item
+    except IntegrityError:
+        await db.rollback()
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid data or a supplier with this name already exists.")
+
 # MANUFACTURERS
 @app.get('/manufacturers/count')
 async def get_manufacturers_count(db = Depends(get_db)):
@@ -133,6 +246,124 @@ async def get_manufacturers_counts(db = Depends(get_db)):
     
     return data
 
+@app.get("/manufacturers", response_model = schemas.PageResponse[schemas.ManufacturerFull])
+async def get_manufacturers_list(
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1, le=100),
+    search: str | None = Query(None),
+    sortBy: str = Query("id"),
+    sortDesc: bool = Query(False),
+    db = Depends(get_db)
+):
+    limit = max(1, min(limit, 100))
+    skip = (page - 1) * limit
+
+    count_query = select(func.count()).select_from(models.Manufacturer)
+    if search:
+        search_term = f"%{search.strip()}%"
+        count_query = count_query.where(models.Manufacturer.name.ilike(search_term))
+
+    count_result = await db.execute(count_query)
+    totalCount = count_result.scalar() or 0
+
+    sort_column = getattr(models.Manufacturer, sortBy, None)
+    if sort_column is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Unsupported sortBy value: {sortBy}"
+        )
+
+    queryEntries = select(models.Manufacturer)
+    if search:
+        search_term = f"%{search.strip()}%"
+        queryEntries = queryEntries.where(models.Manufacturer.name.ilike(search_term))
+
+    queryEntries = (
+        queryEntries
+        .order_by(sort_column.desc() if sortDesc else sort_column.asc())
+        .offset(skip)
+        .limit(limit)
+    )
+    entriesResult = await db.execute(queryEntries)
+    entries = entriesResult.scalars().all()
+
+    return schemas.PageResponse(items=entries, total=totalCount, page=page, limit=limit)
+
+@app.delete('/manufacturers/{id}')
+async def delete_manufacturers(id: int, db = Depends(get_db)):
+    query = select(models.Manufacturer).where(models.Manufacturer.id == id)
+    result = await db.execute(query)
+    item = result.scalar_one_or_none()
+    
+    if item is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="ID doesn't exist!"
+        )
+    
+    await db.delete(item)
+    await db.commit()
+    await MyDatabase.updateElementsViews(db)
+    
+    return id
+
+@app.post('/manufacturers')
+async def post_manufacturers(manufacturer: schemas.ManufacturerBase, db = Depends(get_db)):
+    item = models.Manufacturer(**manufacturer.model_dump())
+    db.add(item)
+    try:
+        await db.commit()
+        await db.refresh(item)
+        await MyDatabase.updateElementsViews(db)
+        return item
+    except IntegrityError:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid data or a supplier with this name already exists."
+        )
+
+@app.get('/manufacturers/{id}')
+async def get_manufacturers(id: int, db = Depends(get_db)):
+    query = select(models.Manufacturer).where(models.Manufacturer.id == id)
+    result = await db.execute(query)
+    item = result.scalar_one_or_none()
+    
+    if item is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="ID doesn't exist!"
+        )
+    
+    return item
+
+@app.patch('/manufacturers/{id}')
+async def patch_manufacturers(id: int, manufacturer: schemas.ManufacturerBase, db = Depends(get_db)):
+    query = select(models.Manufacturer).where(models.Manufacturer.id == id)
+    result = await db.execute(query)
+    item = result.scalar_one_or_none()
+    
+    if item is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="ID doesn't exist!"
+        )
+    
+    update_data = manufacturer.model_dump(exclude_unset=True)
+
+    for field, value in update_data.items():
+        setattr(item, field, value)
+    
+    try:
+        db.add(item)
+        await db.commit()
+        await db.refresh(item)
+        await MyDatabase.updateElementsViews(db)
+        return item
+    except IntegrityError:
+        await db.rollback()
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid data or a supplier with this name already exists.")
+
 # SUPPLIERS
 @app.get('/suppliers/count')
 async def get_suppliers_count(db = Depends(get_db)):
@@ -140,6 +371,124 @@ async def get_suppliers_count(db = Depends(get_db)):
     result = await db.execute(query)
     totalCount = result.scalar()
     return {'count': totalCount}
+
+@app.get("/suppliers", response_model = schemas.PageResponse[schemas.SupplierFull])
+async def get_suppliers_list(
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1, le=100),
+    search: str | None = Query(None),
+    sortBy: str = Query("id"),
+    sortDesc: bool = Query(False),
+    db = Depends(get_db)
+):
+    limit = max(1, min(limit, 100))
+    skip = (page - 1) * limit
+
+    count_query = select(func.count()).select_from(models.Supplier)
+    if search:
+        search_term = f"%{search.strip()}%"
+        count_query = count_query.where(models.Supplier.name.ilike(search_term))
+
+    count_result = await db.execute(count_query)
+    totalCount = count_result.scalar() or 0
+
+    sort_column = getattr(models.Supplier, sortBy, None)
+    if sort_column is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Unsupported sortBy value: {sortBy}"
+        )
+
+    queryEntries = select(models.Supplier)
+    if search:
+        search_term = f"%{search.strip()}%"
+        queryEntries = queryEntries.where(models.Supplier.name.ilike(search_term))
+
+    queryEntries = (
+        queryEntries
+        .order_by(sort_column.desc() if sortDesc else sort_column.asc())
+        .offset(skip)
+        .limit(limit)
+    )
+    entriesResult = await db.execute(queryEntries)
+    entries = entriesResult.scalars().all()
+
+    return schemas.PageResponse(items=entries, total=totalCount, page=page, limit=limit)
+
+@app.delete('/suppliers/{id}')
+async def delete_suppliers(id: int, db = Depends(get_db)):
+    query = select(models.Supplier).where(models.Supplier.id == id)
+    result = await db.execute(query)
+    item = result.scalar_one_or_none()
+    
+    if item is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="ID doesn't exist!"
+        )
+    
+    await db.delete(item)
+    await db.commit()
+    await MyDatabase.updateElementsViews(db)
+    
+    return id
+
+@app.post('/suppliers')
+async def post_suppliers(supplier: schemas.SupplierBase, db = Depends(get_db)):
+    item = models.Supplier(**supplier.model_dump())
+    db.add(item)
+    try:
+        await db.commit()
+        await db.refresh(item)
+        await MyDatabase.updateElementsViews(db)
+        return item
+    except IntegrityError:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid data or a supplier with this name already exists."
+        )
+
+@app.get('/suppliers/{id}')
+async def get_suppliers(id: int, db = Depends(get_db)):
+    query = select(models.Supplier).where(models.Supplier.id == id)
+    result = await db.execute(query)
+    item = result.scalar_one_or_none()
+    
+    if item is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="ID doesn't exist!"
+        )
+    
+    return item
+
+@app.patch('/suppliers/{id}')
+async def patch_suppliers(id: int, supplier: schemas.SupplierBase, db = Depends(get_db)):
+    query = select(models.Supplier).where(models.Supplier.id == id)
+    result = await db.execute(query)
+    item = result.scalar_one_or_none()
+    
+    if item is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="ID doesn't exist!"
+        )
+    
+    update_data = supplier.model_dump(exclude_unset=True)
+
+    for field, value in update_data.items():
+        setattr(item, field, value)
+    
+    try:
+        db.add(item)
+        await db.commit()
+        await db.refresh(item)
+        await MyDatabase.updateElementsViews(db)
+        return item
+    except IntegrityError:
+        await db.rollback()
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid data or a supplier with this name already exists.")
 
 # SERVER
 @app.get('/server/info')
@@ -494,92 +843,6 @@ async def get_server_info():
 # # SUPPLIER
 
 
-# @app.get("/supplier/list", response_model = schemas.SupplierList)
-# async def supplierList(limit: int = Query(default=10, ge=1, le=100), skip: int = Query(default=0, ge=0), db = Depends(get_db)):
-#     query = select(func.count()).select_from(models.Supplier)
-#     result = await db.execute(query)
-#     totalCount = result.scalar()
-    
-#     queryEntries = select(models.Supplier).offset(skip).limit(limit)
-#     entriesResult = await db.execute(queryEntries)
-#     entries = entriesResult.scalars().all()
-    
-#     return {"total": totalCount, "items": entries}
-
-# @app.delete('/supplier/delete/{id}')
-# async def supplierDelete(id: int, db = Depends(get_db)):
-#     query = select(models.Supplier).where(models.Supplier.id == id)
-#     result = await db.execute(query)
-#     item = result.scalar_one_or_none()
-    
-#     if item is None:
-#         raise HTTPException(
-#             status_code=status.HTTP_404_NOT_FOUND,
-#             detail="ID doesn't exist!"
-#         )
-    
-#     await db.delete(item)
-#     await db.commit()
-#     await utils.dbCreateOrUpdateElementViews(db)
-    
-#     return id
-
-# @app.post('/supplier/create')
-# async def supplierCreate(supplier: schemas.SupplierBase, db = Depends(get_db)):
-#     item = models.Supplier(**supplier.model_dump())
-#     db.add(item)
-#     try:
-#         await db.commit()
-#         await db.refresh(item)
-#         await utils.dbCreateOrUpdateElementViews(db)
-#         return item
-#     except IntegrityError:
-#         await db.rollback()
-#         raise HTTPException(
-#             status_code=status.HTTP_400_BAD_REQUEST,
-#             detail="Invalid data or a supplier with this name already exists."
-#         )
-
-# @app.get('/supplier/{id}')
-# async def supplierID(id: int, db = Depends(get_db)):
-#     query = select(models.Supplier).where(models.Supplier.id == id)
-#     result = await db.execute(query)
-#     item = result.scalar_one_or_none()
-    
-#     if item is None:
-#         raise HTTPException(
-#             status_code=status.HTTP_404_NOT_FOUND,
-#             detail="ID doesn't exist!"
-#         )
-    
-#     return item
-
-# @app.put('/supplier/edit/{id}')
-# async def supplierEdit(id: int, supplier: schemas.SupplierBase, db = Depends(get_db)):
-#     query = select(models.Supplier).where(models.Supplier.id == id)
-#     result = await db.execute(query)
-#     item = result.scalar_one_or_none()
-    
-#     if item is None:
-#         raise HTTPException(
-#             status_code=status.HTTP_404_NOT_FOUND,
-#             detail="ID doesn't exist!"
-#         )
-    
-#     update_data = supplier.model_dump(exclude_unset=True)
-
-#     for field, value in update_data.items():
-#         setattr(item, field, value)
-    
-#     try:
-#         db.add(item)
-#         await db.commit()
-#         await db.refresh(item)
-#         await utils.dbCreateOrUpdateElementViews(db)
-#         return item
-#     except IntegrityError:
-#         await db.rollback()
-#         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid data or a supplier with this name already exists.")
 
 # # TABLE
 

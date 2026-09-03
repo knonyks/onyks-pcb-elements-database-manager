@@ -1,13 +1,16 @@
 <script setup>
     import { ref, watch } from 'vue';
+    import { onMounted, onUnmounted } from 'vue';
 
     const props = defineProps(
     {
         isLoading: Boolean,
-        error: String
+        error: String,
+        state: {
+            type: Number,
+        },
     })
 
-    const state = ref(0)
     const isFinishing = ref(false)
     const color = ref('red')
     let finishTimer = null
@@ -30,17 +33,13 @@
         if (isLoading) 
         {
             isFinishing.value = false
-            state.value = 20
             return
         }
 
         isFinishing.value = true
-        state.value = 20
 
         finishTimer = setTimeout(() => 
         {
-            state.value = 100
-
             finishTimer = setTimeout(() => 
             {
                 isFinishing.value = false
@@ -53,7 +52,7 @@
     <transition name="fade" mode="out-in">
 
         <onyks-container v-if="isLoading || isFinishing" align="center" justify="center" class="loadingBar" padding="l">
-            <onyks-loading-bar max="100" :current-state="state" :color="color" size="xl" striped animated></onyks-loading-bar>
+            <onyks-loading-bar max="100" :current-state="props.state" :color="color" size="xl" striped animated></onyks-loading-bar>
         </onyks-container>
 
         <onyks-container v-else-if="error" align="center" justify="center" padding="l" class="error">

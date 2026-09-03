@@ -4,6 +4,8 @@ from typing import List, Optional, Generic, TypeVar
 from fastapi import Query
 from typing import Annotated
 from uuid import UUID
+from typing import Generic, TypeVar
+from pydantic import BaseModel
 
 from pydantic import BaseModel, Field, BeforeValidator
 
@@ -14,6 +16,47 @@ def emptyToNone(v: str | None) -> str | None:
 
 NotEmptyString = Annotated[str | None, BeforeValidator(emptyToNone)]
 
+# GENERAL
+T = TypeVar('T')
+
+class PageQuery(BaseModel):
+    search: Optional[str] = None
+    sortBy: str = "id"
+    sortDesc: bool = True
+    page: int = 1
+    limit: int = 100
+
+class PageResponse(BaseModel, Generic[T]):
+    items: list[T]
+    total: int
+    page: int
+    limit: int
+
+# SUPPLIERS
+class SupplierBase(BaseModel):
+    name: str = Field(min_length=1, max_length=256)
+
+class SupplierFull(SupplierBase):
+    id: int
+    createdAt: datetime
+
+# MANUFACTURERS
+class ManufacturerBase(BaseModel):
+    name: str = Field(min_length=1, max_length=256)
+
+class ManufacturerFull(ManufacturerBase):
+    id: int
+    createdAt: datetime
+
+# TABLES
+class TableBase(BaseModel):
+    name: str = Field(min_length=1, max_length=256)
+
+class TableFull(TableBase):
+    id: int
+    createdAt: datetime
+
+# ELEMENTS
 class ElementBase(BaseModel):
     partName: NotEmptyString = Field(min_length=3, max_length=256)
     description: NotEmptyString = Field(max_length=256)
@@ -42,36 +85,3 @@ class ElementFull(ElementBase):
 class ElementList(BaseModel):
     total: int
     items: List[ElementFull]
-
-class ManufacturerBase(BaseModel):
-    name: str = Field(min_length=1, max_length=256)
-
-class ManufacturerFull(ManufacturerBase):
-    id: int
-    createdAt: datetime
-
-class ManufacturerList(BaseModel):
-    total: int
-    items: List[ManufacturerFull]
-
-class SupplierBase(BaseModel):
-    name: str = Field(min_length=1, max_length=256)
-
-class SupplierFull(SupplierBase):
-    id: int
-    createdAt: datetime
-
-class SupplierList(BaseModel):
-    total: int
-    items: List[SupplierFull]
-
-class TableBase(BaseModel):
-    name: str = Field(min_length=1, max_length=256)
-
-class TableFull(TableBase):
-    id: int
-    createdAt: datetime
-
-class TableList(BaseModel):
-    total: int
-    items: List[TableFull]

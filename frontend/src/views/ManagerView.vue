@@ -18,6 +18,7 @@
                 </transition>
             </router-view>
         </onyks-container>
+        <!-- <onyks-container class="footer"></onyks-container> -->
     </onyks-container>
 </template>
 
@@ -46,7 +47,7 @@
         box-sizing: border-box;
     }
 
-    footer
+    .footer
     {
         height: 300px;
         width: 100%;

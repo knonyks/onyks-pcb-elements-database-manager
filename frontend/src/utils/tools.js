@@ -99,7 +99,70 @@ export class MyError
     }
 }
 
+export class MyLoaderState
+{
+    constructor()
+    {
+        this.state = 0
+        this.error = ''
+        this.isLoading = true
+    }
+}
 
+export class MyManagementTable
+{
+    constructor(cmd, columns, formater = (e) => e)
+    {
+        this.data = []
+        this.columns = columns
+        this.formater = formater
+        this.total = 0
+        this.limit = 100
+        this.search = ''
+        this.page = 1
+        this.cmd = cmd
+        this.extend = false
+        this.selectedCount = 0
+    }
+
+    async init()
+    {
+        const data = (await this.cmd(this.page, this.limit, '', 'id', false))
+        this.total = data.data.total
+        this.data = data.data?.items.filter((item) => this.formater(item))
+    }
+
+    async nextPage(index)
+    {
+        const totalItems = this.total || this.data.length || 0
+        const totalPages = Math.max(1, Math.ceil(totalItems / this.limit))
+
+        if (Number.isInteger(index) && index > 0)
+        {
+            this.page = Math.min(index, totalPages)
+            await this.searchPhrase()
+            return
+        }
+
+        if (this.page >= totalPages)
+        {
+            return
+        }
+
+        this.page += 1
+
+        await this.searchPhrase()
+    }
+
+    async searchPhrase()
+    {
+        const response = await this.cmd(this.page, this.limit, this.search, 'id', false)
+        const items = response?.data?.items ?? []
+        console.log(items)
+        this.total = Number(response?.data?.total ?? items.length ?? 0)
+        this.data = items.filter((item) => this.formater(item))
+    }
+}
 
 export const dateUTCtoDestination = (dateStr, zone = 'Europe/Warsaw', locale = 'en') =>
 {

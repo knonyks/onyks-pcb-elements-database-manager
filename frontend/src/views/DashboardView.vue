@@ -6,11 +6,11 @@
     import DataLoader from '@/components/DataLoader.vue';
     import { useWindowSize } from '@vueuse/core';
     import { MyError, MyTime } from '@/utils/tools';
+    import { MyLoaderState } from '@/utils/tools';
 
     const {width} = useWindowSize()
-    const isLoading = ref(true)
-    const error = ref('')
-    
+    const loading = ref(new MyLoaderState())
+ 
     const data = ref(
     {
         elements: {},
@@ -23,26 +23,33 @@
     {
         try
         {
+            loading.value.state += 100/7
             data.value.elements = (await elements.count()).data
+            loading.value.state += 100/7
             data.value.elements.lastAdded = (await elements.lastAdded()).data
             data.value.elements.lastAdded.createdAt = MyTime.getLocalTime(data.value.elements.lastAdded.createdAt, 'en')
+            loading.value.state += 100/7
             data.value.tables = (await tables.count()).data
+            loading.value.state += 100/7
             data.value.tables.counts = (await tables.counts()).data
+            loading.value.state += 100/7
             data.value.suppliers = (await suppliers.count()).data
+            loading.value.state += 100/7
             data.value.manufacturers = (await manufacturers.count()).data
+            loading.value.state = 100
             data.value.manufacturers.counts = (await manufacturers.counts()).data
-            isLoading.value = false
+            loading.value.isLoading = false
         }
         catch (err)
         {
-            error.value = MyError.process(err)
-            isLoading.value = false
+            loading.value.error = MyError.process(err)
+            loading.value.isLoading = false
         }
     })
 </script>
 
 <template>
-    <DataLoader :is-loading="isLoading" :error="error">
+    <DataLoader :is-loading="loading.isLoading" :error="loading.error" :state="loading.state">
 
         <ManagerPage title="Dashboard">
             

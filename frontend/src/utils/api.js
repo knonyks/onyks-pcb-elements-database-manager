@@ -389,71 +389,83 @@ export const suppliers =
             throw error
         }
     },
-    // create: async (element) =>
-    // {
-    //     try 
-    //     {
-    //         const response = await api.post(`/supplier/create`, element);
-    //         return response
-    //     } 
-    //     catch (error) 
-    //     {
-    //         return error
-    //     }
-    // },
-    // list: async (limit, skip) =>
-    // {
-    //     try 
-    //     {
-    //         const response = await api.get(`/supplier/list`, {
-    //             params: {
-    //                 limit: limit,
-    //                 skip: skip
-    //             }
-    //         });
-    //         return response
-    //     } 
-    //     catch (error) 
-    //     {
-    //         return error
-    //     }
-    // },
-    // delete: async (id) =>
-    // {
-    //     try 
-    //     {
-    //         const response = await api.delete(`/supplier/delete/${id}`);
-    //         return response
-    //     } 
-    //     catch (error) 
-    //     {
-    //         return error
-    //     }
-    // },
-    // edit: async (id, supplier) =>
-    // {
-    //     try 
-    //     {
-    //         const response = await api.put(`/supplier/edit/${id}`, supplier);
-    //         return response
-    //     } 
-    //     catch (error) 
-    //     {
-    //         return error
-    //     }
-    // },
-    // get: async (id) =>
-    // {
-    //     try 
-    //     {
-    //         const response = await api.get(`/supplier/${id}`);
-    //         return response
-    //     } 
-    //     catch (error) 
-    //     {
-    //         return error
-    //     }
-    // }
+    create: async (name) =>
+    {
+        try 
+        {
+            const response = await api.post(`/suppliers`, name);
+            return response
+        } 
+        catch (error) 
+        {
+            throw error
+        }
+    },
+    list: async (page = 1, limit = 100, search = '', sortBy = 'id', sortDesc = true) =>
+    {
+        try 
+        {
+            const response = await api.get(`/suppliers`, {
+                params: {
+                    page: page,
+                    limit: limit,
+                    search: search,
+                    sortBy: sortBy,
+                    sortDesc: sortDesc
+                }
+            });
+            return response
+        } 
+        catch (error) 
+        {
+            throw error
+        }
+    },
+    delete: async (id) =>
+    {
+        try 
+        {
+            const response = await api.delete(`/suppliers/${id}`);
+            return response
+        } 
+        catch (error) 
+        {
+            throw error
+        }
+    },
+    edit: async (id, supplier) =>
+    {
+        try 
+        {
+            const response = await api.patch(`/suppliers/${id}`, supplier);
+            return response
+        } 
+        catch (error) 
+        {
+            throw error
+        }
+    },
+    get: async (id) =>
+    {
+        try 
+        {
+            const response = await api.get(`/suppliers/${id}`);
+            return response
+        } 
+        catch (error) 
+        {
+            throw error
+        }
+    }
+}
+
+export const services = 
+{
+    repository,
+    elements,
+    tables,
+    manufacturers,
+    suppliers
 }
 
 // ################################################

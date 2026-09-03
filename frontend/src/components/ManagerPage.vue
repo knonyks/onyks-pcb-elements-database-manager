@@ -8,8 +8,10 @@
         <onyks-container class="header" padding="l">
             <onyks-header>{{ props.title }}</onyks-header>
         </onyks-container>
-        <WarningAlert></WarningAlert>
-        <slot></slot>
+        <onyks-container gap="l">
+            <WarningAlert></WarningAlert>
+            <slot></slot>
+        </onyks-container>
     </onyks-container>
 </template>
 

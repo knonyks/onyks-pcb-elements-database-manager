@@ -1,98 +1,23 @@
 <script setup>
-    import { dateUTCtoDestination } from '@/utils/tools';
-    import { defineProps, ref } from 'vue';
-    import { defineExpose } from 'vue';
+    import { defineEmits } from 'vue';
 
-    const props = defineProps(['columns', 'update']);
-    const emit = defineEmits(['checkbox-click'])
+    const emit = defineEmits(['page-change', 'checkbox-click'])
+    const model = defineModel();
 
-    const table = ref(null)
-    const data = ref([])
-    const total = ref(0)
-    const skip = ref(0)
-    const limit = ref(50)
-    const selected = ref(0)
-
-
-    const pageChange = async (e) =>
-    {
-        skip.value = (e.detail.index  - 1)*limit.value
-        let temp = await props.update(limit.value, skip.value)
-        if(temp.status == 200)
-        {
-            temp.data.items.forEach(element => 
-            {
-                element.selected = false
-                element.createdAt = dateUTCtoDestination(element.createdAt)
-            });
-            data.value = temp.data.items
-            selected.value = 0
-        }
-    }
-
-    const init = async () =>
-    {
-        let temp = await props.update(limit.value, skip.total)
-        if(temp.status == 200)
-        {
-            temp.data.items.forEach(element => 
-            {
-                element.selected = false
-                element.createdAt = dateUTCtoDestination(element.createdAt)
-            });
-            data.value = temp.data.items
-            total.value = temp.data.total
-            skip.value = 0
-            selected.value = 0
-        }
-    }
-
-    const getSelectedRows = () =>
-    {
-        return table.value.getSelectedRows()
-    }
-
-    const refresh = () =>
-    {
-        table.value.refresh()
-    }
-
-    const handleCheckbox = (e) =>
-    {
-        if(e.detail.type == 'row')
-        {
-            if(e.detail.checked)
-            {
-                selected.value += 1
-            }
-            else
-            {
-                selected.value -= 1
-            }
-        }
-        else if(e.detail.type == 'all')
-        {
-            if(e.detail.checked)
-            {
-                selected.value = data.value.length
-            }
-            else
-            {
-                selected.value = 0
-            }
-        }
-        emit('checkbox-click', selected.value);
-    }
-
-    defineExpose({init, getSelectedRows, refresh})
+    
+    // {
+    //     default: () => ({ columns: [], data: [], selected: 0, total: 0, limit: 20, page: 1, cmd: async (page, limit) => [] })
+    // }
 </script>
 
 <template>
-    <onyks-container gap="l" align="center" padding="">
-        <onyks-table ref="table" .columns="columns" .data="data" @checkbox-click="handleCheckbox"></onyks-table>
-        <onyks-container type="group" align="center" justify="center" padding="" gap="l">
-            <onyks-pagination-nav :max-index="Math.ceil(total / limit)" index="1" max-view="3" size="m" @page-change="pageChange"></onyks-pagination-nav>
-            <onyks-text>Selected:&emsp;{{selected}}&emsp;|&emsp;Total:&emsp;{{ total }}</onyks-text>
+    <onyks-container gap="l" align="center">
+        <onyks-container :class="{ extend: model.extend }" :padding="`${model.extend ? 'l' : ''}`">
+            <onyks-table :columns="model?.columns ?? []" :data="model?.data ?? []" @checkbox-click="console.log"></onyks-table>
+        </onyks-container>
+        <onyks-container type="group" align="center" justify="center" gap="m">
+            <onyks-pagination-nav :max-index="Math.ceil(model.total / model.limit)" :index="model.page" max-view="3" size="m" @page-change="model.nextPage($event.detail.index)"></onyks-pagination-nav>
+            <onyks-text>Selected:&emsp;{{model.selectedCount}}&emsp;|&emsp;Total:&emsp;{{ model.total }}</onyks-text>
         </onyks-container>
     </onyks-container>
 </template>
@@ -100,7 +25,23 @@
 <style lang="css" scoped>
     onyks-table
     {
-        height: 400px;
+        height: 450px;
+        box-sizing: border-box;
+        width: 100%;
+    }
+
+    .extend
+    {
+        box-sizing: border-box;
+        width: 100vw;
+        position: relative;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
+    .extend > onyks-table
+    {
+        height: 550px;
     }
 
     onyks-container

@@ -10,7 +10,9 @@
     <onyks-container type="stack" padding="m" gap="l" align="center" :class="$style.container" justify="center">
         <Logos></Logos>
         <onyks-header>ERROR! {{route.params.message != undefined? route.params.message.toUpperCase():'SOMETHING WENT WRONG!'}}</onyks-header>
-        <onyks-button @click="router.push('/manager/dashboard')">Return</onyks-button>
+        <router-link :to="{ path: '/manager/dashboard' }">
+            <onyks-button>Return</onyks-button>
+        </router-link>
     </onyks-container>
 </template>
 

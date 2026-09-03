@@ -1,8 +1,8 @@
 <script setup lang="js">
     import { ref } from 'vue';
-    
-    const props = defineProps(['explorer-content', 'path'])
-    const emit = defineEmits(['path-change', 'refresh', 'enter-folder'])
+    import { defineModel } from 'vue';
+
+    const model = defineModel()
 
     const types = ref([{type: 'file', icon: 'F390', isLikeDir: false}, 
     {type: 'dir', icon: 'F3D8', isLikeDir: true}, 
@@ -13,10 +13,10 @@
 </script>
 
 <template>
-    <onyks-path @path-change="(e) => emit('path-change', e)" :content="props.path"></onyks-path>
-    <onyks-file-explorer :types="types" @enter-folder="(e) => emit('enter-folder', e)" :content="props.explorerContent"></onyks-file-explorer>
+    <onyks-path @path-change="model.pathChange($event)" :content="model.path"></onyks-path>
+    <onyks-file-explorer :types="types" @enter-folder="model.enterFolder($event)" :content="model.content"></onyks-file-explorer>
     <onyks-container type="group" padding="" justify="end">
-        <onyks-button @click="emit('refresh')" background="green">Refresh</onyks-button>
+        <onyks-button @click="model.refresh" background="green">Refresh</onyks-button>
     </onyks-container>
 </template>
 

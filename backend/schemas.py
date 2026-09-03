@@ -4,6 +4,7 @@ from typing import List, Optional, Generic, TypeVar
 from fastapi import Query
 from typing import Annotated
 from uuid import UUID
+from enum import Enum
 from typing import Generic, TypeVar
 from pydantic import BaseModel
 
@@ -55,6 +56,21 @@ class TableBase(BaseModel):
 class TableFull(TableBase):
     id: int
     createdAt: datetime
+
+# USERS
+class UserRank(str, Enum):
+    EDITOR = 'editor'
+    USER = "user"
+    ADMIN = "admin"
+
+class UserBase(BaseModel):
+    login: str
+    email: str
+    rank: UserRank
+
+class UserFull(UserBase):
+    id: int
+    expirationTime: datetime
 
 # ELEMENTS
 class ElementBase(BaseModel):

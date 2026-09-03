@@ -1,14 +1,13 @@
 <script setup>
     import { ref, watch } from 'vue';
-    import { onMounted, onUnmounted } from 'vue';
+    import { defineModel } from 'vue';
 
-    const props = defineProps(
-    {
-        isLoading: Boolean,
-        error: String,
-        state: {
-            type: Number,
-        },
+    const model = defineModel({
+        default: () => ({
+            isLoading: false,
+            state: 0,
+            error: null,
+        }),
     })
 
     const isFinishing = ref(false)
@@ -23,7 +22,7 @@
 
     color.value = randomColor()
 
-    watch(() => props.isLoading, (isLoading) => 
+    watch(() => model.value?.isLoading, (isLoading) => 
     {
         if (finishTimer) 
         {
@@ -51,12 +50,12 @@
 <template>
     <transition name="fade" mode="out-in">
 
-        <onyks-container v-if="isLoading || isFinishing" align="center" justify="center" class="loadingBar" padding="l">
-            <onyks-loading-bar max="100" :current-state="props.state" :color="color" size="xl" striped animated></onyks-loading-bar>
+        <onyks-container v-if="model.isLoading || isFinishing" align="center" justify="center" class="loadingBar" padding="l">
+            <onyks-loading-bar max="100" :current-state="model.state" :color="color" size="xl" striped animated></onyks-loading-bar>
         </onyks-container>
 
-        <onyks-container v-else-if="error" align="center" justify="center" padding="l" class="error">
-            <onyks-alert  type="error">{{ error }}</onyks-alert>
+        <onyks-container v-else-if="model.error" align="center" justify="center" padding="l" class="error">
+            <onyks-alert  type="error">{{ model.error }}</onyks-alert>
         </onyks-container>
         
         <onyks-container v-else padding="m" gap="l">

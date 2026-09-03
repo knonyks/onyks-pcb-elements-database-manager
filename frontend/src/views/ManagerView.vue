@@ -10,6 +10,8 @@
             <router-link slot="nav" to="dashboard" .selected="route.path.endsWith('/dashboard')">Dashboard</router-link>
             <router-link slot="nav" to="management" .selected="route.path.endsWith('/management')">Management</router-link>
             <router-link slot="nav" to="repository" .selected="route.path.endsWith('/repository')">Repository</router-link>
+            <router-link slot="nav" to="settings" .selected="route.path.endsWith('/settings')">Settings</router-link>
+            <router-link slot="nav" to="admin" .selected="route.path.endsWith('/admin')">Admin</router-link>
         </onyks-nav>
         <onyks-container gap="" class="content">
             <router-view v-slot="{ Component }">

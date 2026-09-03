@@ -6,6 +6,8 @@ import ErrorView from '@/views/ErrorView.vue';
 import ElementView from '@/views/ElementView.vue';
 import LoginView from '@/views/LoginView.vue';
 import ManagerView from '@/views/ManagerView.vue';
+import AdminView from '@/views/AdminView.vue';
+import SettingsView from '@/views/SettingsView.vue';
 
 const routes = [
   {
@@ -38,6 +40,17 @@ const routes = [
         component: RepositoryView,
         meta: { title: 'Repository - ONYKS Bloodstone' }
       },
+      {
+        path: 'admin',
+        component: AdminView,
+        meta: { title: 'Admin - ONYKS Bloodstone' }
+      },
+      {
+        path: 'settings',
+        component: SettingsView,
+        meta: { title: 'Settings - ONYKS Bloodstone' }
+      },
+
       {
         path: 'element/add',
         component: ElementView,

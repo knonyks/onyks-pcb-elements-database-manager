@@ -215,71 +215,74 @@ export const tables =
             throw error
         }
     },
-    // create: async (table) =>
-    // {
-    //     try 
-    //     {
-    //         const response = await api.post(`/table/create`, table);
-    //         return response
-    //     } 
-    //     catch (error) 
-    //     {
-    //         return error
-    //     }
-    // },
-    // get: async (id) =>
-    // {
-    //     try 
-    //     {
-    //         const response = await api.get(`/table/${id}`);
-    //         return response
-    //     } 
-    //     catch (error) 
-    //     {
-    //         return error
-    //     }
-    // },
-    // list: async (limit, skip) =>
-    // {
-    //     try 
-    //     {
-    //         const response = await api.get(`/table/list`, {
-    //             params: {
-    //                 limit: limit,
-    //                 skip: skip
-    //             }
-    //         });
-    //         return response
-    //     } 
-    //     catch (error) 
-    //     {
-    //         return error
-    //     }
-    // },
-    // edit: async (id, table) =>
-    // {
-    //     try 
-    //     {
-    //         const response = await api.put(`/table/edit/${id}`, table);
-    //         return response
-    //     } 
-    //     catch (error) 
-    //     {
-    //         return error
-    //     }
-    // },
-    // delete: async (id) =>
-    // {
-    //     try 
-    //     {
-    //         const response = await api.delete(`/table/delete/${id}`);
-    //         return response
-    //     } 
-    //     catch (error) 
-    //     {
-    //         return error
-    //     }
-    // }
+    create: async (name) =>
+    {
+        try 
+        {
+            const response = await api.post(`/tables`, name);
+            return response
+        } 
+        catch (error) 
+        {
+            throw error
+        }
+    },
+    list: async (page = 1, limit = 100, search = '', sortBy = 'id', sortDesc = true) =>
+    {
+        try 
+        {
+            const response = await api.get(`/tables`, {
+                params: {
+                    page: page,
+                    limit: limit,
+                    search: search,
+                    sortBy: sortBy,
+                    sortDesc: sortDesc
+                }
+            });
+            return response
+        } 
+        catch (error) 
+        {
+            throw error
+        }
+    },
+    delete: async (id) =>
+    {
+        try 
+        {
+            const response = await api.delete(`/tables/${id}`);
+            return response
+        } 
+        catch (error) 
+        {
+            throw error
+        }
+    },
+    edit: async (id, supplier) =>
+    {
+        try 
+        {
+            const response = await api.patch(`/tables/${id}`, supplier);
+            return response
+        } 
+        catch (error) 
+        {
+            throw error
+        }
+    },
+    get: async (id) =>
+    {
+        try 
+        {
+            const response = await api.get(`/tables/${id}`);
+            return response
+        } 
+        catch (error) 
+        {
+            throw error
+        }
+    }
 }
 
 export const manufacturers = 
@@ -308,71 +311,74 @@ export const manufacturers =
             throw error
         }
     },
-    // create: async (element) =>
-    // {
-    //     try 
-    //     {
-    //         const response = await api.post(`/manufacturer/create`, element);
-    //         return response
-    //     } 
-    //     catch (error) 
-    //     {
-    //         return error
-    //     }
-    // },
-    // get: async (id) =>
-    // {
-    //     try 
-    //     {
-    //         const response = await api.get(`/manufacturer/${id}`);
-    //         return response
-    //     } 
-    //     catch (error) 
-    //     {
-    //         return error
-    //     }
-    // },
-    // list: async (limit, skip) =>
-    // {
-    //     try 
-    //     {
-    //         const response = await api.get(`/manufacturer/list`, {
-    //             params: {
-    //                 limit: limit,
-    //                 skip: skip
-    //             }
-    //         });
-    //         return response
-    //     } 
-    //     catch (error) 
-    //     {
-    //         return error
-    //     }
-    // },
-    // edit: async (id, manufacturer) =>
-    // {
-    //     try 
-    //     {
-    //         const response = await api.put(`/manufacturer/edit/${id}`, manufacturer);
-    //         return response
-    //     } 
-    //     catch (error) 
-    //     {
-    //         return error
-    //     }
-    // },
-    // delete: async (id) =>
-    // {
-    //     try 
-    //     {
-    //         const response = await api.delete(`/manufacturer/delete/${id}`);
-    //         return response
-    //     } 
-    //     catch (error) 
-    //     {
-    //         return error
-    //     }
-    // }
+    create: async (name) =>
+    {
+        try 
+        {
+            const response = await api.post(`/manufacturers`, name);
+            return response
+        } 
+        catch (error) 
+        {
+            throw error
+        }
+    },
+    list: async (page = 1, limit = 100, search = '', sortBy = 'id', sortDesc = true) =>
+    {
+        try 
+        {
+            const response = await api.get(`/manufacturers`, {
+                params: {
+                    page: page,
+                    limit: limit,
+                    search: search,
+                    sortBy: sortBy,
+                    sortDesc: sortDesc
+                }
+            });
+            return response
+        } 
+        catch (error) 
+        {
+            throw error
+        }
+    },
+    delete: async (id) =>
+    {
+        try 
+        {
+            const response = await api.delete(`/manufacturers/${id}`);
+            return response
+        } 
+        catch (error) 
+        {
+            throw error
+        }
+    },
+    edit: async (id, supplier) =>
+    {
+        try 
+        {
+            const response = await api.patch(`/manufacturers/${id}`, supplier);
+            return response
+        } 
+        catch (error) 
+        {
+            throw error
+        }
+    },
+    get: async (id) =>
+    {
+        try 
+        {
+            const response = await api.get(`/manufacturers/${id}`);
+            return response
+        } 
+        catch (error) 
+        {
+            throw error
+        }
+    }
 }
 
 export const suppliers = 
@@ -459,13 +465,86 @@ export const suppliers =
     }
 }
 
+export const users = 
+{
+    create: async (name) =>
+    {
+        try 
+        {
+            const response = await api.post(`/users`, name);
+            return response
+        } 
+        catch (error) 
+        {
+            throw error
+        }
+    },
+    list: async (page = 1, limit = 100, search = '', sortBy = 'id', sortDesc = true) =>
+    {
+        try 
+        {
+            const response = await api.get(`/users`, {
+                params: {
+                    page: page,
+                    limit: limit,
+                    search: search,
+                    sortBy: sortBy,
+                    sortDesc: sortDesc
+                }
+            });
+            return response
+        } 
+        catch (error) 
+        {
+            throw error
+        }
+    },
+    delete: async (id) =>
+    {
+        try 
+        {
+            const response = await api.delete(`/suppliers/${id}`);
+            return response
+        } 
+        catch (error) 
+        {
+            throw error
+        }
+    },
+    edit: async (id, supplier) =>
+    {
+        try 
+        {
+            const response = await api.patch(`/suppliers/${id}`, supplier);
+            return response
+        } 
+        catch (error) 
+        {
+            throw error
+        }
+    },
+    get: async (id) =>
+    {
+        try 
+        {
+            const response = await api.get(`/suppliers/${id}`);
+            return response
+        } 
+        catch (error) 
+        {
+            throw error
+        }
+    }
+}
+
 export const services = 
 {
     repository,
     elements,
     tables,
     manufacturers,
-    suppliers
+    suppliers,
+    users
 }
 
 // ################################################

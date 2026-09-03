@@ -1,7 +1,7 @@
 import { degrees, PDFDocument, rgb, StandardFonts, PageSizes } from 'pdf-lib';
 import QRCode from 'qrcode'
 import { DateTime } from "luxon";
-import { repository } from './api';
+import { services } from './api';
 
 export class MyTime
 {
@@ -54,8 +54,8 @@ export class MyRepository
 
     async init()
     {
-        this.path = [(await repository.info()).data.name]
-        let temp = Array.from((await repository.content('/')).data)
+        this.path = [(await services.repository.info()).data.name]
+        let temp = Array.from((await services.repository.content('/')).data)
         temp = temp.filter(e => this.filter(e))
         this.content = temp
     }
@@ -63,7 +63,7 @@ export class MyRepository
     async pathChange(e)
     {
         this.path = e.detail.path
-        let temp = Array.from((await repository.content(e.detail.path.slice(1).join('/'))).data)
+        let temp = Array.from((await services.repository.content(e.detail.path.slice(1).join('/'))).data)
         temp = temp.filter(e => this.filter(e))
         this.content = temp
     }
@@ -71,14 +71,14 @@ export class MyRepository
     async enterFolder(e)
     {
         this.path = [...this.path, e.detail.folder.name]
-        let temp = Array.from((await repository.content(this.path.slice(1).join('/'))).data)
+        let temp = Array.from((await services.repository.content(this.path.slice(1).join('/'))).data)
         temp = temp.filter(e => this.filter(e))
         this.content = temp
     }
 
     async refresh()
     {
-        let temp = Array.from((await repository.content(this.path.slice(1).join('/'))).data)
+        let temp = Array.from((await services.repository.content(this.path.slice(1).join('/'))).data)
         temp = temp.filter(e => this.filter(e))
         this.content = temp
     }
@@ -109,7 +109,7 @@ export class MyLoaderState
     }
 }
 
-export class MyManagementTable
+export class MyTable
 {
     constructor(cmd, columns, formater = (e) => e)
     {

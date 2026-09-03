@@ -490,6 +490,144 @@ async def patch_suppliers(id: int, supplier: schemas.SupplierBase, db = Depends(
         await db.rollback()
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid data or a supplier with this name already exists.")
 
+# USERS
+@app.get("/users", response_model = schemas.PageResponse[schemas.UserFull])
+async def get_users_list(
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1, le=100),
+    search: str | None = Query(None),
+    sortBy: str = Query("id"),
+    sortDesc: bool = Query(False),
+    db = Depends(get_db)
+):
+    user_model = models.User
+    limit = max(1, min(limit, 100))
+    skip = (page - 1) * limit
+
+    sort_column = getattr(user_model, sortBy, None)
+    if sort_column is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Unsupported sortBy value: {sortBy}"
+        )
+
+    count_query = select(func.count()).select_from(user_model)
+    query_entries = select(user_model)
+    if search:
+        search_term = f"%{search.strip()}%"
+        search_filters = [
+            column.ilike(search_term)
+            for column in user_model.__table__.columns
+            if getattr(column.type, "python_type", None) is str
+        ]
+        if search_filters:
+            from sqlalchemy import or_
+            search_filter = or_(*search_filters)
+            count_query = count_query.where(search_filter)
+            query_entries = query_entries.where(search_filter)
+
+    count_result = await db.execute(count_query)
+    total_count = count_result.scalar() or 0
+
+    query_entries = (
+        query_entries
+        .order_by(sort_column.desc() if sortDesc else sort_column.asc())
+        .offset(skip)
+        .limit(limit)
+    )
+    entries_result = await db.execute(query_entries)
+    entries = entries_result.scalars().all()
+
+    return schemas.PageResponse(
+        items=entries,
+        total=total_count,
+        page=page,
+        limit=limit
+    )
+
+@app.delete('/users/{id}')
+async def delete_users(id: int, db = Depends(get_db)):
+    query = select(models.User).where(models.User.id == id)
+    result = await db.execute(query)
+    item = result.scalar_one_or_none()
+
+    if item is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="ID doesn't exist!"
+        )
+
+    await db.delete(item)
+    await db.commit()
+    await MyDatabase.updateElementsViews(db)
+
+    return id
+
+
+
+
+
+
+
+@app.post('/users')
+async def post_users(user: schemas.UserBase, db = Depends(get_db)):
+    item = models.User(**user.model_dump())
+    db.add(item)
+    try:
+        await db.commit()
+        await db.refresh(item)
+        await MyDatabase.updateElementsViews(db)
+        return item
+    except IntegrityError:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid data or a user with these details already exists."
+        )
+
+@app.get('/users/{id}')
+async def get_users(id: int, db = Depends(get_db)):
+    query = select(models.User).where(models.User.id == id)
+    result = await db.execute(query)
+    item = result.scalar_one_or_none()
+
+    if item is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="ID doesn't exist!"
+        )
+
+    return item
+
+@app.patch('/users/{id}')
+async def patch_users(id: int, user: schemas.UserBase, db = Depends(get_db)):
+    query = select(models.User).where(models.User.id == id)
+    result = await db.execute(query)
+    item = result.scalar_one_or_none()
+
+    if item is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="ID doesn't exist!"
+        )
+
+    update_data = user.model_dump(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(item, field, value)
+
+    try:
+        db.add(item)
+        await db.commit()
+        await db.refresh(item)
+        await MyDatabase.updateElementsViews(db)
+        return item
+    except IntegrityError:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid data or a user with these details already exists."
+        )
+
 # SERVER
 @app.get('/server/info')
 async def get_server_info():

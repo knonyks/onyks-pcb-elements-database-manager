@@ -2,7 +2,7 @@
     import { ref } from 'vue';
     import ManagerPage from '@/components/ManagerPage.vue';
     import { onMounted } from 'vue';
-    import { elements, manufacturers, suppliers, tables } from '@/utils/api';
+    import { services } from '@/utils/api';
     import DataLoader from '@/components/DataLoader.vue';
     import { useWindowSize } from '@vueuse/core';
     import { MyError, MyTime } from '@/utils/tools';
@@ -24,20 +24,20 @@
         try
         {
             loading.value.state += 100/7
-            data.value.elements = (await elements.count()).data
+            data.value.elements = (await services.elements.count()).data
             loading.value.state += 100/7
-            data.value.elements.lastAdded = (await elements.lastAdded()).data
+            data.value.elements.lastAdded = (await services.elements.lastAdded()).data
             data.value.elements.lastAdded.createdAt = MyTime.getLocalTime(data.value.elements.lastAdded.createdAt, 'en')
             loading.value.state += 100/7
-            data.value.tables = (await tables.count()).data
+            data.value.tables = (await services.tables.count()).data
             loading.value.state += 100/7
-            data.value.tables.counts = (await tables.counts()).data
+            data.value.tables.counts = (await services.tables.counts()).data
             loading.value.state += 100/7
-            data.value.suppliers = (await suppliers.count()).data
+            data.value.suppliers = (await services.suppliers.count()).data
             loading.value.state += 100/7
-            data.value.manufacturers = (await manufacturers.count()).data
+            data.value.manufacturers = (await services.manufacturers.count()).data
             loading.value.state = 100
-            data.value.manufacturers.counts = (await manufacturers.counts()).data
+            data.value.manufacturers.counts = (await services.manufacturers.counts()).data
             loading.value.isLoading = false
         }
         catch (err)
@@ -49,7 +49,7 @@
 </script>
 
 <template>
-    <DataLoader :is-loading="loading.isLoading" :error="loading.error" :state="loading.state">
+    <DataLoader v-model="loading">
 
         <ManagerPage title="Dashboard">
             

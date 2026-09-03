@@ -7,14 +7,14 @@
     import { MyError } from '@/utils/tools';
     
     const loading = ref(new MyLoaderState())
-    const repo = ref(new MyRepository((e) => e.type === 'dir' || e.type === 'schlib' || e.type === 'pcblib' || e.type === 'footprint' || e.type === 'symbol'))
+    const repository = ref(new MyRepository((e) => e.type === 'dir' || e.type === 'schlib' || e.type === 'pcblib' || e.type === 'footprint' || e.type === 'symbol'))
 
     onMounted(async () =>
     {
         try 
         {
             loading.value.state += 50
-            await repo.value.init()
+            await repository.value.init()
             loading.value.state = 100
             loading.value.isLoading = false
         } 
@@ -27,12 +27,9 @@
 </script>
 
 <template>
-    <DataLoader :is-loading="loading.isLoading" :error="loading.error" :state="loading.state">
+    <DataLoader v-model="loading">
         <ManagerPage title="Repository">
-            <RepositoryExplorer :explorerContent="repo.content" :path="repo.path"
-            @enter-folder="(e) => repo.enterFolder(e)"
-            @path-change="(e) => repo.pathChange(e)"
-            @refresh="(e) => repo.refresh()"></RepositoryExplorer>
+            <RepositoryExplorer v-model="repository"></RepositoryExplorer>
         </ManagerPage>
     </DataLoader>
 </template>

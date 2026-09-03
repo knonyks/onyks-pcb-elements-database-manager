@@ -1,19 +1,29 @@
 <script setup>
     import { defineEmits } from 'vue';
+    import BasicSearch from './BasicSearch.vue';
 
     const emit = defineEmits(['page-change', 'checkbox-click'])
     const model = defineModel();
 
-    
-    // {
-    //     default: () => ({ columns: [], data: [], selected: 0, total: 0, limit: 20, page: 1, cmd: async (page, limit) => [] })
-    // }
+    const handleCheckboxClick = (e) =>
+    {
+        if(e.detail.type == 'row')
+        {
+            model.value.data[e.detail.rowIndex].selected = e.detail.checked
+        }
+        else
+        {
+            model.value.data.forEach((item) => item.selected = e.detail.checked)
+        }
+        model.value.selectedCount = model.value.data.filter((item) => item.selected).length
+    }
 </script>
 
 <template>
     <onyks-container gap="l" align="center">
+        <BasicSearch v-model="model"></BasicSearch>
         <onyks-container :class="{ extend: model.extend }" :padding="`${model.extend ? 'l' : ''}`">
-            <onyks-table :columns="model?.columns ?? []" :data="model?.data ?? []" @checkbox-click="console.log"></onyks-table>
+            <onyks-table :columns="model?.columns ?? []" :data="model?.data ?? []" @checkbox-click="handleCheckboxClick"></onyks-table>
         </onyks-container>
         <onyks-container type="group" align="center" justify="center" gap="m">
             <onyks-pagination-nav :max-index="Math.ceil(model.total / model.limit)" :index="model.page" max-view="3" size="m" @page-change="model.nextPage($event.detail.index)"></onyks-pagination-nav>
@@ -41,7 +51,7 @@
 
     .extend > onyks-table
     {
-        height: 550px;
+        height: 700px;
     }
 
     onyks-container
